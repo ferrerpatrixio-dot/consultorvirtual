@@ -62,6 +62,34 @@ métrica que muestre un límite superado. Cuando exista, se descongela.
 
 ---
 
+### [F-002] Interfaz de pago de suscripción
+- **Propuesto por:** Patricio Ferrer / 2026-07-27
+- **Qué es:** medio de pago recurrente en línea para un modelo de suscripción.
+- **Por qué está congelado:** hoy el modelo de ingresos es **por proyecto**
+  (Fase 1 precio fijo, Fase 2 cotizada), no por suscripción. No existe todavía
+  el producto que se cobraría mensualmente. Integrar pagos antes de tener qué
+  cobrar es construir la caja registradora antes que la tienda.
+- **Gatillo de descongelamiento:** que exista un **producto de cobro recurrente
+  definido y aprobado por PRODUCT MANAGER**, y **≥ 3 clientes** dispuestos a
+  contratarlo. Ambas condiciones, no una.
+- **Costo estimado al descongelar:** por evaluar. En Chile las opciones a mirar
+  incluyen Transbank/Webpay, Flow, Khipu y MercadoPago; el criterio será
+  comisión efectiva y si emiten documento tributario. **No investigado aún.**
+- **Qué hacemos mientras tanto:** transferencia bancaria y factura. Con el
+  volumen actual (0 clientes) es suficiente y no tiene comisión.
+
+**Reparto de responsabilidades cuando se descongele** (los tres, en orden):
+1. **PRODUCT MANAGER** — decide *si* hay suscripción, qué incluye y a qué precio.
+   Es dueño del modelo de ingresos. **Sin su definición, los otros dos no parten.**
+2. **FINANCE / contabilidad** — cómo se concilia la plata, emisión de boleta o
+   factura electrónica, reconocimiento del ingreso, y el efecto en el flujo de caja.
+3. **ARQUITECTO + DEV** — recién al final, la integración técnica.
+
+**No es de uno o de otro: es secuencial.** El error clásico es partir por el
+punto 3 porque es el entretenido.
+
+---
+
 ## ✅ IDEAS DESCONGELADAS (histórico)
 
 *(Vacío. Cuando una idea pase a ejecución, se mueve aquí con la fecha y el gatillo que se cumplió.)*

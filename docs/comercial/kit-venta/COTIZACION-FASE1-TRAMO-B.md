@@ -19,7 +19,7 @@ RUT `[[RUT]]` · `[[DIRECCION]]` · Fecha: `[[__ / __ / 2026]]`
 | Riesgos y puntos de quiebre | Listado completo, priorizado | Los 3 principales |
 | Plan de trabajo | Qué se hace, en qué orden, en cuántas semanas, con costo estimado | Qué se hace y en qué orden |
 | Reunión de entrega con usted | 1 hora | 1 hora |
-| **Precio total (IVA incluido)** | **$600.000** | **$`[[ ]]`** |
+| **Precio total (IVA incluido)** | **$600.000** | **$400.000** |
 
 ---
 

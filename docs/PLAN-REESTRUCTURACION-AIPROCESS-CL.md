@@ -229,8 +229,27 @@ de diseño, no se agrega una sola dependencia.
 
 ### Escalación a Patricio antes de la Ola 1
 
-1. **URL de agenda** — sin ella la Ola 1 no tiene destino. ¿Calendly, Google
-   Calendar público, o un formulario a correo?
+1. ~~**URL de agenda**~~ — ✅ **RESUELTO (Patricio, 2026-07-27): agenda manual.**
+   No se contrata Calendly ni herramienta de agendamiento: sin clientes todavía,
+   sería costo y complejidad sin uso.
+
+   **Reemplazo en la Ola 1 — el CTA no lleva a un calendario, captura y avisa:**
+   ```
+   Botón "Quiero la reunión gratis (1 hora)"
+        ↓
+   Pide SOLO teléfono + franja horaria preferida
+   (el email y la empresa ya se capturaron antes del resultado)
+        ↓
+   Guarda en la tabla `leads` y notifica a Patricio
+        ↓
+   Patricio llama y coordina por WhatsApp
+   ```
+   **Ventaja:** cero costo, cero dependencia nueva, y hablas con el prospecto
+   antes de la reunión — que con este segmento convierte mejor que un
+   calendario frío.
+
+   **Gatillo para automatizar** (va al backlog como idea congelada): más de
+   **5 solicitudes de reunión por semana**. Antes de eso, el teléfono gana.
 2. **Casilla del dominio** — `contacto@aiprocess.cl` o similar, para sacar el
    Gmail personal del footer.
 3. **Confirmar la duración pública del test:** "5 minutos" (real) vs. los "15
