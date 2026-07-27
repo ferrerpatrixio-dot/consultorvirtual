@@ -50,7 +50,42 @@ afecta el despliegue: el remoto y Vercel siguen exactamente igual.
 
 ---
 
-## 🚀 PUBLICACIÓN EN www.aiprocess.cl
+## 🗺️ MAPA REAL DEL DESPLIEGUE (verificado 2026-07-27)
+
+**Hay DOS proyectos de Vercel, no uno.**
+
+| Dominio | Repositorio | Qué es |
+|---|---|---|
+| `www.aiprocess.cl` | `ferrerpatrixio-dot/app` → carpeta `LANDPAGE` | Landing **estática**. Es lo que ve el público hoy. |
+| `app-procesos.vercel.app` | `ferrerpatrixio-dot/APP-PROCESOS` | Aplicación **Next.js**: el test MMA-OD y el back-office. |
+
+**El dominio NO apunta a la aplicación Next.** Apunta a la landing estática.
+
+### Consecuencia para publicar el sitio nuevo
+
+El sitio nuevo (rama `web-nueva`) está en **APP-PROCESOS**, así que al desplegarlo
+llega a `app-procesos.vercel.app`, **no** a `aiprocess.cl`.
+
+Para publicarlo hay que **mover el dominio de un proyecto de Vercel al otro**:
+
+```
+1. Desplegar web-nueva y validarla en app-procesos.vercel.app
+2. En Vercel, quitar aiprocess.cl del proyecto "app"
+3. Agregarlo al proyecto "APP-PROCESOS"
+4. Dejar aiprocess.cl como principal y www redirigiendo (hoy es al revés)
+5. Archivar el proyecto de la landing estática
+```
+
+**El sitio nuevo reemplaza la landing estática**: trae landing y test en una sola
+aplicación, así que ese proyecto queda obsoleto. No se borra hasta confirmar que
+el dominio sirve bien desde el proyecto nuevo.
+
+⚠️ Los assets de marca en `public/marca/` provienen de la copia local de ese
+repositorio (`...\antigravity\LANDPAGE\landpage\assets\`).
+
+---
+
+## 🚀 PUBLICACIÓN EN aiprocess.cl
 
 Modelo: apuntar el dominio propio a la URL interna que entrega Vercel.
 
