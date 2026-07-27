@@ -39,7 +39,26 @@ Cuando ARQUITECTO o PRODUCT MANAGER proponen algo caro o novedoso:
 
 ## 🧊 IDEAS CONGELADAS
 
-*(Vacío al 2026-07-27. Se pobla con lo que descarten ARQUITECTO y PRODUCT MANAGER en las investigaciones en curso.)*
+### [F-001] Software modularizador de cotizaciones
+- **Propuesto por:** Patricio Ferrer / 2026-07-27
+- **Qué es:** una herramienta que arme cotizaciones por módulos en vez de
+  redactarlas a mano.
+- **Por qué está congelado:** hoy la Fase 1 es un **producto de precio fijo con
+  2 tramos**. Existen exactamente 4 documentos y ya están escritos. No hay nada
+  que modularizar: sería un generador para elegir entre 4 archivos estáticos.
+  Además el cuello de botella real hoy es **0 clientes**, no el tiempo de
+  cotizar.
+- **Gatillo de descongelamiento:** haber cotizado **≥ 10 Fases 2** a mano
+  **y** que el tiempo promedio de armar una cotización supere **2 horas**.
+  (La Fase 2 sí es a medida — ahí la modularización tendría sentido, pero
+  recién cuando existan patrones observados, no imaginados.)
+- **Costo estimado al descongelar:** por evaluar. No se estima ahora.
+- **Qué hacemos mientras tanto:** las 4 plantillas del kit de venta con campos
+  `[[ ]]` completados a mano en la reunión. Tiempo real: minutos.
+
+**Nota:** esta entrada es el primer caso de prueba de la regla de decisión de
+ARQUITECTO. La idea no se rechazó: no cumple el requisito (a) — no existe la
+métrica que muestre un límite superado. Cuando exista, se descongela.
 
 ---
 
