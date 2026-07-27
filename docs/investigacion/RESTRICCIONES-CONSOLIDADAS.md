@@ -47,6 +47,12 @@ Ordenadas por probabilidad de hundir un proyecto:
 Barrera #1 declarada (75% reporta obstáculos por falta de personal experto).
 → **Si tu diseño necesita que alguien del cliente "administre" algo, está muerto.**
 
+> **Única excepción (2026-07-27):** los **modelos de predicción**, que sí exigen
+> un perfil analítico mínimo del lado del cliente. Solo se proponen a clientes
+> en estado `BASE_LISTA` y con una persona identificada por nombre que va a leer
+> el resultado. Ver [REGLA-HABILITACION-POR-MADUREZ.md](../REGLA-HABILITACION-POR-MADUREZ.md).
+> R-3 sigue vigente sin cambios para toda la oferta base.
+
 ### 2. R-6 — Prohibido reemplazar el software contable/DTE
 Nubox, Defontana, Bsale, Softland: los eligió **el contador**, no el dueño. Tocarlos activa un veto externo que no controlas.
 → Se **integra o convive**. Nunca se reemplaza.
