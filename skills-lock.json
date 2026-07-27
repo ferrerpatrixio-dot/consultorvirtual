@@ -13,6 +13,12 @@
       "skillPath": "SKILL.md",
       "computedHash": "5b10f279a493acaf1b5e76dd8a20a005c2bcc46fa88672ad684cec8e6df62728"
     },
+    "geo-audit": {
+      "source": "zubair-trabzada/geo-seo-claude",
+      "sourceType": "github",
+      "skillPath": "skills/geo-audit/SKILL.md",
+      "computedHash": "0a9c2cd9b39514a0e9993a01c2b403bb1f567bdd5ed7f01d370c68b0d38c5491"
+    },
     "supabase": {
       "source": "supabase/agent-skills",
       "sourceType": "github",
