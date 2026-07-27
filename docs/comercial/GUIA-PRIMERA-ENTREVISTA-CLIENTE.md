@@ -305,6 +305,20 @@ llegar al cierre ya sabes cuál de las dos cotizaciones entregar.
 □ Contrato Fase 1 estándar
 ```
 
+### ⚡ Menciona los arreglos inmediatos (baja la barrera de entrada)
+
+Si el cliente duda porque "suena a proyecto largo y caro", esta es la respuesta:
+
+> "Mira, parte del trabajo es justamente separar lo que se arregla altiro
+> —sin invertir nada y con tu propia gente— de lo que sí necesita un proyecto.
+> Si durante el diagnóstico veo algo obvio, te lo digo en el momento, no espero
+> a la entrega. No te prometo cuántas cosas van a aparecer porque depende de tu
+> operación, pero si están, las vas a saber."
+
+**Nunca prometas una cantidad ni un porcentaje de ahorro.** Un número prometido
+es una deuda sobre algo que no controlas.
+Detalle en [ARREGLOS-INMEDIATOS-Y-RELATO.md](../ARREGLOS-INMEDIATOS-Y-RELATO.md).
+
 ### Guion de entrega (después del semáforo 🟢)
 
 > "Mira, por lo que me contaste esto se ataca en [X semanas] y estás perdiendo

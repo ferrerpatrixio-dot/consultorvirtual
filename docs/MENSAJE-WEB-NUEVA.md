@@ -91,6 +91,42 @@ Todas te están costando plata.
 
 ---
 
+## 2️⃣bis ALGUNAS COSAS SE ARREGLAN ALTIRO
+
+**Va entre el problema y el proceso.** Desarma la objeción "esto va a ser largo
+y caro" antes de que lea las 4 etapas. Ver [ARREGLOS-INMEDIATOS-Y-RELATO.md](ARREGLOS-INMEDIATOS-Y-RELATO.md).
+
+```
+TÍTULO
+Algunas cosas se arreglan en una semana. Otras no.
+
+TEXTO
+Cuando alguien de afuera mira tu operación con método, casi siempre
+aparecen cosas que se pueden arreglar de inmediato: un formulario que
+se llena dos veces, un permiso que nadie revisa, un informe que nadie
+lee, un dato que se pide por teléfono y podría pedirse una sola vez.
+
+Esas no necesitan proyecto, ni inversión, ni esperar a nada. Te las
+digo apenas las veo y las arregla tu propia gente.
+
+No te voy a prometer cuántas van a aparecer, porque depende de tu
+operación. A veces son varias, a veces una. Lo que sí te aseguro es
+que si están, las vas a saber altiro y son tuyas.
+
+Lo que no se arregla en una semana es lo de fondo: cuando el problema
+está en cómo está armado el proceso. Eso sí toma tiempo, y ahí te
+muestro los números antes de que decidas nada.
+
+CIERRE
+La idea es simple: que empieces a recuperar plata mientras
+todavía estamos entendiendo el problema completo.
+```
+
+⚠️ **Nunca prometer una cantidad ni un porcentaje.** Un número prometido es una
+deuda sobre algo que no controlamos.
+
+---
+
 ## 3️⃣ CÓMO FUNCIONA — las 4 etapas
 
 ```
@@ -186,6 +222,10 @@ PASO 3 · El trabajo de fondo
         Ese documento es tuyo. Con él decides: lo haces internamente,
         lo haces conmigo, o lo licitas con otro. Igual te sirve.
 
+        Y si durante el trabajo aparece algo que se pueda arreglar
+        altiro, te lo digo en el momento. No espero a la entrega
+        para contártelo.
+
 PASO 4 · Implementar
         Solo si decides seguir, y con el alcance que salió del plan.
 
@@ -224,6 +264,12 @@ FORMATO cuando exista:
 El test y la primera conversación no cuestan nada. Si después decides
 avanzar, te paso el valor en la reunión, con el alcance ya conversado.
 No cotizo a ciegas.
+
+"¿Tengo que hacer un proyecto grande sí o sí?"
+No. Parte del trabajo es justamente separar lo que se arregla rápido
+—sin inversión y con tu propia gente— de lo que necesita un proyecto.
+Muchas veces lo primero alcanza para que lo segundo se pague solo.
+Y si al final no da, te lo digo.
 
 "¿Tengo que cambiar mis sistemas?"
 No. Tu software contable no se toca — lo eligió tu contador y funciona.

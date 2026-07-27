@@ -14,7 +14,7 @@
 | | **FASE 0** | **FASE 1** | **FASE 2** |
 |---|---|---|---|
 | **Nombre** | Termómetro **+ reunión inicial** | Consultoría inicial | Implementación |
-| **Qué es** | Test MMA-OD online (**8 preguntas**) **+ 1ª entrevista (1 h)** | BPMN estado actual + riesgos + plan de implementación | Ejecución de la solución |
+| **Qué es** | Test MMA-OD online (**8 preguntas**) **+ 1ª entrevista (1 h)** | BPMN estado actual + riesgos + **arreglos inmediatos** + plan de implementación | Ejecución de la solución |
 | **Duración** | ~5 min + 1 h | **1-2 semanas** | ≤ 6 semanas (R-11) |
 | **Precio** | **GRATIS (ambos)** | **$450.000** (≤10 pers.) · **$600.000** (>10 pers.) | Cotizado desde el plan de Fase 1 |
 | **Techo** | — | $1.000.000 (asistencia técnica, Crece verificado) | $5.000.000 (subsidio total Crece) |

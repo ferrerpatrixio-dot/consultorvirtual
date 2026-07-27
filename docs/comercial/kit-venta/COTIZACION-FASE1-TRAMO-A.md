@@ -17,6 +17,7 @@ RUT `[[RUT]]` · `[[DIRECCION]]` · Fecha: `[[__ / __ / 2026]]`
 | Mapa del proceso tal como funciona hoy | Sí, completo, incluidas las excepciones (qué pasa cuando algo sale mal) | Sí, solo el camino normal |
 | Dónde se está yendo la plata | Medido con sus registros, punto por punto | Estimado sobre los 2 o 3 puntos más gruesos |
 | Riesgos y puntos de quiebre | Listado completo, priorizado | Los 3 principales |
+| **Arreglos inmediatos** (lo que se puede hacer esta semana, sin inversión) | Sí, con responsable y ahorro estimado | Sí, con responsable y ahorro estimado |
 | Plan de trabajo | Qué se hace, en qué orden, en cuántas semanas, con costo estimado | Qué se hace y en qué orden |
 | Reunión de entrega con usted | 1 hora | 1 hora |
 | **Precio total (IVA incluido)** | **$450.000** | **$300.000** |
