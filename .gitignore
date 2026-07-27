@@ -1,0 +1,32 @@
+# sistemaaiprocess tiene su propio repositorio git — se versiona aparte
+sistemaaiprocess/
+
+# Dependencias
+node_modules/
+.venv/
+__pycache__/
+
+# Secrets — NUNCA versionar
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+credentials*.json
+
+# Build / cache
+.next/
+dist/
+build/
+.turbo/
+*.tsbuildinfo
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporales
+*.tmp
+*.log
+~$*

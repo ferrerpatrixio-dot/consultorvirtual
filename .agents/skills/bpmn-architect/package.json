@@ -1,0 +1,13 @@
+{
+  "name": "skill-bpmn-architect",
+  "version": "1.0.0",
+  "description": "Transforma datos estructurados en arquitectura BPMN 2.0 con lógica de resiliencia.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "dependencies": {
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

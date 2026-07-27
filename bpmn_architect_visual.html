@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BPMN Architect - Recepción Equipos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .header .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.3);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .comparison-section {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .comparison-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .comparison-card.winner {
+            border-color: #28a745;
+            background: #f0f8f4;
+            border-width: 3px;
+        }
+
+        .comparison-card.winner h3 {
+            color: #28a745;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            color: #333;
+        }
+
+        .feature-list li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .score {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        .score.high {
+            background: #28a745;
+        }
+
+        .json-viewer {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .node-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: white;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-card .label {
+            color: #666;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        .color-legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .color-item {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .color-box {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            border: 1px solid #333;
+        }
+
+        .color-label {
+            font-size: 13px;
+            color: #333;
+        }
+
+        .verdict {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .verdict h2 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .verdict p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+        }
+
+        table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        table tbody tr:hover {
+            background: #f5f5f5;
+        }
+
+        .footer {
+            background: #f5f5f5;
+            padding: 30px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: transform 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        @media print {
+            .btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚖️ Comparativa BPMN Skills</h1>
+            <p>Recepción y Validación de Equipos</p>
+            <div class="badge">BPMN 2.0 Architect vs PlantUML</div>
+        </div>
+
+        <div class="content">
+            <!-- COMPARATIVA -->
+            <div class="comparison-section">
+                <h2 style="color: #667eea; margin-bottom: 20px;">📊 Comparativa de Skills</h2>
+
+                <div class="comparison-grid">
+                    <!-- SKILL 1: BPMN ARCHITECT -->
+                    <div class="comparison-card winner">
+                        <h3>🏗️ BPMN ARCHITECT <span class="score high">9.5/10</span></h3>
+                        <ul class="feature-list">
+                            <li>Arquitectura XML-first BPMN 2.0</li>
+                            <li>Metadatos técnicos (resiliencia, idempotencia)</li>
+                            <li>JSON estructurado y verificable</li>
+                            <li>Estrategias de retry integradas</li>
+                            <li>Análisis de idempotencia</li>
+                            <li>Preguntas pendientes identificadas</li>
+                            <li>Semántica visual por tipo de tarea</li>
+                            <li>Integración con sistemas resilientes</li>
+                            <li>Genera artefactos executables</li>
+                        </ul>
+                    </div>
+
+                    <!-- SKILL 2: BPMN PLANTUML -->
+                    <div class="comparison-card">
+                        <h3>📐 BPMN PLANTUML <span class="score">7.5/10</span></h3>
+                        <ul class="feature-list">
+                            <li>Sintaxis PlantUML legible</li>
+                            <li>Diagramas visuales bonitos</li>
+                            <li>Fácil de editar manualmente</li>
+                            <li>Compatible con Markdown</li>
+                            <li>Genera SVG limpio</li>
+                            <li>Buena documentación visual</li>
+                            <li>Swimlanes claros y espaciados</li>
+                            <li>Sin metadatos técnicos</li>
+                            <li>No valida lógica de procesos</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ESTADÍSTICAS DEL DIAGRAMA ARCHITECT -->
+            <div class="comparison-section">
+                <h2 style="color: #667eea; margin-bottom: 20px;">📈 Análisis del Diagrama BPMN Architect</h2>
+
+                <div class="node-stats">
+                    <div class="stat-card">
+                        <div class="number">26</div>
+                        <div class="label">Nodos Totales</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">7</div>
+                        <div class="label">Carriles (Lanes)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">7</div>
+                        <div class="label">Decisiones (Gateways)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">31</div>
+                        <div class="label">Conexiones (Edges)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">2</div>
+                        <div class="label">Tasks de Sistema (API)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">4</div>
+                        <div class="label">Preguntas Pendientes</div>
+                    </div>
+                </div>
+
+                <h3 style="color: #667eea; margin: 30px 0 15px 0;">🎨 Paleta de Colores BPMN Architect</h3>
+                <div class="color-legend">
+                    <div class="color-item">
+                        <div class="color-box" style="background: #28a745;"></div>
+                        <div class="color-label"><strong>Verde (#28a745)</strong><br>Happy Path, Inicio, Éxito</div>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background: #dc3545;"></div>
+                        <div class="color-label"><strong>Rojo (#dc3545)</strong><br>Errores, Fin forzado</div>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background: #ffc107;"></div>
+                        <div class="color-label"><strong>Ámbar (#ffc107)</strong><br>Decisiones, Esperas</div>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background: #007bff;"></div>
+                        <div class="color-label"><strong>Azul (#007bff)</strong><br>Tareas de Usuario</div>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background: #f8f9fa;"></div>
+                        <div class="color-label"><strong>Gris (#f8f9fa)</strong><br>Tareas de Sistema</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLA COMPARATIVA DETALLADA -->
+            <div class="comparison-section">
+                <h2 style="color: #667eea; margin-bottom: 20px;">🔍 Análisis Detallado</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Aspecto</th>
+                            <th>BPMN Architect</th>
+                            <th>BPMN PlantUML</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Formato de Salida</strong></td>
+                            <td>JSON estructurado + BPMN 2.0 XML</td>
+                            <td>PlantUML syntax (texto)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Metadatos Técnicos</strong></td>
+                            <td>✓ Completo (retry, idempotencia)</td>
+                            <td>✗ No tiene</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Análisis de Resiliencia</strong></td>
+                            <td>✓ Included automático</td>
+                            <td>✗ Manual</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Validación de Lógica</strong></td>
+                            <td>✓ Verifica decisiones y paths</td>
+                            <td>✗ No valida</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ejecutabilidad</strong></td>
+                            <td>✓ Genera artefactos executable</td>
+                            <td>✗ Solo visualización</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Documentación Automática</strong></td>
+                            <td>✓ Preguntas pendientes + resumen</td>
+                            <td>✗ Manual</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Facilidad de Lectura</strong></td>
+                            <td>△ JSON (requiere herramientas)</td>
+                            <td>✓ Muy legible (texto plano)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Edición Manual</strong></td>
+                            <td>△ Posible pero complejo</td>
+                            <td>✓ Fácil y directa</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Integración con Sistemas</strong></td>
+                            <td>✓ API-first, integra APIs</td>
+                            <td>△ Solo documentación</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Compatibilidad BPMN 2.0</strong></td>
+                            <td>✓ Completa (estándar oficial)</td>
+                            <td>✓ Representa visualmente</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- JSON DEL DIAGRAMA -->
+            <div class="comparison-section">
+                <h2 style="color: #667eea; margin-bottom: 20px;">📋 Estructura JSON Architect (Resumen)</h2>
+                <div class="json-viewer">
+<pre>{
+  "diagram_title": "Recepción y Validación de Equipos",
+  "nodes": [
+    {
+      "id": "task_11",
+      "type": "SERVICE_TASK",
+      "label": "Ingresa serie confirmada a SAP",
+      "lane": "Bodeguero/Administrativo",
+      "visual_meta": {
+        "color": "#f8f9fa",
+        "icon_ref": "icon_api"
+      },
+      "technical_meta": {
+        "retry_strategy": "Exponential Backoff + Jitter",
+        "is_idempotent": false
+      }
+    }
+  ],
+  "resilience_summary": "El proceso incluye estrategia Exponential Backoff + Jitter...",
+  "pending_questions": [
+    "¿Cuál es el timeout máximo para el pistolaje de cada caja?"
+  ]
+}</pre>
+                </div>
+            </div>
+
+            <!-- VEREDICTO FINAL -->
+            <div class="verdict">
+                <h2>🏆 Veredicto: BPMN Architect es la MEJOR OPCIÓN</h2>
+                <p>
+                    <strong>Por qué:</strong> Proporciona artefactos ejecutables (JSON + BPMN 2.0 XML),
+                    incluye metadatos técnicos críticos para resiliencia e idempotencia, y genera automáticamente
+                    análisis de puntos débiles y preguntas de implementación.
+                </p>
+                <p style="margin-top: 20px; font-size: 0.95em;">
+                    PlantUML es excelente para <em>visualización y documentación</em>, pero Architect es mejor
+                    para <em>arquitectura ejecutable y validación técnica</em> de procesos complejos.
+                </p>
+            </div>
+
+            <!-- RECOMENDACIONES -->
+            <div class="comparison-section">
+                <h2 style="color: #667eea; margin-bottom: 20px;">💡 Recomendaciones de Uso</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Escenario</th>
+                            <th>Usar BPMN Architect</th>
+                            <th>Usar PlantUML</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Procesos con APIs/Sistemas</td>
+                            <td>✓ Primaria</td>
+                            <td>△ Secundaria</td>
+                        </tr>
+                        <tr>
+                            <td>Análisis de resiliencia</td>
+                            <td>✓ Primaria</td>
+                            <td>✗ No recomendado</td>
+                        </tr>
+                        <tr>
+                            <td>Documentación visual rápida</td>
+                            <td>△ Secundaria</td>
+                            <td>✓ Primaria</td>
+                        </tr>
+                        <tr>
+                            <td>Educación/Presentaciones</td>
+                            <td>△ Secundaria</td>
+                            <td>✓ Primaria</td>
+                        </tr>
+                        <tr>
+                            <td>Implementación de workflows</td>
+                            <td>✓ Primaria</td>
+                            <td>✗ No recomendado</td>
+                        </tr>
+                        <tr>
+                            <td>Auditoría y compliance</td>
+                            <td>✓ Primaria</td>
+                            <td>△ Secundaria</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- DESCARGAS -->
+            <div class="comparison-section" style="text-align: center;">
+                <h2 style="color: #667eea; margin-bottom: 20px;">📥 Descargas</h2>
+                <button class="btn" onclick="downloadJSON()">📄 Descargar JSON Architect</button>
+                <button class="btn" onclick="downloadMD()">📋 Descargar PlantUML .md</button>
+                <button class="btn" onclick="window.print()">🖨️ Imprimir esta página</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><strong>Análisis Comparativo de BPMN Skills</strong></p>
+            <p>Recepción y Validación de Equipos | Versión: 1.0 | 2024</p>
+        </div>
+    </div>
+
+    <script>
+        function downloadJSON() {
+            const link = document.createElement('a');
+            link.href = 'bpmn_architect_diagrama.json';
+            link.download = 'bpmn_architect_diagrama.json';
+            link.click();
+        }
+
+        function downloadMD() {
+            const link = document.createElement('a');
+            link.href = 'diagrama_bpmn_profesional.md';
+            link.download = 'diagrama_bpmn_profesional.md';
+            link.click();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0">
+  <bpmn:collaboration id="Collaboration_1">
+    <bpmn:participant id="Participant_Distribuidor" name="DISTRIBUIDOR" processRef="Process_Distribuidor" />
+    <bpmn:participant id="Participant_Guardian" name="GUARDIÁN" processRef="Process_Guardian" />
+    <bpmn:participant id="Participant_Bodeguero" name="BODEGUERO/ADMINISTRATIVO" processRef="Process_Bodeguero" />
+    <bpmn:participant id="Participant_Supervisor" name="SUPERVISOR" processRef="Process_Supervisor" />
+
+    <!-- Message Flows -->
+    <bpmn:messageFlow id="MessageFlow_1" sourceRef="Activity_Distribuidor_Presenta" targetRef="Activity_Guardian_Registra" />
+    <bpmn:messageFlow id="MessageFlow_2" sourceRef="Activity_Bodeguero_Firma" targetRef="Activity_Distribuidor_Recibe" />
+    <bpmn:messageFlow id="MessageFlow_3" sourceRef="Activity_Bodeguero_Discrepancia" targetRef="Activity_Supervisor_Revisa" />
+  </bpmn:collaboration>
+
+  <!-- PROCESS: DISTRIBUIDOR -->
+  <bpmn:process id="Process_Distribuidor" isExecutable="false">
+    <bpmn:startEvent id="Event_Distribuidor_Start" name="Llega con camión">
+      <bpmn:outgoing>Flow_D1</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:task id="Activity_Distribuidor_Presenta" name="Presenta documentación de entrega">
+      <bpmn:incoming>Flow_D1</bpmn:incoming>
+      <bpmn:outgoing>Flow_D2</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Activity_Distribuidor_Recibe" name="Recibe guía firmada">
+      <bpmn:incoming>Flow_D2</bpmn:incoming>
+      <bpmn:outgoing>Flow_D3</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Activity_Distribuidor_Retira" name="Se retira con comprobante">
+      <bpmn:incoming>Flow_D3</bpmn:incoming>
+      <bpmn:outgoing>Flow_D4</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:endEvent id="Event_Distribuidor_End" name="Entrega completada">
+      <bpmn:incoming>Flow_D4</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_D1" sourceRef="Event_Distribuidor_Start" targetRef="Activity_Distribuidor_Presenta" />
+    <bpmn:sequenceFlow id="Flow_D2" sourceRef="Activity_Distribuidor_Presenta" targetRef="Activity_Distribuidor_Recibe" />
+    <bpmn:sequenceFlow id="Flow_D3" sourceRef="Activity_Distribuidor_Recibe" targetRef="Activity_Distribuidor_Retira" />
+    <bpmn:sequenceFlow id="Flow_D4" sourceRef="Activity_Distribuidor_Retira" targetRef="Event_Distribuidor_End" />
+  </bpmn:process>
+
+  <!-- PROCESS: GUARDIÁN -->
+  <bpmn:process id="Process_Guardian" isExecutable="false">
+    <bpmn:startEvent id="Event_Guardian_Start" name="Distribuidor llega">
+      <bpmn:outgoing>Flow_G1</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:task id="Activity_Guardian_Registra" name="Registra entrada del distribuidor">
+      <bpmn:incoming>Flow_G1</bpmn:incoming>
+      <bpmn:outgoing>Flow_G2</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:exclusiveGateway id="Gateway_Guardian_Valido" name="¿Registro válido?">
+      <bpmn:incoming>Flow_G2</bpmn:incoming>
+      <bpmn:outgoing>Flow_G3_No</bpmn:outgoing>
+      <bpmn:outgoing>Flow_G3_Si</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:task id="Activity_Guardian_Rechaza" name="Rechaza entrada">
+      <bpmn:incoming>Flow_G3_No</bpmn:incoming>
+      <bpmn:outgoing>Flow_G4</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:endEvent id="Event_Guardian_End_Rechaza" name="Entrada rechazada">
+      <bpmn:incoming>Flow_G4</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:task id="Activity_Guardian_Autoriza" name="Autoriza acceso a bodega">
+      <bpmn:incoming>Flow_G3_Si</bpmn:incoming>
+      <bpmn:outgoing>Flow_G5</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:endEvent id="Event_Guardian_End_Autoriza" name="Acceso autorizado">
+      <bpmn:incoming>Flow_G5</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_G1" sourceRef="Event_Guardian_Start" targetRef="Activity_Guardian_Registra" />
+    <bpmn:sequenceFlow id="Flow_G2" sourceRef="Activity_Guardian_Registra" targetRef="Gateway_Guardian_Valido" />
+    <bpmn:sequenceFlow id="Flow_G3_No" sourceRef="Gateway_Guardian_Valido" targetRef="Activity_Guardian_Rechaza" name="No" />
+    <bpmn:sequenceFlow id="Flow_G3_Si" sourceRef="Gateway_Guardian_Valido" targetRef="Activity_Guardian_Autoriza" name="Sí" />
+    <bpmn:sequenceFlow id="Flow_G4" sourceRef="Activity_Guardian_Rechaza" targetRef="Event_Guardian_End_Rechaza" />
+    <bpmn:sequenceFlow id="Flow_G5" sourceRef="Activity_Guardian_Autoriza" targetRef="Event_Guardian_End_Autoriza" />
+  </bpmn:process>
+
+  <!-- PROCESS: BODEGUERO/ADMINISTRATIVO -->
+  <bpmn:process id="Process_Bodeguero" isExecutable="true">
+    <bpmn:startEvent id="Event_Bodeguero_Start" name="Recibe autorización">
+      <bpmn:outgoing>Flow_B1</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:task id="Activity_Bodeguero_Traslada" name="Traslada cajas a bodega">
+      <bpmn:incoming>Flow_B1</bpmn:incoming>
+      <bpmn:outgoing>Flow_B2</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Activity_Bodeguero_Abre" name="Abre cajas y verifica contenido">
+      <bpmn:incoming>Flow_B2</bpmn:incoming>
+      <bpmn:outgoing>Flow_B3</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:exclusiveGateway id="Gateway_Bodeguero_Cantidad" name="¿Cantidades correctas?">
+      <bpmn:incoming>Flow_B3</bpmn:incoming>
+      <bpmn:outgoing>Flow_B4_No</bpmn:outgoing>
+      <bpmn:outgoing>Flow_B4_Si</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:exclusiveGateway id="Gateway_Bodeguero_Modelos" name="¿Modelos correctos?">
+      <bpmn:incoming>Flow_B4_Si</bpmn:incoming>
+      <bpmn:outgoing>Flow_B5_No</bpmn:outgoing>
+      <bpmn:outgoing>Flow_B5_Si</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:task id="Activity_Bodeguero_InspeccionaFisica" name="Inspecciona daños físicos">
+      <bpmn:incoming>Flow_B5_Si</bpmn:incoming>
+      <bpmn:outgoing>Flow_B6</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:exclusiveGateway id="Gateway_Bodeguero_Daños" name="¿Hay daños críticos?">
+      <bpmn:incoming>Flow_B6</bpmn:incoming>
+      <bpmn:outgoing>Flow_B7_No</bpmn:outgoing>
+      <bpmn:outgoing>Flow_B7_Si</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:task id="Activity_Bodeguero_Firma" name="Firma guía de entrega">
+      <bpmn:incoming>Flow_B7_No</bpmn:incoming>
+      <bpmn:outgoing>Flow_B8</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Activity_Bodeguero_IngresaSAP" name="Ingresa a SAP - Preparación">
+      <bpmn:incoming>Flow_B8</bpmn:incoming>
+      <bpmn:outgoing>Flow_B9</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Activity_Bodeguero_PistolayCaja" name="Pistola/Escanea cada caja">
+      <bpmn:incoming>Flow_B9</bpmn:incoming>
+      <bpmn:outgoing>Flow_B10</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:exclusiveGateway id="Gateway_Bodeguero_SAPFisico" name="¿Físico = SAP?">
+      <bpmn:incoming>Flow_B10</bpmn:incoming>
+      <bpmn:outgoing>Flow_B11_No</bpmn:outgoing>
+      <bpmn:outgoing>Flow_B11_Si</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:task id="Activity_Bodeguero_IngresaConfirma" name="Ingresa serie confirmada">
+      <bpmn:incoming>Flow_B11_Si</bpmn:incoming>
+      <bpmn:outgoing>Flow_B12</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:exclusiveGateway id="Gateway_Bodeguero_MasCajas" name="¿Más cajas?">
+      <bpmn:incoming>Flow_B12</bpmn:incoming>
+      <bpmn:outgoing>Flow_B13_Si</bpmn:outgoing>
+      <bpmn:outgoing>Flow_B13_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:task id="Activity_Bodeguero_Discrepancia" name="Registra discrepancia">
+      <bpmn:incoming>Flow_B4_No</bpmn:incoming>
+      <bpmn:outgoing>Flow_B_Disc1</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Activity_Bodeguero_Discrepancia2" name="Registra discrepancia">
+      <bpmn:incoming>Flow_B5_No</bpmn:incoming>
+      <bpmn:outgoing>Flow_B_Disc1</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Activity_Bodeguero_Discrepancia3" name="Registra discrepancia">
+      <bpmn:incoming>Flow_B7_Si</bpmn:incoming>
+      <bpmn:outgoing>Flow_B_Disc1</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Activity_Bodeguero_Discrepancia4" name="Registra discrepancia">
+      <bpmn:incoming>Flow_B11_No</bpmn:incoming>
+      <bpmn:outgoing>Flow_B_Disc1</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:endEvent id="Event_Bodeguero_End" name="Inventario actualizado">
+      <bpmn:incoming>Flow_B13_No</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_B1" sourceRef="Event_Bodeguero_Start" targetRef="Activity_Bodeguero_Traslada" />
+    <bpmn:sequenceFlow id="Flow_B2" sourceRef="Activity_Bodeguero_Traslada" targetRef="Activity_Bodeguero_Abre" />
+    <bpmn:sequenceFlow id="Flow_B3" sourceRef="Activity_Bodeguero_Abre" targetRef="Gateway_Bodeguero_Cantidad" />
+    <bpmn:sequenceFlow id="Flow_B4_No" sourceRef="Gateway_Bodeguero_Cantidad" targetRef="Activity_Bodeguero_Discrepancia" name="No" />
+    <bpmn:sequenceFlow id="Flow_B4_Si" sourceRef="Gateway_Bodeguero_Cantidad" targetRef="Gateway_Bodeguero_Modelos" name="Sí" />
+    <bpmn:sequenceFlow id="Flow_B5_No" sourceRef="Gateway_Bodeguero_Modelos" targetRef="Activity_Bodeguero_Discrepancia2" name="No" />
+    <bpmn:sequenceFlow id="Flow_B5_Si" sourceRef="Gateway_Bodeguero_Modelos" targetRef="Activity_Bodeguero_InspeccionaFisica" name="Sí" />
+    <bpmn:sequenceFlow id="Flow_B6" sourceRef="Activity_Bodeguero_InspeccionaFisica" targetRef="Gateway_Bodeguero_Daños" />
+    <bpmn:sequenceFlow id="Flow_B7_No" sourceRef="Gateway_Bodeguero_Daños" targetRef="Activity_Bodeguero_Firma" name="No" />
+    <bpmn:sequenceFlow id="Flow_B7_Si" sourceRef="Gateway_Bodeguero_Daños" targetRef="Activity_Bodeguero_Discrepancia3" name="Sí" />
+    <bpmn:sequenceFlow id="Flow_B8" sourceRef="Activity_Bodeguero_Firma" targetRef="Activity_Bodeguero_IngresaSAP" />
+    <bpmn:sequenceFlow id="Flow_B9" sourceRef="Activity_Bodeguero_IngresaSAP" targetRef="Activity_Bodeguero_PistolayCaja" />
+    <bpmn:sequenceFlow id="Flow_B10" sourceRef="Activity_Bodeguero_PistolayCaja" targetRef="Gateway_Bodeguero_SAPFisico" />
+    <bpmn:sequenceFlow id="Flow_B11_No" sourceRef="Gateway_Bodeguero_SAPFisico" targetRef="Activity_Bodeguero_Discrepancia4" name="No" />
+    <bpmn:sequenceFlow id="Flow_B11_Si" sourceRef="Gateway_Bodeguero_SAPFisico" targetRef="Activity_Bodeguero_IngresaConfirma" name="Sí" />
+    <bpmn:sequenceFlow id="Flow_B12" sourceRef="Activity_Bodeguero_IngresaConfirma" targetRef="Gateway_Bodeguero_MasCajas" />
+    <bpmn:sequenceFlow id="Flow_B13_Si" sourceRef="Gateway_Bodeguero_MasCajas" targetRef="Activity_Bodeguero_PistolayCaja" name="Sí" />
+    <bpmn:sequenceFlow id="Flow_B13_No" sourceRef="Gateway_Bodeguero_MasCajas" targetRef="Event_Bodeguero_End" name="No" />
+    <bpmn:sequenceFlow id="Flow_B_Disc1" sourceRef="Activity_Bodeguero_Discrepancia" targetRef="Flow_B_Disc_End" />
+    <bpmn:sequenceFlow id="Flow_B_Disc1" sourceRef="Activity_Bodeguero_Discrepancia2" targetRef="Flow_B_Disc_End" />
+    <bpmn:sequenceFlow id="Flow_B_Disc1" sourceRef="Activity_Bodeguero_Discrepancia3" targetRef="Flow_B_Disc_End" />
+    <bpmn:sequenceFlow id="Flow_B_Disc1" sourceRef="Activity_Bodeguero_Discrepancia4" targetRef="Flow_B_Disc_End" />
+  </bpmn:process>
+
+  <!-- PROCESS: SUPERVISOR -->
+  <bpmn:process id="Process_Supervisor" isExecutable="false">
+    <bpmn:startEvent id="Event_Supervisor_Start" name="Discrepancia detectada">
+      <bpmn:outgoing>Flow_S1</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:task id="Activity_Supervisor_Revisa" name="Revisa discrepancia y documentación">
+      <bpmn:incoming>Flow_S1</bpmn:incoming>
+      <bpmn:outgoing>Flow_S2</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:exclusiveGateway id="Gateway_Supervisor_Resolver" name="¿Puede resolverse?">
+      <bpmn:incoming>Flow_S2</bpmn:incoming>
+      <bpmn:outgoing>Flow_S3_Si</bpmn:outgoing>
+      <bpmn:outgoing>Flow_S3_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:task id="Activity_Supervisor_Resuelve" name="Autoriza solución">
+      <bpmn:incoming>Flow_S3_Si</bpmn:incoming>
+      <bpmn:outgoing>Flow_S4</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:endEvent id="Event_Supervisor_End_Resuelto" name="Discrepancia resuelta">
+      <bpmn:incoming>Flow_S4</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:task id="Activity_Supervisor_Escalada" name="Registra como incidencia">
+      <bpmn:incoming>Flow_S3_No</bpmn:incoming>
+      <bpmn:outgoing>Flow_S5</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:endEvent id="Event_Supervisor_End_Escalada" name="Caso escalado">
+      <bpmn:incoming>Flow_S5</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_S1" sourceRef="Event_Supervisor_Start" targetRef="Activity_Supervisor_Revisa" />
+    <bpmn:sequenceFlow id="Flow_S2" sourceRef="Activity_Supervisor_Revisa" targetRef="Gateway_Supervisor_Resolver" />
+    <bpmn:sequenceFlow id="Flow_S3_Si" sourceRef="Gateway_Supervisor_Resolver" targetRef="Activity_Supervisor_Resuelve" name="Sí" />
+    <bpmn:sequenceFlow id="Flow_S3_No" sourceRef="Gateway_Supervisor_Resolver" targetRef="Activity_Supervisor_Escalada" name="No" />
+    <bpmn:sequenceFlow id="Flow_S4" sourceRef="Activity_Supervisor_Resuelve" targetRef="Event_Supervisor_End_Resuelto" />
+    <bpmn:sequenceFlow id="Flow_S5" sourceRef="Activity_Supervisor_Escalada" targetRef="Event_Supervisor_End_Escalada" />
+  </bpmn:process>
+</bpmn:definitions>

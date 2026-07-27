@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagrama BPMN Profesional - Recepción Equipos</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .diagram-section {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .diagram-title {
+            font-size: 1.5em;
+            color: #667eea;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            border: 1px solid #e0e0e0;
+        }
+
+        .info-section {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .info-section p {
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .controls-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .control-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-print {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-print:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(245, 87, 108, 0.4);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        table tbody tr:hover {
+            background: #f5f5f5;
+        }
+
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .legend-item {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+
+        .legend-item strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .legend-item p {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .footer {
+            background: #f5f5f5;
+            padding: 30px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .control-btn {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📦 Diagrama BPMN Profesional</h1>
+            <p>Recepción y Validación de Equipos - Modelo de Procesos</p>
+        </div>
+
+        <div class="content">
+            <!-- CONTROLES -->
+            <div class="controls-section">
+                <button class="control-btn btn-download" onclick="downloadMD()">📥 Descargar Markdown</button>
+                <button class="control-btn btn-print" onclick="window.print()">🖨️ Imprimir / PDF</button>
+            </div>
+
+            <!-- DIAGRAMA BPMN -->
+            <div class="diagram-section">
+                <div class="diagram-title">🔄 Flujo de Proceso Completo</div>
+                <div class="mermaid">
+graph TD
+    subgraph Distribuidor ["🚚 DISTRIBUIDOR"]
+        inicio[["◯ Inicio"]]
+        llega["Llega con camión"]
+        presenta["Presenta documentación"]
+        recibe["Recibe guía firmada"]
+        retira["Se retira con copia"]
+        fin_ok[["◯ Fin OK"]]
+    end
+
+    subgraph Guardian ["👤 GUARDIÁN"]
+        registra["Registra entrada"]
+        valida{{"¿Documentación<br/>válida?"}}
+        rechaza["❌ RECHAZA"]
+        fin_rechazo[["◯ Rechazado"]]
+    end
+
+    subgraph Bodeguero ["📦 BODEGUERO/ADMINISTRATIVO"]
+        traslada["Traslada cajas<br/>a bodega"]
+        abre["Abre cajas<br/>y verifica"]
+        cant{{"¿Cantidades<br/>correctas?"}}
+        modelos{{"¿Modelos<br/>correctos?"}}
+        inspecc["Inspecciona<br/>daños físicos"]
+        danos{{"¿Daños<br/>críticos?"}}
+        firma["Firma guía<br/>de entrega"]
+        sap_prep["Ingresa a SAP<br/>Preparación"]
+        pistola["Pistola/Escanea<br/>cada caja"]
+        fisico{{"¿Físico<br/>= SAP?"}}
+        ingresa["Ingresa serie<br/>confirmada"]
+        mas_cajas{{"¿Más<br/>cajas?"}}
+        fin_bodega[["✓ FIN OK"]]
+    end
+
+    subgraph Supervisor ["⚠️ SUPERVISOR"]
+        reg_disc["Registra<br/>discrepancia"]
+        revisa["Revisa caso y<br/>documentación"]
+        resolvible{{"¿Se puede<br/>resolver?"}}
+        escalada["📌 Escalado<br/>a Gerencia"]
+        fin_escalada[["◯ Escalado"]]
+    end
+
+    %% DISTRIBUIDOR FLOW
+    inicio --> llega
+    llega --> presenta
+    presenta -->|"Comunicación"| registra
+
+    %% GUARDIAN FLOW
+    registra --> valida
+    valida -->|"NO"| rechaza
+    rechaza --> fin_rechazo
+    valida -->|"SÍ"| traslada
+
+    %% BODEGUERO FLOW - VERIFICACIÓN
+    traslada --> abre
+    abre --> cant
+    cant -->|"NO"| reg_disc
+    cant -->|"SÍ"| modelos
+    modelos -->|"NO"| reg_disc
+    modelos -->|"SÍ"| inspecc
+    inspecc --> danos
+    danos -->|"SÍ"| reg_disc
+    danos -->|"NO"| firma
+    firma -->|"Entrega"| recibe
+    recibe --> retira
+    retira --> fin_ok
+
+    %% BODEGUERO FLOW - SAP
+    firma --> sap_prep
+    sap_prep --> pistola
+    pistola --> fisico
+    fisico -->|"NO<br/>(Reintenta)"| pistola
+    fisico -->|"SÍ"| ingresa
+    ingresa --> mas_cajas
+    mas_cajas -->|"SÍ<br/>(Repetir)"| pistola
+    mas_cajas -->|"NO"| fin_bodega
+
+    %% SUPERVISOR FLOW
+    reg_disc --> revisa
+    revisa --> resolvible
+    resolvible -->|"SÍ<br/>(Reintentar)"| abre
+    resolvible -->|"NO"| escalada
+    escalada --> fin_escalada
+
+    style inicio fill:#28a745,stroke:#333,stroke-width:2px,color:#fff
+    style fin_ok fill:#28a745,stroke:#333,stroke-width:2px,color:#fff
+    style fin_rechazo fill:#dc3545,stroke:#333,stroke-width:2px,color:#fff
+    style fin_escalada fill:#dc3545,stroke:#333,stroke-width:2px,color:#fff
+    style fin_bodega fill:#28a745,stroke:#333,stroke-width:2px,color:#fff
+                </div>
+            </div>
+
+            <!-- DESCRIPCIÓN -->
+            <div class="info-section">
+                <h3>📋 Descripción del Proceso</h3>
+                <p>
+                    Este diagrama BPMN profesional modela el flujo completo de recepción de equipos en la sucursal.
+                    El proceso se divide en 4 roles principales que actúan en secuencia:
+                </p>
+            </div>
+
+            <!-- FLUJOS -->
+            <div class="diagram-section">
+                <div class="diagram-title">🔀 Flujos Principales</div>
+
+                <h3 style="color: #667eea; margin: 20px 0 15px 0;">✅ Camino Feliz (Proceso Normal)</h3>
+                <p style="color: #333; margin-bottom: 20px;">
+                    <strong>1.</strong> Distribuidor llega →
+                    <strong>2.</strong> Guardián valida entrada ✓ →
+                    <strong>3.</strong> Bodeguero verifica todo ✓ →
+                    <strong>4.</strong> Firma guía →
+                    <strong>5.</strong> Ingresa a SAP ✓ →
+                    <strong>6.</strong> FIN
+                </p>
+
+                <h3 style="color: #dc3545; margin: 20px 0 15px 0;">⚠️ Camino de Discrepancias</h3>
+                <p style="color: #333;">
+                    Si se detecta error en cualquier validación:
+                    <strong>→</strong> Registra discrepancia →
+                    <strong>→</strong> Supervisor revisa →
+                    <strong>→</strong> ¿Resolvible?
+                    <strong>SÍ:</strong> Reintentar verificación |
+                    <strong>NO:</strong> Escalar a Gerencia
+                </p>
+            </div>
+
+            <!-- PUNTOS DE CONTROL -->
+            <div class="diagram-section">
+                <div class="diagram-title">✅ Puntos de Control Críticos</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Punto de Control</th>
+                            <th>Responsable</th>
+                            <th>Decisión</th>
+                            <th>Acción SÍ</th>
+                            <th>Acción NO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="badge">1</span></td>
+                            <td>Documentación válida</td>
+                            <td>Guardián</td>
+                            <td>¿Válido?</td>
+                            <td>✓ Autoriza bodega</td>
+                            <td>✗ Rechaza entrada</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge">2</span></td>
+                            <td>Cantidad de cajas</td>
+                            <td>Bodeguero</td>
+                            <td>¿= Guía?</td>
+                            <td>✓ Continúa</td>
+                            <td>✗ Discrepancia</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge">3</span></td>
+                            <td>Modelos de equipos</td>
+                            <td>Bodeguero</td>
+                            <td>¿Correctos?</td>
+                            <td>✓ Continúa</td>
+                            <td>✗ Discrepancia</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge">4</span></td>
+                            <td>Condición física</td>
+                            <td>Bodeguero</td>
+                            <td>¿Sin daño crítico?</td>
+                            <td>✓ Firma guía</td>
+                            <td>✗ Discrepancia</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge">5</span></td>
+                            <td>Pistolaje (SAP)</td>
+                            <td>Bodeguero</td>
+                            <td>¿Físico = SAP?</td>
+                            <td>✓ Ingresa serie</td>
+                            <td>✗ Reintenta escaneo</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge">6</span></td>
+                            <td>Más cajas pendientes</td>
+                            <td>Bodeguero</td>
+                            <td>¿Quedan cajas?</td>
+                            <td>✓ Repite pistolaje</td>
+                            <td>✗ Finaliza</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- LEYENDA -->
+            <div class="diagram-section">
+                <div class="diagram-title">📊 Leyenda de Símbolos</div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <strong>◯ Círculos</strong>
+                        <p>Inicio (verde) y Fin (verde=OK, rojo=error)</p>
+                    </div>
+                    <div class="legend-item">
+                        <strong>□ Rectángulos</strong>
+                        <p>Actividades/tareas a realizar</p>
+                    </div>
+                    <div class="legend-item">
+                        <strong>◇ Diamantes</strong>
+                        <p>Puntos de decisión (SÍ/NO)</p>
+                    </div>
+                    <div class="legend-item">
+                        <strong>→ Flechas Sólidas</strong>
+                        <p>Flujo de secuencia normal</p>
+                    </div>
+                    <div class="legend-item">
+                        <strong>⚠️ Amarillo/Naranja</strong>
+                        <p>Procesos del Supervisor</p>
+                    </div>
+                    <div class="legend-item">
+                        <strong>🟢 Verde</strong>
+                        <p>Procesos Bodeguero (flujo principal)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARACTERÍSTICAS -->
+            <div class="info-section">
+                <h3>✨ Características del Diagrama</h3>
+                <ul style="list-style-position: inside; color: #333; line-height: 1.8;">
+                    <li><strong>✓ Swimlanes claros</strong> - Separación por rol/departamento</li>
+                    <li><strong>✓ Decisiones binarias</strong> - Cada compuerta tiene SÍ y NO</li>
+                    <li><strong>✓ Loops integrados</strong> - Reintentos automáticos (pistolaje, más cajas)</li>
+                    <li><strong>✓ Escaladas definidas</strong> - Supervisor → Gerencia para casos no resolubles</li>
+                    <li><strong>✓ Comunicación clara</strong> - Flechas entre roles muestran transferencias</li>
+                    <li><strong>✓ Puntos de control</strong> - 6 validaciones críticas explícitas</li>
+                    <li><strong>✓ Sin ambigüedad</strong> - Todo error lleva a supervisor</li>
+                    <li><strong>✓ Formato estándar</strong> - Compatible con herramientas BPMN</li>
+                </ul>
+            </div>
+
+            <!-- REGULACIONES -->
+            <div class="diagram-section" style="background: #fff3cd;">
+                <div class="diagram-title" style="color: #ff9800;">⚡ Regla de ORO</div>
+                <p style="font-size: 1.1em; color: #333; font-weight: bold; margin: 0;">
+                    "NO SE PERMITE INGRESO MASIVO POR SISTEMA"
+                </p>
+                <p style="color: #333; margin: 15px 0 0 0;">
+                    Cada serie DEBE ser ingresada manualmente mediante pistolaje/escaneo después de validación física.
+                    Esto garantiza que lo que está en SAP coincida exactamente con lo que hay físicamente en bodega,
+                    evitando pérdidas, robos o errores administrativos.
+                </p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><strong>Diagrama BPMN Profesional - Recepción de Equipos</strong></p>
+            <p>Formato: BPMN 2.0 | Versión: 1.0 | Generado: 2024</p>
+            <p style="font-size: 12px; margin-top: 15px; color: #999;">
+                Este documento contiene el flujo de proceso oficial de la sucursal
+            </p>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'default', securityLevel: 'loose' });
+
+        function downloadMD() {
+            const link = document.createElement('a');
+            link.href = 'diagrama_bpmn_profesional.md';
+            link.download = 'diagrama_bpmn_profesional.md';
+            link.click();
+        }
+    </script>
+</body>
+</html>

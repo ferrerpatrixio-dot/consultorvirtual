@@ -1,0 +1,404 @@
+{
+  "diagram_title": "Recepción y Validación de Equipos - Modelo BPMN Arquitectónico",
+  "nodes": [
+    {
+      "id": "start_1",
+      "type": "START_EVENT",
+      "label": "Distribuidor llega",
+      "lane": "Distribuidor",
+      "visual_meta": {
+        "color": "#28a745",
+        "icon_ref": "icon_user"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "task_1",
+      "type": "USER_TASK",
+      "label": "Presenta documentación",
+      "lane": "Distribuidor",
+      "visual_meta": {
+        "color": "#007bff",
+        "icon_ref": "icon_user"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "task_2",
+      "type": "USER_TASK",
+      "label": "Registra entrada del distribuidor",
+      "lane": "Guardián",
+      "visual_meta": {
+        "color": "#007bff",
+        "icon_ref": "icon_user"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "gateway_1",
+      "type": "GATEWAY_XOR",
+      "label": "¿Documentación válida?",
+      "lane": "Guardián",
+      "visual_meta": {
+        "color": "#ffc107",
+        "icon_ref": "icon_decision"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "error_1",
+      "type": "ERROR_EVENT",
+      "label": "Rechaza entrada",
+      "lane": "Guardián",
+      "visual_meta": {
+        "color": "#dc3545",
+        "icon_ref": "icon_warning"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "end_error_1",
+      "type": "END_EVENT",
+      "label": "Entrega rechazada",
+      "lane": "Guardián",
+      "visual_meta": {
+        "color": "#dc3545",
+        "icon_ref": "icon_warning"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "task_3",
+      "type": "USER_TASK",
+      "label": "Traslada cajas a bodega",
+      "lane": "Bodeguero/Administrativo",
+      "visual_meta": {
+        "color": "#28a745",
+        "icon_ref": "icon_user"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "task_4",
+      "type": "USER_TASK",
+      "label": "Abre cajas y verifica contenido",
+      "lane": "Bodeguero/Administrativo",
+      "visual_meta": {
+        "color": "#28a745",
+        "icon_ref": "icon_user"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "gateway_2",
+      "type": "GATEWAY_XOR",
+      "label": "¿Cantidades correctas?",
+      "lane": "Bodeguero/Administrativo",
+      "visual_meta": {
+        "color": "#ffc107",
+        "icon_ref": "icon_decision"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "gateway_3",
+      "type": "GATEWAY_XOR",
+      "label": "¿Modelos correctos?",
+      "lane": "Bodeguero/Administrativo",
+      "visual_meta": {
+        "color": "#ffc107",
+        "icon_ref": "icon_decision"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "task_5",
+      "type": "USER_TASK",
+      "label": "Inspecciona daños físicos",
+      "lane": "Bodeguero/Administrativo",
+      "visual_meta": {
+        "color": "#28a745",
+        "icon_ref": "icon_user"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "gateway_4",
+      "type": "GATEWAY_XOR",
+      "label": "¿Daños críticos?",
+      "lane": "Bodeguero/Administrativo",
+      "visual_meta": {
+        "color": "#ffc107",
+        "icon_ref": "icon_decision"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "task_6",
+      "type": "USER_TASK",
+      "label": "Firma guía de entrega",
+      "lane": "Bodeguero/Administrativo",
+      "visual_meta": {
+        "color": "#28a745",
+        "icon_ref": "icon_user"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "task_7",
+      "type": "USER_TASK",
+      "label": "Recibe guía firmada",
+      "lane": "Distribuidor",
+      "visual_meta": {
+        "color": "#007bff",
+        "icon_ref": "icon_user"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "task_8",
+      "type": "USER_TASK",
+      "label": "Se retira con copia",
+      "lane": "Distribuidor",
+      "visual_meta": {
+        "color": "#007bff",
+        "icon_ref": "icon_user"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "end_ok_1",
+      "type": "END_EVENT",
+      "label": "Fin - Distribuidor autorizado",
+      "lane": "Distribuidor",
+      "visual_meta": {
+        "color": "#28a745",
+        "icon_ref": "icon_user"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "task_9",
+      "type": "SERVICE_TASK",
+      "label": "Prepara ingreso a SAP",
+      "lane": "Bodeguero/Administrativo",
+      "visual_meta": {
+        "color": "#f8f9fa",
+        "icon_ref": "icon_api"
+      },
+      "technical_meta": {
+        "retry_strategy": "Exponential Backoff + Jitter",
+        "is_idempotent": false
+      }
+    },
+    {
+      "id": "task_10",
+      "type": "USER_TASK",
+      "label": "Pistola/Escanea cada caja",
+      "lane": "Bodeguero/Administrativo",
+      "visual_meta": {
+        "color": "#28a745",
+        "icon_ref": "icon_user"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "gateway_5",
+      "type": "GATEWAY_XOR",
+      "label": "¿Físico = SAP?",
+      "lane": "Bodeguero/Administrativo",
+      "visual_meta": {
+        "color": "#ffc107",
+        "icon_ref": "icon_decision"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "task_11",
+      "type": "SERVICE_TASK",
+      "label": "Ingresa serie confirmada a SAP",
+      "lane": "Bodeguero/Administrativo",
+      "visual_meta": {
+        "color": "#f8f9fa",
+        "icon_ref": "icon_api"
+      },
+      "technical_meta": {
+        "retry_strategy": "Exponential Backoff + Jitter",
+        "is_idempotent": false
+      }
+    },
+    {
+      "id": "gateway_6",
+      "type": "GATEWAY_XOR",
+      "label": "¿Más cajas?",
+      "lane": "Bodeguero/Administrativo",
+      "visual_meta": {
+        "color": "#ffc107",
+        "icon_ref": "icon_decision"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "end_ok_2",
+      "type": "END_EVENT",
+      "label": "Inventario actualizado - FIN OK",
+      "lane": "Bodeguero/Administrativo",
+      "visual_meta": {
+        "color": "#28a745",
+        "icon_ref": "icon_api"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "task_12",
+      "type": "USER_TASK",
+      "label": "Registra discrepancia",
+      "lane": "Supervisor",
+      "visual_meta": {
+        "color": "#ffc107",
+        "icon_ref": "icon_warning"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "task_13",
+      "type": "USER_TASK",
+      "label": "Revisa caso y documentación",
+      "lane": "Supervisor",
+      "visual_meta": {
+        "color": "#ffc107",
+        "icon_ref": "icon_user"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "gateway_7",
+      "type": "GATEWAY_XOR",
+      "label": "¿Se puede resolver?",
+      "lane": "Supervisor",
+      "visual_meta": {
+        "color": "#ffc107",
+        "icon_ref": "icon_decision"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "task_14",
+      "type": "USER_TASK",
+      "label": "Escalado a Gerencia",
+      "lane": "Supervisor",
+      "visual_meta": {
+        "color": "#dc3545",
+        "icon_ref": "icon_warning"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    },
+    {
+      "id": "end_error_2",
+      "type": "END_EVENT",
+      "label": "Caso escalado",
+      "lane": "Supervisor",
+      "visual_meta": {
+        "color": "#dc3545",
+        "icon_ref": "icon_warning"
+      },
+      "technical_meta": {
+        "is_idempotent": true
+      }
+    }
+  ],
+  "edges": [
+    {"from": "start_1", "to": "task_1", "label": ""},
+    {"from": "task_1", "to": "task_2", "label": "Documentación"},
+    {"from": "task_2", "to": "gateway_1", "label": ""},
+    {"from": "gateway_1", "to": "error_1", "label": "NO"},
+    {"from": "error_1", "to": "end_error_1", "label": ""},
+    {"from": "gateway_1", "to": "task_3", "label": "SÍ"},
+    {"from": "task_3", "to": "task_4", "label": ""},
+    {"from": "task_4", "to": "gateway_2", "label": ""},
+    {"from": "gateway_2", "to": "task_12", "label": "NO"},
+    {"from": "gateway_2", "to": "gateway_3", "label": "SÍ"},
+    {"from": "gateway_3", "to": "task_12", "label": "NO"},
+    {"from": "gateway_3", "to": "task_5", "label": "SÍ"},
+    {"from": "task_5", "to": "gateway_4", "label": ""},
+    {"from": "gateway_4", "to": "task_12", "label": "SÍ"},
+    {"from": "gateway_4", "to": "task_6", "label": "NO"},
+    {"from": "task_6", "to": "task_7", "label": "Entrega guía"},
+    {"from": "task_7", "to": "task_8", "label": ""},
+    {"from": "task_8", "to": "end_ok_1", "label": ""},
+    {"from": "task_6", "to": "task_9", "label": ""},
+    {"from": "task_9", "to": "task_10", "label": ""},
+    {"from": "task_10", "to": "gateway_5", "label": ""},
+    {"from": "gateway_5", "to": "task_10", "label": "NO (Reintenta)"},
+    {"from": "gateway_5", "to": "task_11", "label": "SÍ"},
+    {"from": "task_11", "to": "gateway_6", "label": ""},
+    {"from": "gateway_6", "to": "task_10", "label": "SÍ (Repetir)"},
+    {"from": "gateway_6", "to": "end_ok_2", "label": "NO"},
+    {"from": "task_12", "to": "task_13", "label": ""},
+    {"from": "task_13", "to": "gateway_7", "label": ""},
+    {"from": "gateway_7", "to": "task_4", "label": "SÍ (Reintentar)"},
+    {"from": "gateway_7", "to": "task_14", "label": "NO"},
+    {"from": "task_14", "to": "end_error_2", "label": ""}
+  ],
+  "resilience_summary": "El proceso incluye estrategia Exponential Backoff + Jitter para las integraciones con SAP (SERVICE_TASK). Los reintentos están definidos para inconsistencias físico-digital y los bucles de supervisión permiten resolver discrepancias antes de escalar. El Supervisor actúa como punto de control crítico antes de escalada a Gerencia.",
+  "technical_notes": [
+    "SAP Integration (task_9, task_11): Requiere idempotencia en todas las transacciones de inventario",
+    "Pistolaje Loop (task_10, gateway_5): Permite reintentos ilimitados hasta que físico coincida con SAP",
+    "Resolución de Discrepancias: Supervisor puede retroceder hasta verificación inicial (task_4) si es resolvible",
+    "Todos los ERROR_EVENT y END_EVENT con color rojo implican escala o finalización de emergencia"
+  ],
+  "pending_questions": [
+    "¿Cuál es el timeout máximo para el pistolaje de cada caja?",
+    "¿Se puede configurar el Supervisor para auto-resolver ciertos tipos de discrepancias?",
+    "¿Hay límite de reintentos en la comparación Físico=SAP antes de escalar?",
+    "¿Se registran las discrepancias en un log de auditoría separado?"
+  ]
+}

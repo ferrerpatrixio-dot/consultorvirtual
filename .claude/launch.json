@@ -1,0 +1,35 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "aiprocess",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "aiprocess"],
+      "port": 3000
+    },
+    {
+      "name": "http-server",
+      "runtimeExecutable": "http-server",
+      "runtimeArgs": ["."],
+      "port": 8080
+    },
+    {
+      "name": "Python SimpleHTTPServer",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8000"],
+      "port": 8000
+    },
+    {
+      "name": "landpage",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8899",
+        "--directory",
+        "C:\\Users\\ferre\\Documentos\\APLICACIONES\\antigravity\\LANDPAGE\\landpage"
+      ],
+      "port": 8899
+    }
+  ]
+}
