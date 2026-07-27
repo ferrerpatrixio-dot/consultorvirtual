@@ -78,18 +78,24 @@ Vercel en vez de aiprocess.cl.
 Va incluido en la **Ola 1** del
 [plan de reestructuración](PLAN-REESTRUCTURACION-AIPROCESS-CL.md).
 
-### Decisión pendiente: apex o www
+### ✅ Dirección principal: `aiprocess.cl` (sin www)
 
-Hay que elegir cuál es la dirección principal y cuál redirige:
+**Decidido por Patricio, 2026-07-27.**
 
-| Opción | Principal | Redirige |
-|---|---|---|
-| A | `aiprocess.cl` | `www` → apex |
-| B | `www.aiprocess.cl` | apex → `www` |
+```
+aiprocess.cl          ← PRINCIPAL. La que se imprime, se dicta y se indexa.
+www.aiprocess.cl      ← redirige a la principal
+```
 
-Patricio escribió **www.aiprocess.cl**, lo que sugiere la opción B.
-**Confirmar antes de configurar**, porque cambiarlo después afecta enlaces
-compartidos y posicionamiento.
+Ambas funcionan para el visitante; quien escriba `www` termina viendo
+`aiprocess.cl` en la barra del navegador.
+
+**Razones:** más corta de imprimir en cotizaciones, NDA y tarjetas, y de dictar
+en una reunión. El `www` no aporta nada técnico. Vercel soporta ambas igual.
+
+**Esta dirección es la que va en todo el material impreso del kit de venta.**
+Cambiarla más adelante rompe enlaces ya compartidos y el posicionamiento
+acumulado, así que se considera decisión firme.
 
 ---
 
