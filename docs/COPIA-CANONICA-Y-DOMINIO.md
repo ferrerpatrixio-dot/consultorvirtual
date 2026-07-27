@@ -14,25 +14,39 @@ C:\Users\ferre\Proyectos\CONSULTORAVIRTUAL\sistemaaiprocess\
 
 Remoto: `https://github.com/ferrerpatrixio-dot/APP-PROCESOS.git`
 
-### ⚠️ Las otras dos copias NO se tocan
+### ✅ Copia duplicada retirada (2026-07-27)
+
+`PROCESOS BPMN\aiprocess` fue **movida fuera de `Proyectos\`** por decisión de
+Patricio, tras verificar que no tenía cambios sin commitear ni commits sin subir.
 
 ```
-C:\Users\ferre\Proyectos\PROCESOS BPMN\aiprocess\                  ← obsoleta
-C:\Users\ferre\Proyectos\PROCESOS BPMN_BACKUP_20260727\aiprocess\  ← respaldo
+Ahora en: C:\Users\ferre\Archivo\aiprocess-copia-obsoleta-20260727\
 ```
 
-Ambas son clones del **mismo repositorio**, en el mismo commit base.
+Conserva su historial git completo. No se borró nada.
+También se detuvo el servidor de desarrollo que corría desde ahí.
 
-**El riesgo concreto:** el 2026-07-27 se retiró el claim ISO 27001 en la copia
-canónica y el sitio seguía mostrándolo, porque había un servidor de desarrollo
-corriendo desde `PROCESOS BPMN\aiprocess`. Un arreglo puede parecer que "no
-funcionó" cuando en realidad se está mirando otra copia.
+**Por qué se retiró:** el 2026-07-27 se quitó el claim ISO 27001 en la copia
+canónica y el sitio seguía mostrándolo, porque el servidor del puerto 3000
+servía la copia duplicada. Un arreglo puede parecer que "no funcionó" cuando en
+realidad se está mirando otra copia. Peor: commitear desde dos copias al mismo
+remoto pisa cambios.
 
-**Peor aún:** si se commitea desde dos copias al mismo remoto, se pisan cambios.
+### ⚠️ Queda un respaldo dentro de Proyectos
 
-**Acción pendiente de Patricio:** borrar o archivar `PROCESOS BPMN\aiprocess`
-una vez confirmado que no hay nada sin commitear ahí. El respaldo puede quedar,
-pero fuera de `Proyectos\`.
+```
+C:\Users\ferre\Proyectos\PROCESOS BPMN_BACKUP_20260727\aiprocess\
+```
+
+Es un respaldo declarado, menos riesgoso porque el nombre lo identifica. Aun así
+sigue apareciendo en búsquedas de archivos. **Decisión pendiente de Patricio:**
+moverlo también a `Archivo\` o dejarlo.
+
+### 🟢 Producción no se tocó
+
+Por instrucción de Patricio, la aplicación actual **permanece publicada en
+GitHub y en Vercel** hasta que la nueva web esté lista. Mover la copia local no
+afecta el despliegue: el remoto y Vercel siguen exactamente igual.
 
 ---
 
