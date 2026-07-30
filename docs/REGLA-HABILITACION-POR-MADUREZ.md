@@ -111,6 +111,64 @@ que sube. La escala de madurez es el mapa de crecimiento de la cuenta.
 
 ---
 
+## 🎯 CÓMO SE ENCUADRA LA OFERTA — ahorro vs. capacidad
+
+**Criterio de Patricio (2026-07-29):**
+
+> Las organizaciones que ven la IA solo como una forma de reducir costos suelen
+> aprovecharla de manera limitada. Las que la usan para fortalecer el talento de
+> sus equipos mejoran decisiones, aprenden más rápido y descubren nuevas
+> oportunidades de negocio.
+
+### Por qué importa acá
+
+La tabla de arriba dice **qué** se puede proponer en cada estado. Este criterio
+dice **cómo se justifica**, y cambia el techo del servicio:
+
+| Encuadre | Qué promete | Techo |
+|---|---|---|
+| **Reducción de costos** | menos gasto, menos retrabajo, menos horas | El ahorro se agota. Cuando ya recortaste, no hay segundo proyecto |
+| **Fortalecer el talento** | mejores decisiones, aprendizaje más rápido, oportunidades nuevas | No se agota: cada vuelta del ciclo deja al equipo más capaz |
+
+**Los dos se usan, en este orden.** El ahorro es la **puerta**: un dueño de PYME
+no compra «amplificar las capacidades del equipo», compra «recuperar dinero que
+estoy perdiendo». Es concreto y medible, y por eso abre la primera reunión. La
+capacidad es el **techo**: es la razón por la que hay Fase 2 y por la que la
+cuenta sigue después del primer proyecto.
+
+### El método ya encodea esta progresión
+
+*Ordenar → Automatizar → Mejorar* es exactamente el recorrido del criterio:
+
+| Etapa | Qué gana la empresa | Encuadre |
+|---|---|---|
+| **Ordenar** | deja de perder dinero en retrabajo y errores | ahorro (la puerta) |
+| **Automatizar** | su gente deja de hacer trabajo de copiar y pegar | transición |
+| **Mejorar** | el equipo decide mejor, aprende más rápido, ve oportunidades | capacidad (el techo) |
+
+Por eso **«Mejorar» no es solo cerrar el ciclo**: es donde el valor cambia de
+naturaleza. Y por eso el tercer paso no podía ser «Disfrutar» — eso sugería un
+final, cuando es justamente donde empieza lo que no se agota.
+
+### La regla del párrafo anterior es este criterio
+
+Releer la regla de los modelos de predicción: se proponen **solo si existe una
+persona identificada con nombre que va a leer y usar el resultado**. Eso *es*
+fortalecer el talento, puesto como condición de venta. Un modelo sin esa persona
+es gasto en tecnología; con ella, es capacidad instalada.
+
+### ⚠️ Disciplina de lenguaje
+
+«Fortalecer el talento» es abstracto, y en el sitio leería como la jerga de
+transformación digital que se eliminó a propósito. **En el copy va siempre
+aterrizado a una persona y una tarea concretas:** no «amplificamos las
+capacidades de su equipo», sino «tu jefa de operaciones deja de armar el informe
+a mano y usa ese tiempo en decidir qué hacer con él».
+
+El criterio es estratégico. El lenguaje sigue siendo concreto.
+
+---
+
 *Ver también: [RESTRICCIONES-CONSOLIDADAS.md](investigacion/RESTRICCIONES-CONSOLIDADAS.md) (R-3) ·
 [MODELO-FASES-Y-PRECIOS.md](MODELO-FASES-Y-PRECIOS.md) ·
 [GUIA-PRIMERA-ENTREVISTA-CLIENTE.md](comercial/GUIA-PRIMERA-ENTREVISTA-CLIENTE.md)*
