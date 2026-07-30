@@ -99,6 +99,22 @@ que no está listo, no el que le vende lo que sea.
 
 ---
 
+## 🪜 LA VERSIÓN OPERATIVA DE ESTA TABLA
+
+La tabla de arriba dice qué **clase** de cosas se propone en cada estado.
+[`ESCALERA-IA-POR-MADUREZ.md`](ESCALERA-IA-POR-MADUREZ.md) la baja a **casos de
+uso concretos** —chatbot, agendamiento, OCR, cobranza, reportes, inventario— cada
+uno con su peldaño mínimo y con qué pasa si se hace antes.
+
+Trae además dos cosas que a esta regla le faltaban:
+
+1. **Herramienta personal ≠ automatización de proceso.** La segunda requiere
+   madurez; la primera no, porque no reemplaza un paso del proceso. Eso permite
+   proponerle algo honesto a un cliente en `CIMIENTOS` sin romper la regla.
+2. **El segundo filtro.** Esta regla filtra organizaciones; falta filtrar tareas.
+   Una tarea puede pasar el peldaño y fracasar igual. Los dos filtros van en
+   cadena.
+
 ## 📌 CONSECUENCIA COMERCIAL
 
 El MMA-OD deja de ser solo un diagnóstico y pasa a ser **el habilitador de la

@@ -37,8 +37,7 @@ esto es sobre *la plata que se le está escapando*, el mensaje falló.
 
 ```
 TÍTULO
-Tu operación está perdiendo plata todos los meses.
-El problema es que no aparece en ninguna parte.
+Tu operación pierde dinero todos los meses.
 
 BAJADA
 No está en el balance ni en el estado de resultados. Está en el pedido
@@ -159,7 +158,7 @@ Entiendo dónde estás parado.
 TEXTO
 Tú no estás pensando en software ni en revisar procesos. Estás viendo
 cómo llegar a fin de mes, cómo financiar la máquina que necesitas, cómo
-conseguir un proveedor más barato. El día a día se te come.
+conseguir un proveedor más barato. El día a día te consume.
 
 Por eso no llego a ofrecerte un gasto nuevo.
 

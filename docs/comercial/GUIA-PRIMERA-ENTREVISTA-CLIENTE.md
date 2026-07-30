@@ -82,7 +82,37 @@
 | "¿Se te han caído ventas por no llegar a tiempo o no tener stock? ¿Cuántas al mes, de qué monto?" | Venta perdida (el número más grande, casi siempre) |
 | "¿Pagas multas, devoluciones o notas de crédito por errores?" | Costo documentado, verificable |
 | "¿Cuánto te cuesta un cliente que se va enojado? ¿Cuántos se fueron este año?" | Costo de la mala calidad |
+| **"¿Cuántos llamados, mensajes o correos reciben al día que no deberían existir?"** ⭐ | **Contacto evitable** — ver nota abajo |
+| ↳ *"¿Cuánto se demoran en atender cada uno?"* | Minutos × volumen × valor hora = plata/mes |
+| ↳ *"¿Qué es lo que más preguntan?"* | **Señala el proceso que falló**, no solo el costo |
 | **Cierre del bloque:** "Sumando grueso, esto te está costando alrededor de $____ al mes. ¿Estamos de acuerdo?" | ✅ La cifra que va en la propuesta |
+
+#### 💡 Por qué el contacto evitable es la mejor pregunta del bloque
+
+Las otras fuentes de pérdida obligan al dueño a **estimar** algo que nunca midió
+—cuántas horas, cuánto se pierde, cuántas ventas se cayeron—. El contacto
+evitable, en cambio, **se cuenta**: el volumen lo sabe, o lo sabe la persona que
+contesta el teléfono, y sale al tiro.
+
+Y tiene una ventaja doble que ninguna otra pregunta de este bloque tiene:
+**el número y el diagnóstico salen juntos.** Cada llamado que no debería existir
+es un proceso que falló antes.
+
+| Lo que más preguntan | El proceso que falló |
+|---|---|
+| «¿A qué hora era mi hora?» | Nadie confirma la cita |
+| «¿Ya llegó mi pedido?» | El estado no es visible para el cliente |
+| «¿Me llegó la factura?» | El envío no queda registrado |
+| «¿Con quién hablo de esto?» | No hay responsable del proceso |
+
+Con eso el proceso acotado del cierre (§4) casi se elige solo: el que genera más
+contacto evitable suele ser también el que más plata cuesta, y el dueño ya lo
+vio con sus propios números.
+
+**Concepto tomado de Rodrigo Masjoan (CX Value Consulting LATAM), 2026-07-29.**
+Su marco es de experiencia de cliente y escala corporativa; se adopta solo esta
+idea, en el lenguaje de acá y sin su vocabulario —nada de «journey» ni «canal»,
+que traen su segmento con ellos.
 
 ### BLOQUE D — Sistemas y conectividad · **7 min**
 
