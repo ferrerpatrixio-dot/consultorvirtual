@@ -172,7 +172,7 @@ te lo digo y no seguimos. Prefiero eso a venderte algo que no te sirve.
 Empieza con   una propuesta               una medición
 Te deja       un informe                  un proceso funcionando y digitalizado
 Habla de      transformación digital      lo que pierdes al mes
-Cobra por     horas                       resultado acordado antes
+Cobra por     horas                       entregable acordado antes
 ```
 
 ---
