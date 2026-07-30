@@ -24,12 +24,42 @@ esto es sobre *la plata que se le está escapando*, el mensaje falló.
               solución integral · partner estratégico · IA de vanguardia
               empoderar · potenciar · optimizar (a secas, sin decir qué)
 
-✅ SE ESCRIBE:  en plata, en horas, en pedidos, en reclamos
+✅ SE ESCRIBE:  en dinero, en horas, en pedidos, en reclamos
                 tuteo, frases cortas, cero adjetivos de folleto
                 ejemplos concretos, no categorías abstractas
 ```
 
 **No se publica ningún precio.** El sitio vende la conversación, no el servicio.
+
+### 🗣️ El registro: cercano, pero no popular
+
+Hay **dos** formas de perder a un dueño de PYME, y las reglas de arriba solo
+cubren una. La jerga corporativa lo aleja porque no le habla a él. Pero el
+chilenismo lo aleja por el otro lado: comunica informalidad, y **está por
+contratar a alguien que va a ver sus números y hablar con su equipo**.
+
+El punto medio es el castellano común de Chile: se entiende sin diccionario y
+sirve para escribirle a un cliente.
+
+| ❌ Demasiado popular | ✅ Como se escribe |
+|---|---|
+| la pega | el trabajo · tu tarea |
+| estuve metido en… | fui responsable de… · participé en… |
+| altiro · al tiro | de inmediato · en el momento |
+| plata | dinero |
+| cachar | entender · darse cuenta |
+| pololear con la idea | evaluar la idea |
+
+**Y tampoco al otro extremo.** «Fui responsable de operaciones» está bien;
+«lideré la excelencia operacional» ya volvió a ser folleto. La prueba: si no lo
+dirías en voz alta en la oficina de un cliente, no va.
+
+Ojo con la credibilidad: cuando se habla de la trayectoria, el verbo importa.
+«Estuve metido en» suena a que se pasó por ahí. **«Fui responsable de» dice qué
+se hizo**, y es lo que sostiene el precio.
+
+*Regla agregada por Patricio, 2026-07-30. En un proyecto normal esto lo define
+UX/UI; acá se resolvió en el mismo documento del mensaje.*
 
 ---
 
