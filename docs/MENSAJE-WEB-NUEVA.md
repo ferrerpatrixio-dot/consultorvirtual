@@ -170,8 +170,8 @@ te lo digo y no seguimos. Prefiero eso a venderte algo que no te sirve.
 
               LA CONSULTORA TÍPICA        ACÁ
 Empieza con   una propuesta               una medición
-Te deja       un informe                  un proceso funcionando
-Habla de      transformación              pesos al mes
+Te deja       un informe                  un proceso funcionando y digitalizado
+Habla de      transformación digital      lo que pierdes al mes
 Cobra por     horas                       resultado acordado antes
 ```
 
@@ -259,7 +259,7 @@ FORMATO cuando exista:
 ## 8️⃣ PREGUNTAS FRECUENTES
 
 ```
-"¿Cuánto cuesta?"
+"¿Cuánto cuesta trabajar contigo?"
 El test y la primera conversación no cuestan nada. Si después decides
 avanzar, te paso el valor en la reunión, con el alcance ya conversado.
 No cotizo a ciegas.
@@ -271,7 +271,7 @@ Muchas veces lo primero alcanza para que lo segundo se pague solo.
 Y si al final no da, te lo digo.
 
 "¿Tengo que cambiar mis sistemas?"
-No. Tu software contable no se toca — lo eligió tu contador y funciona.
+No. Si lo que usas hoy te funciona, trabajo con eso. No vendo software ni
 Trabajo con lo que ya tienes.
 
 "¿Necesito a alguien técnico en mi equipo?"
