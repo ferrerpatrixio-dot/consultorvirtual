@@ -150,6 +150,23 @@ Por eso **«Mejorar» no es solo cerrar el ciclo**: es donde el valor cambia de
 naturaleza. Y por eso el tercer paso no podía ser «Disfrutar» — eso sugería un
 final, cuando es justamente donde empieza lo que no se agota.
 
+### Falta medir el talento que se quiere fortalecer
+
+Si el techo del servicio es la capacidad del equipo, hay que medirla. Hoy el
+instrumento mide el **sistema** (orden y datos) y la capacidad de las personas se
+averigua conversando — o sea que el criterio decisivo de esta misma regla queda
+fuera del modelo.
+
+Propuesta de **eje P · Personas** en
+[`sistemaaiprocess/docs/madurez/eje-p-personas.md`](../sistemaaiprocess/docs/madurez/eje-p-personas.md):
+cuatro ítems —criterio de uso del resultado, política de uso, exposición de datos
+y experiencia de adopción—, y **como habilitador, no como tercer estado**: no
+cambia dónde está el cliente, cambia qué se le puede proponer desde ahí.
+
+Con eso se puede decir *«tu proceso y tus datos están listos, tu equipo todavía
+no: el primer trabajo es capacitación, no un modelo»*. **No implementado**: el
+motor sigue en MMA-OD v1.0 de dos ejes.
+
 ### La regla del párrafo anterior es este criterio
 
 Releer la regla de los modelos de predicción: se proponen **solo si existe una
