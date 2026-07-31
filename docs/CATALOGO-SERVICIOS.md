@@ -127,23 +127,23 @@ Reglas de nombre §1.
 > *"Tu vendedor va a consultar el catálogo de proveedores en lenguaje natural,
 > sin leer tablas. Sigue vendiendo como hoy — solo que más rápido."*
 
-**Modelo de cobro:** ⚠️ **CONFLICTO NORMATIVO ABIERTO — no cotizar hasta
-resolver.** Mantención reactiva: paquete de horas prepagado si algo se rompe o
-hay dudas de uso.
+**Modelo de cobro:** ✅ **Resuelto (Patricio, 2026-07-31)** — R-14 enmendada,
+ver `docs/investigacion/REALIDAD-CLIENTE-PYME-CHILE.md`.
 
-> **R-14 prohíbe el precio por usuario** cuando el cliente tiene **< 10
-> personas**: *«el precio es plano, nunca por usuario ni por transacción»*,
-> porque «castiga justo al cliente que queremos y hace el costo impredecible».
->
-> Según los clasificadores del test (1-5, 6-20, 21-50, 50+), **la mayoría del
-> mercado objetivo está bajo ese umbral.** El «cobro por cada usuario» que se
-> planteó para el Ambiente de trabajo con IA choca de frente con la regla, y
-> este documento ya decía «pago único por usuario» en las cuatro filas de
-> arriba — la contradicción ya estaba escrita.
->
-> **Opciones para Patricio:** (a) precio plano por empresa hasta N usuarios ·
-> (b) tramos por tamaño, que es predecible y no es «por usuario» · (c) cobro por
-> usuario solo desde 10 personas, plano por debajo. Detectado 2026-07-30.
+- **Instalación — cargo único por persona.** No viola R-14: la regla prohíbe
+  el precio **recurrente** por usuario (impredecible), no un cargo único. El
+  costo real de instalar Hermes escala con el número de personas, y el total
+  queda fijo y conocido al firmar — el cliente sabe su headcount de antemano.
+- **Mantención — bolsa de horas mensual, plana.** No importa si son 1 o 10
+  personas: mismo precio. La mantención de Hermes no escala linealmente con
+  usuarios (es la instalación la que sí), así que esta parte **respeta la
+  regla original de R-14 sin necesitar excepción**.
+
+Esto también corrige la contradicción que arrastraban las cuatro filas de
+arriba («pago único por usuario»): ahí donde el ejemplo es de uso personal
+puntual (redacción, resumen), «pago único por usuario» es correcto porque no
+es recurrente. Donde hay mantención mensual involucrada, esa parte debe ser
+plana.
 
 **Lo que NO incluye:** Cambio de proceso, integración con sistemas, personas
 técnicas contratadas.
