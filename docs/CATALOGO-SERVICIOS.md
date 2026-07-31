@@ -106,21 +106,28 @@ mejora cómo alguien hace su trabajo hoy.
 | Asistente de catálogo | Hermes en LM Studio sobre manuales | Manuales ya están escritos |
 | Chatbot sobre FAQ | Chatbot que consulta la base de preguntas frecuentes | FAQ escritas, acceso local, no responde a clientes |
 
-### Los dos servicios de esta familia
+### Los servicios de esta familia — tres formas de comprar el mismo trabajo
 
-**① «Puesta en marcha de IA»** — *nombre decidido por Patricio, 2026-07-30.*
-Se instalan las herramientas y se enseña a usarlas para el trabajo de todos los
-días. Reemplaza a «capacitación / alfabetización IA», que ponía al cliente en
-posición de ignorante. Nombra la acción y el resultado, no la carencia.
+*Decisión de Patricio, 2026-07-31: el curso y el entorno son partes del mismo
+paquete, pero también se venden sueltos — un cliente que ya sabe usar IA no
+necesita el curso; alguien que solo quiere aprender no necesita que le
+instalen nada.*
 
-**② Ambiente de trabajo con IA** — ⏳ *nombre pendiente de ratificar.*
-Implementación del entorno para uso de IA en productividad personal (tipo
-cowork). Candidato a **primer producto recurrente de la casa**: R-12 no prohíbe
-recurrencia, solo amarres (permanencia > 3 meses, multa de salida, cobro anual
-anticipado). Mensual y cancelable sí es viable.
+**① «Puesta en marcha de IA»** — *nombre decidido 2026-07-30, reemplaza a
+«capacitación / alfabetización IA» (ponía al cliente en posición de
+ignorante).* **El paquete completo:** curso de fundamentos de IA + el entorno
+de trabajo (tipo cowork, ej. Hermes) queda instalado y configurado al cerrar.
 
-Se venden juntos o por separado. **No se numeran** como «1.1 / 1.2 / 1.3» — ver
-Reglas de nombre §1.
+**② Solo el curso** — fundamentos de IA, sin instalar nada. Para quien ya
+tiene sus herramientas y quiere que su equipo aprenda a usarlas bien.
+
+**③ Solo el entorno** — «Ambiente de trabajo con IA», ⏳ *nombre pendiente de
+ratificar.* Instalación sin curso. Para quien ya sabe usar IA y solo necesita
+el entorno configurado. Candidato a **primer producto recurrente de la casa**
+por su mantención mensual (R-12 no prohíbe recurrencia, solo amarres).
+
+**No se numeran** como «1.1 / 1.2 / 1.3» en materiales de cara al cliente —
+ver Reglas de nombre §1. La numeración ①②③ es solo de este documento interno.
 
 **Cómo se vende:**
 
@@ -128,22 +135,19 @@ Reglas de nombre §1.
 > sin leer tablas. Sigue vendiendo como hoy — solo que más rápido."*
 
 **Modelo de cobro:** ✅ **Resuelto (Patricio, 2026-07-31)** — R-14 enmendada,
-ver `docs/investigacion/REALIDAD-CLIENTE-PYME-CHILE.md`.
+ver `docs/investigacion/REALIDAD-CLIENTE-PYME-CHILE.md`. La misma lógica
+aplica a las dos partes del paquete, porque las dos son cargo único con costo
+real que escala por persona:
 
-- **Instalación — cargo único por persona.** No viola R-14: la regla prohíbe
-  el precio **recurrente** por usuario (impredecible), no un cargo único. El
-  costo real de instalar Hermes escala con el número de personas, y el total
-  queda fijo y conocido al firmar — el cliente sabe su headcount de antemano.
-- **Mantención — bolsa de horas mensual, plana.** No importa si son 1 o 10
-  personas: mismo precio. La mantención de Hermes no escala linealmente con
-  usuarios (es la instalación la que sí), así que esta parte **respeta la
-  regla original de R-14 sin necesitar excepción**.
+| Componente | Cobro | Por qué |
+|---|---|---|
+| Curso (fundamentos) | Cargo único **por persona** | Cada persona adicional suma tiempo real de enseñanza. Total conocido al firmar |
+| Instalación del entorno | Cargo único **por persona** | El costo real de instalar Hermes escala con el número de personas |
+| Mantención del entorno | Bolsa de horas mensual, **plana** | No escala con usuarios — respeta la regla original de R-14 sin necesitar excepción |
 
-Esto también corrige la contradicción que arrastraban las cuatro filas de
-arriba («pago único por usuario»): ahí donde el ejemplo es de uso personal
-puntual (redacción, resumen), «pago único por usuario» es correcto porque no
-es recurrente. Donde hay mantención mensual involucrada, esa parte debe ser
-plana.
+El curso solo (②) y la instalación sola (③) cobran cada uno su línea de la
+tabla. El paquete completo (①) cobra ambas líneas de cargo único + la
+mantención si el cliente contrata el entorno.
 
 **Lo que NO incluye:** Cambio de proceso, integración con sistemas, personas
 técnicas contratadas.
