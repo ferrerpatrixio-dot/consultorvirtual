@@ -182,3 +182,4 @@ Aplica a todos excepto Productividad (que es una herramienta).
 *Válido para: CONSULTORAVIRTUAL Fase 1 y 2*  
 *Próxima revisión: Cuando varíe UF o cambien casos tipo*
 
+
