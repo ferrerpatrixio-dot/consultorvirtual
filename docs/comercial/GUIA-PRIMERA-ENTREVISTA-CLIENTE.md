@@ -1,4 +1,4 @@
-# 🎤 GUÍA DE PRIMERA ENTREVISTA CON CLIENTE
+﻿# 🎤 GUÍA DE PRIMERA ENTREVISTA CON CLIENTE
 
 **Para:** Patricio Ferrer, en vivo · **Dura:** 1 hora exacta (R-9) · **Objetivo real:** salir con las visitas de esta semana agendadas.
 
@@ -32,7 +32,7 @@
 >
 > Lo que hacemos es esto: yo miro tu operación, te digo con números cuánto te cuesta hoy, y tú decides si vale la pena arreglarlo. Si no vale la pena, te lo digo y no te cobro por venderte humo.
 >
-> En esta hora te hago preguntas. La próxima semana vengo a ver la pega con tu gente — a ti no te molesto más. Y después te entrego un informe con el mapa de tu proceso, dónde está el problema y qué se hace.
+> En esta hora te hago preguntas. La próxima semana vengo a ver el trabajo con tu gente — a ti no te molesto más. Y después te entrego un informe con el mapa de tu proceso, dónde está el problema y qué se hace.
 >
 > ¿Te parece? Partamos por lo que más te está doliendo hoy."
 
@@ -92,7 +92,7 @@
 Las otras fuentes de pérdida obligan al dueño a **estimar** algo que nunca midió
 —cuántas horas, cuánto se pierde, cuántas ventas se cayeron—. El contacto
 evitable, en cambio, **se cuenta**: el volumen lo sabe, o lo sabe la persona que
-contesta el teléfono, y sale al tiro.
+contesta el teléfono, y sale de inmediato.
 
 Y tiene una ventaja doble que ninguna otra pregunta de este bloque tiene:
 **el número y el diagnóstico salen juntos.** Cada llamado que no debería existir
@@ -156,7 +156,7 @@ que traen su segmento con ellos.
 ## 4. CIERRE Y AGENDAMIENTO — 10 min (esto es la reunión)
 
 **Guion:**
-> "Perfecto. Con lo que me contaste ya tengo dónde mirar. Ahora necesito ver la pega funcionando, y para eso NO te necesito a ti — necesito a tu gente, media hora cada uno, mientras trabajan.
+> "Perfecto. Con lo que me contaste ya tengo dónde mirar. Ahora necesito ver el trabajo funcionando, y para eso NO te necesito a ti — necesito a tu gente, media hora cada uno, mientras trabajan.
 >
 > ¿Te sirve el martes y el jueves de esta semana? Yo llego, miro, pregunto, y me voy.
 >
@@ -339,7 +339,7 @@ llegar al cierre ya sabes cuál de las dos cotizaciones entregar.
 
 Si el cliente duda porque "suena a proyecto largo y caro", esta es la respuesta:
 
-> "Mira, parte del trabajo es justamente separar lo que se arregla altiro
+> "Mira, parte del trabajo es justamente separar lo que se arregla de inmediato
 > —sin invertir nada y con tu propia gente— de lo que sí necesita un proyecto.
 > Si durante el diagnóstico veo algo obvio, te lo digo en el momento, no espero
 > a la entrega. No te prometo cuántas cosas van a aparecer porque depende de tu
@@ -417,3 +417,4 @@ cobró y desapareció. Casi nadie lo hace en reunión 1. Ver plantilla en
 
 *COMERCIAL · CONSULTORAVIRTUAL · v1.0 — 2026-07-27*
 *Fuentes: RESTRICCIONES-CONSOLIDADAS.md · REALIDAD-CLIENTE-PYME-CHILE.md (R-1 a R-15) · FINANCIAMIENTO-CLIENTE-Y-FLUJO-CAJA.md · POSICIONAMIENTO-PYME-PARTNER-NO-CONSULTOR.md*
+

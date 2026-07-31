@@ -1,4 +1,4 @@
-# 🛍️ CATÁLOGO DE SERVICIOS — CONSULTORAVIRTUAL
+﻿# 🛍️ CATÁLOGO DE SERVICIOS — CONSULTORAVIRTUAL
 
 **Versión:** 1.0  
 **Efectiva:** 2026-07-30  
@@ -225,3 +225,4 @@ durante 6-12 meses, y vuelve a este punto después.
 ---
 
 *Fuente de autoridad: REGLA-HABILITACION-POR-MADUREZ.md · ESCALERA-IA-POR-MADUREZ.md · Conversación de diseño 2026-07-30*
+
