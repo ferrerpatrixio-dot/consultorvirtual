@@ -7,10 +7,86 @@ conversación de diseño (2026-07-30)
 
 ---
 
+## 📛 REGLAS DE NOMBRE (decididas 2026-07-30)
+
+**1. Los servicios se nombran, nunca se numeran.** Ya hay cuatro numeraciones
+vivas —Fases 0/1/2 (en contratos firmados), 5 estados MMA-OD, 3 peldaños de
+`/procesos-e-ia`, 4 etapas de la landing—. Un «servicio nivel 4» chocaría con
+«etapa 4 = Automatizar» en la misma web. **Los números quedan reservados para
+las Fases comerciales.**
+
+**2. Prohibido usar «transformación digital».** Es literalmente la columna de la
+consultora típica en nuestra propia tabla comparativa de la home («Habla de:
+transformación digital / lo que pierdes al mes»). Nombrar así nuestro servicio
+más caro contradice el posicionamiento en la misma página. También lo prohíbe
+R-11.
+
+**3. Prohibido «alfabetización» y «capacitación» como nombre de servicio.**
+Ponen al cliente en posición de ignorante («suena a eres ignorante», Patricio
+2026-07-30). Se nombra lo que el cliente gana, no lo que le falta.
+
+**4. El catálogo manda; la home se adapta.** Los nombres de las cuatro familias
+quedan reservados a este documento. Si el método de la landing usa una palabra
+que pisa una familia, se renombra el método, no la familia (decisión de
+Patricio, 2026-07-30).
+
+---
+
+## 📖 GLOSARIO — qué significa cada verbo, y en qué Fase cae
+
+La home tenía **dos secuencias de cuatro** que se pisaban: las etapas del método
+(Diagnóstico → Visualizar → Ejecutar → Automatizar) y los pasos del embudo
+(Test → Conversación → Trabajo de fondo → Implementar). No se corresponden 1:1;
+el mapeo real es **2:1**:
+
+| Verbo | Qué significa | Qué Fase es |
+|---|---|---|
+| **Diagnosticar** | Medir + visualizar (etapas 1 y 2 **juntas**) | **Fase 1** — lo que el cliente compra primero |
+| **Implementar** | Llevar a cabo el plan. **Incluye digitalizar** | **Fase 2** — venta aparte, opcional, cotizada después |
+| **Automatizar** | **No es un paso nuevo.** Es el *cómo* de Implementar cuando la madurez de datos lo permite | Dentro de Fase 2 |
+| ~~Ejecutar~~ | **Retirado.** Era ambiguo; queda como sinónimo de Implementar y no se usa más | — |
+
+### ⚠️ El riesgo comercial que esto corrige
+
+La etapa «Ejecutar» decía que el proceso *«queda digitalizado, andando en el día
+a día»* — redactado como si viniera incluido. Pero «Implementar», que es lo que
+de verdad hace eso, dice *«solo si decides seguir»*: **es Fase 2, opcional y
+cotizada aparte.**
+
+Un cliente que leía solo «Nuestro enfoque» podía creer que la digitalización
+venía incluida en lo que pagaba en Fase 1, y sorprenderse cuando en la reunión
+le cotizaban Fase 2. **Es sobreexpectativa creada por nosotros**, y el tipo de
+cosa por la que un cliente siente que se le cobró de más por entender el
+alcance.
+
+**Corrección aplicada:** la etapa 3 pasa a llamarse «Implementar» (mismo verbo
+que el embudo, porque son lo mismo) y su texto dice explícitamente *«Esto tiene
+costo y se cotiza aparte — es tu decisión si lo haces conmigo o adentro»*.
+
+---
+
 ## 🎯 LAS CUATRO FAMILIAS
 
 Cada una responde a una pregunta diferente. **Todas pueden convivir en el mismo
 cliente, en distintos momentos.**
+
+**La pregunta que define la taxonomía completa: ¿toca el proceso?**
+
+| Familia | Qué la define | Estado MMA-OD mínimo |
+|---|---|---|
+| **Productividad con IA** | **No toca el proceso.** Una persona trabaja mejor; si se va, el proceso sigue igual | Cualquiera, incluso CIMIENTOS |
+| **Digitalizar** | El proceso queda igual, **cambia el medio** | ORDEN_SIN_DATOS |
+| **Automatizar** | **El proceso cambia**: hay que redefinir quién hace qué, qué se responde, qué pasa según volumen | EN_CONSTRUCCION |
+| **Anticipar** | **Cambia cómo se decide**: de mirar lo que pasó a estimar lo que viene | BASE_LISTA + persona con nombre |
+
+**El caso que prueba que el criterio funciona — el dashboard.** El mismo
+artefacto cae en dos familias distintas según si obliga a cambiar cómo se
+registra el dato:
+
+- Dashboard sobre el Excel que ya existe → **Digitalizar** (el medio cambia, el proceso no)
+- Dashboard dinámico y compartible hacia afuera → **Automatizar**, porque aguantar
+  ser público y en vivo obliga a un paso nuevo de validación antes de publicar y
+  a que alguien responda por lo que se muestra
 
 ---
 
@@ -23,20 +99,51 @@ mejora cómo alguien hace su trabajo hoy.
 
 **Estado mínimo:** **Cualquiera, incluso CIMIENTOS**
 
-| Caso típico | Ejemplo concreto | Costo | Requisito |
-|---|---|---|---|
-| Redacción acelerada | Claude, ChatGPT, NotebookLM | Pago único por usuario | Nada |
-| Resumen de documentos | "resumir las entradas de blog de este mes" | Pago único por usuario | Documentos ya existen |
-| Asistente de catálogo | Hermes en LM Studio sobre manuales | Pago único por usuario | Manuales ya están escritos |
-| Chatbot sobre FAQ | Chatbot que consulta la base de preguntas frecuentes | Pago único por usuario | FAQ escritas, acceso local, no responde a clientes |
+| Caso típico | Ejemplo concreto | Requisito |
+|---|---|---|
+| Redacción acelerada | Claude, ChatGPT, NotebookLM | Nada |
+| Resumen de documentos | "resumir las entradas de blog de este mes" | Documentos ya existen |
+| Asistente de catálogo | Hermes en LM Studio sobre manuales | Manuales ya están escritos |
+| Chatbot sobre FAQ | Chatbot que consulta la base de preguntas frecuentes | FAQ escritas, acceso local, no responde a clientes |
+
+### Los dos servicios de esta familia
+
+**① «Puesta en marcha de IA»** — *nombre decidido por Patricio, 2026-07-30.*
+Se instalan las herramientas y se enseña a usarlas para el trabajo de todos los
+días. Reemplaza a «capacitación / alfabetización IA», que ponía al cliente en
+posición de ignorante. Nombra la acción y el resultado, no la carencia.
+
+**② Ambiente de trabajo con IA** — ⏳ *nombre pendiente de ratificar.*
+Implementación del entorno para uso de IA en productividad personal (tipo
+cowork). Candidato a **primer producto recurrente de la casa**: R-12 no prohíbe
+recurrencia, solo amarres (permanencia > 3 meses, multa de salida, cobro anual
+anticipado). Mensual y cancelable sí es viable.
+
+Se venden juntos o por separado. **No se numeran** como «1.1 / 1.2 / 1.3» — ver
+Reglas de nombre §1.
 
 **Cómo se vende:**
 
 > *"Tu vendedor va a consultar el catálogo de proveedores en lenguaje natural,
 > sin leer tablas. Sigue vendiendo como hoy — solo que más rápido."*
 
-**Modelo de cobro:** Pago único por usuario + mantención reactiva (bolsa de
-horas prepagada si algo se rompe o hay duda sobre cómo usarlo).
+**Modelo de cobro:** ⚠️ **CONFLICTO NORMATIVO ABIERTO — no cotizar hasta
+resolver.** Mantención reactiva: paquete de horas prepagado si algo se rompe o
+hay dudas de uso.
+
+> **R-14 prohíbe el precio por usuario** cuando el cliente tiene **< 10
+> personas**: *«el precio es plano, nunca por usuario ni por transacción»*,
+> porque «castiga justo al cliente que queremos y hace el costo impredecible».
+>
+> Según los clasificadores del test (1-5, 6-20, 21-50, 50+), **la mayoría del
+> mercado objetivo está bajo ese umbral.** El «cobro por cada usuario» que se
+> planteó para el Ambiente de trabajo con IA choca de frente con la regla, y
+> este documento ya decía «pago único por usuario» en las cuatro filas de
+> arriba — la contradicción ya estaba escrita.
+>
+> **Opciones para Patricio:** (a) precio plano por empresa hasta N usuarios ·
+> (b) tramos por tamaño, que es predecible y no es «por usuario» · (c) cobro por
+> usuario solo desde 10 personas, plano por debajo. Detectado 2026-07-30.
 
 **Lo que NO incluye:** Cambio de proceso, integración con sistemas, personas
 técnicas contratadas.
@@ -200,6 +307,32 @@ notas de las respuestas. La complejidad de la respuesta define el precio.
 **Regla:** si alguna respuesta es "no sabemos" o "alguien vemos", el cliente no
 está en BASE_LISTA. Propón Automatizar primero para que registre datos limpios
 durante 6-12 meses, y vuelve a este punto después.
+
+### 🗣️ Guion: el cliente pide predicción y no tiene datos
+
+Caso planteado por Patricio (2026-07-30). Son dos respuestas distintas:
+
+**Si dice «usa un modelo ya entrenado»** → Para los tres casos de esta familia
+(demanda, inasistencias, fuga) **no existe atajo**: predecir *su* demanda exige
+*su* historia. Ningún modelo pre-entrenado conoce su negocio.
+
+> *"Un modelo entrenado con datos de otras empresas le va a predecir el
+> comportamiento de esas otras empresas, no el de sus clientes."*
+
+**La excepción que hay que reconocer:** si la tarea es genérica —OCR, clasificar
+texto, detectar objetos en fotos— sí hay modelos pre-entrenados que sirven sin
+historia propia. Pero eso **no es Anticipar**: es Digitalizar o Automatizar mal
+etiquetado. **El pedido se reclasifica, no se rechaza.**
+
+**Si dice «ayúdame a ordenar los datos para poder hacerlo»** → Es el cliente
+ideal, pero **no se vende como «fase 1 de un proyecto de predicción»**. Se vende
+como lo que es (Digitalizar o Automatizar, con valor propio y verificable), y la
+predicción se evalúa después con las 5 preguntas de arriba.
+
+> **Por qué importa la distinción:** vendido por fases, quedas comprometido a
+> entregar la predicción. Si a los 12 meses los datos no alcanzan —pasa
+> seguido—, incumpliste, y el cliente siente que pagó la primera fase por nada.
+> Vendidos como dos decisiones separadas, la primera se sostiene sola.
 
 ---
 
