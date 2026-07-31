@@ -1,27 +1,31 @@
 # 🤖 MATRIZ DE AGENTES - CONSULTORAVIRTUAL
 
-**Versión:** 1.1  
+**Versión:** 1.2  
 **Fecha:** 2026-07-31  
-**Propósito:** Definir roles, responsabilidades y autoridad de cada agente en la consultora virtual
+**Propósito:** Definir roles, responsabilidades y autoridad de cada agente en CONSULTORAVIRTUAL (empresa única integrada)
 
-> **Cambios v1.1:** agregados agentes PRODUCT MANAGER, COMERCIAL, FINANCE (cash flow). Total: 11 agentes (antes 7).
-> Los agentes están formalizados en `.claude/agents/` para integración con proyectos AIProcess y otras herramientas IA.
+> **Cambios v1.2:** Estructura unificada. Los agentes técnicos (ARQUITECTO, DEV, QA, SECURITY, DELIVERY)
+> trabajan en AMBOS: (1) desarrollos internos (AIProcess, sitio web) y (2) proyectos de clientes.
+> No hay separación "IT interno" vs "IT cliente" — es el mismo equipo, priorizado por PMcoordinador.
+
+> **Cambios v1.1:** agregados agentes PRODUCT MANAGER, COMERCIAL, FINANCE (cash flow). Total: 11 agentes.
 
 ---
 
 ## 📊 MATRIZ DE RESPONSABILIDADES
 
 ### **ARQUITECTO** 👨‍🏛️
-**Rol:** Diseñador de soluciones técnicas y de procesos
+**Rol:** Diseñador de soluciones técnicas y de procesos (internos + clientes)
 
 | Aspecto | Descripción |
 |---------|------------|
-| **Responsable De** | Diseño as-is/to-be, propuestas técnicas, viabilidad |
+| **Responsable De** | Diseño as-is/to-be, propuestas técnicas, viabilidad (para ambos: productos internos y proyectos clientes) |
 | **Tareas Core** | Analizar estado actual, diseñar mejoras, validar factibilidad |
 | **Decisión Clave** | "¿Cuál es la solución óptima?" |
-| **Scope** | Componente a nivel empresa |
+| **Scope** | Componente a nivel empresa (puede ser para AIProcess, sitio web, O proyecto cliente) |
 | **Reporta A** | PM (Coordinador) |
-| **Escala** | Proyectos de consultoría (nivel 1-3) |
+| **Escala** | Proyectos de consultoría (nivel 1-3) + desarrollo interno |
+| **Prioridad** | Definida por PMcoordinador (puede cambiar si cliente paga + es urgente) |
 
 **Deliverables:**
 - Documento as-is/to-be (BPMN flows)
@@ -30,48 +34,56 @@
 - Recomendación de herramientas
 
 **Criterio de Éxito:**
-- Propuesta validada por cliente
+- Propuesta validada (por cliente si es cliente, por Patricio si es interno)
 - Plan aprobado por DEV (es ejecutable)
 - Cronograma realista (80%+ accuracy)
+
+**Nota:** Este rol aplica igual a un proyecto AIProcess interno que a un proyecto de optimización de procesos para un cliente. La metodología es la misma; lo único que cambia es quién aprueba (cliente externo vs. Patricio internamente).
 
 ---
 
 ### **DEV** 💻
-**Rol:** Implementador y automatizador
+**Rol:** Implementador y automatizador (internos + clientes)
 
 | Aspecto | Descripción |
 |---------|------------|
-| **Responsable De** | Implementación, automations, integraciones, scripts |
+| **Responsable De** | Implementación, automations, integraciones, scripts (para AIProcess, sitio web, O proyectos clientes) |
 | **Tareas Core** | Codificar, integrar APIs, migrar datos, crear dashboards |
 | **Decisión Clave** | "¿Cómo automatizamos esto sin complejidad?" |
-| **Scope** | Tarea operativa a nivel proceso |
+| **Scope** | Tarea operativa a nivel proceso (puede ser interna o de cliente) |
 | **Reporta A** | PM (Coordinador) |
-| **Escala** | Proyectos de implementación (nivel 2-3) |
+| **Escala** | Proyectos de implementación (nivel 2-3) + desarrollo de productos internos |
+| **Prioridad** | Definida por PMcoordinador (cliente urgente puede desplazar trabajo interno) |
 
 **Deliverables:**
 - Automations (Zapier, Make, RPA)
 - Integraciones (APIs, webhooks)
 - Scripts (SQL, Python, etc.)
 - Dashboards (Metabase, Google Sheets, Looker)
+- Features de productos internos (AIProcess, sitio)
 
 **Criterio de Éxito:**
 - 95%+ uptime en automations
 - Cero defectos en migraciones de datos
 - Documentación clara (otro DEV entiende en 30 min)
 
+**Nota:** Es el mismo DEV que desarrolla AIProcess internamente, quien también implementa
+integraciones para clientes. PMcoordinador gestiona la cola (que hace primero).
+
 ---
 
 ### **QA** 🧪
-**Rol:** Validador de calidad
+**Rol:** Validador de calidad (internos + clientes)
 
 | Aspecto | Descripción |
 |---------|------------|
-| **Responsable De** | Testing, validación, auditoría, sign-off |
+| **Responsable De** | Testing, validación, auditoría, sign-off (para AIProcess, sitio web, O proyectos clientes) |
 | **Tareas Core** | Escribir test cases, validar flujos, verificar datos |
 | **Decisión Clave** | "¿Está listo para producción?" |
-| **Scope** | Caso por caso (crítico vs no-crítico) |
+| **Scope** | Caso por caso (crítico vs no-crítico) — puede ser desarrollo interno o cliente |
 | **Reporta A** | PM (Coordinador) |
-| **Escala** | Proyectos completos (todas las fases) |
+| **Escala** | Proyectos completos (todas las fases) + roadmap de AIProcess |
+| **Prioridad** | Definida por PMcoordinador |
 
 **Deliverables:**
 - Plan de testing
@@ -84,19 +96,23 @@
 - 0 bugs críticos en producción
 - Cobertura: funcional + datos + seguridad
 
+**Nota:** Valida features de AIProcess con el mismo rigor que valida proyectos de clientes.
+No hay "testing ligero" para desarrollo interno.
+
 ---
 
 ### **SECURITY** 🔒
-**Rol:** Guardián de cumplimiento y privacidad
+**Rol:** Guardián de cumplimiento y privacidad (internos + clientes)
 
 | Aspecto | Descripción |
 |---------|------------|
-| **Responsable De** | Auditoría, compliance, protección de datos |
+| **Responsable De** | Auditoría, compliance, protección de datos (para AIProcess, sitio web, O proyectos clientes) |
 | **Tareas Core** | Revisar Ley 19.628, GDPR, ISO 27001, OWASP |
 | **Decisión Clave** | "¿Cumple con regulaciones?" |
-| **Scope** | Arquitectura a nivel datos |
+| **Scope** | Arquitectura a nivel datos (pueden ser datos propios de la consultora o del cliente) |
 | **Reporta A** | PM + LEGAL (co-authority) |
-| **Escala** | Proyectos con datos personales (todos en Chile) |
+| **Escala** | Proyectos con datos personales (todos en Chile) + auditoría de AIProcess |
+| **Prioridad** | Definida por PMcoordinador |
 
 **Deliverables:**
 - Auditoría de compliance (Ley 19.628)
@@ -108,6 +124,9 @@
 - 0 violaciones de Ley 19.628
 - Auditoría favorable (si aplica)
 - Documentación de controles implementados
+
+**Nota:** Audita AIProcess con el mismo estándar que audita un proyecto de cliente.
+No hay "compliance ligero" para desarrollo interno.
 
 ---
 
@@ -162,16 +181,17 @@
 ---
 
 ### **DELIVERY** 🚀
-**Rol:** Ejecutor de go-live
+**Rol:** Ejecutor de go-live (internos + clientes)
 
 | Aspecto | Descripción |
 |---------|------------|
-| **Responsable De** | Deployment, capacitación, handoff |
+| **Responsable De** | Deployment, capacitación, handoff (para AIProcess, sitio web, O proyectos clientes) |
 | **Tareas Core** | Deploy a producción, entrenar usuario, go-live |
-| **Decisión Clave** | "¿Está listo el cliente para usar esto?" |
+| **Decisión Clave** | "¿Está listo el [cliente/Patricio] para usar esto?" |
 | **Scope** | Fase final (go-live + 30 días post-launch) |
 | **Reporta A** | PM (Coordinador) |
-| **Escala** | Proyectos de implementación (nivel 2-3) |
+| **Escala** | Proyectos de implementación (nivel 2-3) + lanzamiento de versiones internas |
+| **Prioridad** | Definida por PMcoordinador |
 
 **Deliverables:**
 - Plan de deployment
@@ -182,7 +202,10 @@
 **Criterio de Éxito:**
 - 0 downtime en go-live
 - 95%+ de usuarios pueden usar sin soporte
-- Cliente reporta satisfacción en capacitación
+- [Cliente/Patricio] reporta satisfacción en capacitación
+
+**Nota:** Maneja deployment de AIProcess v1.2 (para uso interno/beta) con el mismo rigor
+que el deployment de un proyecto para cliente.
 
 ---
 
