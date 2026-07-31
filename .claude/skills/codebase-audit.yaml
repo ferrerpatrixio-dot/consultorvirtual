@@ -1,0 +1,64 @@
+name: codebase-audit
+version: 1.0
+description: Weekly codebase audit (READ-ONLY) — Check for outdated files, zombies, sync issues
+author: PMcoordinador
+tags: [audit, codebase, weekly]
+
+steps:
+  - name: git-audit
+    command: |
+      cd /c/Users/ferre/Proyectos/CONSULTORAVIRTUAL
+      echo "=== GIT LOG (últimos 10 commits) ==="
+      git log --oneline | head -10
+      echo ""
+      echo "=== ARCHIVOS DESACTUALIZADOS (>30 días) ==="
+      find . -name "*.md" -mtime +30 -type f 2>/dev/null | grep -v node_modules | head -20
+      echo ""
+      echo "=== BITACORA-CAMBIOS.md STATUS ==="
+      ls -lh BITACORA-CAMBIOS.md
+      head -5 BITACORA-CAMBIOS.md
+    shell: bash
+
+  - name: structure-audit
+    command: |
+      cd /c/Users/ferre/Proyectos/CONSULTORAVIRTUAL
+      echo "=== ESTRUCTURA DIRECTORIOS ==="
+      echo ".agents/ size:"
+      find .agents -type f | wc -l
+      echo ".claude/ size:"
+      find .claude -type f | wc -l
+      echo "OVERLAP check:"
+      diff <(find .agents -name "*.md" -type f) <(find .claude -name "*.md" -type f) 2>/dev/null || echo "No perfect overlap (expected)"
+    shell: bash
+
+  - name: generate-report
+    prompt: |
+      Basándote en los resultados de auditoría anterior, genera REPORTE CONCISO:
+
+      Formato:
+      ```
+      🔍 AUDITORÍA CODEBASE — Viernes [fecha]
+
+      ✅ STATUS GENERAL:
+      - Commits: [N] en última semana
+      - Archivos desactualizados: [N] (>30 días)
+      - Estructura: [OK/⚠️ duplicación]
+
+      ⚠️ PROBLEMAS DETECTADOS:
+      1. [Problema A]: [descripción]
+      2. [Problema B]: [descripción]
+
+      📋 ACCIONES REQUERIDAS:
+      → Patricio decide: arreglar o ignorar
+
+      Próxima auditoría: Viernes próximo
+      ```
+
+      IMPORTANTE: Solo reporta problemas. NO ejecutes fixes.
+    model: haiku
+    toolsets: [terminal]
+
+post_execution:
+  log_status: true
+  log_file: "~/.local/hermes/cron/codebase-audit.log"
+  log_format: "[{{ timestamp }}] CODEBASE-AUDIT: ✅ Completado | Problemas encontrados: {{ problem_count }}"
