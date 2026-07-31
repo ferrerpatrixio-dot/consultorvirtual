@@ -42,7 +42,12 @@ steps:
 output:
   format: markdown
   destination: "{{ output_file }}"
-  notify:
-    - email: ferrer.patricio@gmail.com
-      subject: "📊 Reporte Mercado — {{ date }}"
-      body: "Reporte semanal de mercado completado. Ver adjunto o docs/reportes/"
+  email_send: true
+  email_to: ferrer.patricio@gmail.com
+  email_subject: "📊 Reporte Mercado — {{ date }}"
+
+post_execution:
+  log_status: true
+  log_file: "~/.local/hermes/cron/market-weekly-brief.log"
+  log_format: "[{{ timestamp }}] MARKET-BRIEF: ✅ Ejecutado | Enviado a {{ email_to }} | Archivo: {{ output_file }}"
+  notify_pmcoordinator: true
