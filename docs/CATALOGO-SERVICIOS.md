@@ -149,6 +149,26 @@ El curso solo (②) y la instalación sola (③) cobran cada uno su línea de la
 tabla. El paquete completo (①) cobra ambas líneas de cargo único + la
 mantención si el cliente contrata el entorno.
 
+**La elección es por persona, no por empresa — y eso no fragmenta la
+cotización, la agrega.** No se vende «la empresa compra el paquete ①» o «la
+empresa compra solo ②»: cada empleado elige su línea, y la cotización suma
+cabezas por línea. Sigue siendo **una sola cotización con tres líneas**, sin
+importar cuántas combinaciones distintas haya adentro.
+
+> **Ejemplo (caso real, Patricio 2026-07-31):** empresa de 10 personas. 2
+> quieren curso + entorno, 2 quieren solo curso, 6 quieren solo entorno.
+>
+> | Línea | Personas | Cálculo |
+> |---|---|---|
+> | Curso | 2 + 2 = **4** | 4 × precio curso |
+> | Instalación entorno | 2 + 6 = **8** | 8 × precio instalación |
+> | Mantención | **1 bolsa** | Plana — cubre a las 8 personas con entorno instalado, **por empresa, no por persona** |
+
+**Regla explícita de mantención:** la bolsa de horas es **una por empresa
+cliente**, no una por cada persona con el entorno instalado. No cambia si son
+2 personas con entorno o 10 — es la misma bolsa. Esto es lo que hace que la
+oferta no se disgregue aunque cada empleado elija distinto.
+
 **Lo que NO incluye:** Cambio de proceso, integración con sistemas, personas
 técnicas contratadas.
 
