@@ -39,9 +39,24 @@
 
 ---
 
+### 2026-07-31 — Backup/Recovery + Agentes DELIVERY & SECURITY (continuación auditoría)
+
+**Cambios:**
+- ✅ Creado `SOP-BACKUP-RECOVERY.md` — estrategia completa (Git, Vercel, Supabase, disaster recovery)
+- ✅ Creado `delivery.md` — go-live + DevOps (deployments, rollback 3 niveles, monitoring)
+- ✅ Creado `security.md` — compliance Ley 19.628, control acceso, audit trail
+- ⚠️ Hallazgo: No hay DBA explícito (DELIVERY + DEV lo hacen), crear en futuro si escala
+- ⚠️ Hallazgo: .agents/ y .claude/ coexisten con dependencias frágiles (plan consolidación documentado)
+
+**Commits:**
+- `42076c1` — BITACORA-CAMBIOS.md + auditoría inicial
+- `b22442f` — SOP-BACKUP-RECOVERY + DELIVERY + SECURITY
+
+---
+
 ### 2026-07-27 — Setup inicial estructura 11 agentes + productos
 
-**Cambios:** Creados agents/ con 11 agentes especializados (ARQUITECTO, DEV, QA, SECURITY, DELIVERY, COMERCIAL, PRODUCT MANAGER, FINANCE, LEGAL, DISEÑADOR-UX + PMcoordinador).
+**Cambios:** Creados agents/ con 11 agentes especializados (ARQUITECTO, DEV, QA, COMERCIAL, PRODUCT MANAGER, FINANCE, LEGAL, DISEÑADOR-UX + PMcoordinador).
 
 **Productos:** /sistemaaiprocess/ + /misitioweb/ (rediseñado) + Línea negocio 3 (SaaS).
 
