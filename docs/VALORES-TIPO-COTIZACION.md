@@ -32,85 +32,59 @@ Estos son **precios sin detalle**: se refinan en Fase 1, se confirman en Fase 2.
 
 ## FASE 2: IMPLEMENTACIÓN
 
-### Matriz de precios por familia
+### Las tres bandas
 
-| Familia | Entrada | Mid | Top | Control |
-|---|---|---|---|---|
-| **Productividad** | $5K | $10K | $15K | No |
-| **Digitalizar** | $25K | $45K | $60K | Sí/No según caso |
-| **Automatizar** | $60K | $120K | $180K | Sí (obligatorio) |
-| **Anticipar** | $80K | $150K | $250K+ | Sí (obligatorio) |
+| Banda | CLP | Casos típicos |
+|---|---|---|
+| **Banda 1** | $1.200.000 | Digitalizar simple (dashboard), Productividad avanzada |
+| **Banda 2** | $2.500.000 | Automatizar básica (recepción digital + alertas), Digitalizar con control |
+| **Banda 3** | $4.500.000 | Automatizar completa (flujo punta a punta), Anticipar básica |
+
+**Nota:** Dentro de cada banda hay flexibilidad según alcance. La Fase 1 determina cuál banda es la correcta.
 
 ---
 
 ### Casos típicos de SSTT (reparación móviles)
 
 #### Caso 1: Dashboard de estado (DIGITALIZAR)
+**Banda:** 1 ($1.2M)
 
-| Elemento | Costo | Plazo | Notas |
-|---|---|---|---|
-| Dashboard (en vivo: cola, reparación, listos) | $35K | 2 sem | Filtros por modelo, fecha, cliente |
-| + Búsqueda por IMEI/cliente | $5K | 1 sem | Cliente busca su teléfono |
-| + Notificaciones (SMS/email) | $15K | 1 sem | Aviso automático cuando está listo |
-| + Asistente WhatsApp | $15K | 1 sem | Bot contesta "¿dónde está mi 123456?" |
+Dashboard en vivo (cola, reparación, listos) + filtros por modelo/fecha/cliente + búsqueda por IMEI + notificaciones automáticas.
 
-**Entrada:** $35K solo dashboard  
-**Recomendado:** $55K (dashboard + notificaciones + búsqueda)  
-**Premium:** $70K (todo + WhatsApp)
-
-**Control:** No (es consulta de datos ya registrados)
+**Control:** No (es consulta de datos ya registrados)  
+**Plazo:** 2–3 semanas
 
 ---
 
 #### Caso 2: Automatizar recepción + control (AUTOMATIZAR)
+**Banda:** 2 ($2.5M)
 
-| Elemento | Costo | Plazo | Notas |
-|---|---|---|---|
-| Formulario digital de recepción (reemplaza cuaderno) | $20K | 1 sem | Foto de teléfono, modelo, IMEI, falla |
-| + Asignación automática a técnico | $15K | 1 sem | Sistema sugiere cuál técnico sigue |
-| + Validación de salida (checklist) | $10K | 1 sem | Técnico confirma "listo": sistema valida datos |
-| + Alertas por SLA (si > 5 días, aviso) | $10K | 1 sem | Notificación si se atrasa |
-| + Dashboard de operarios | $15K | 1 sem | Carga de cada técnico en vivo |
+Recepción digital (reemplaza cuaderno) + asignación automática a técnico + validación de salida + alertas por SLA + dashboard de carga de operarios.
 
-**Entrada:** $20K solo recepción digital  
-**Recomendado:** $50K (recepción + validación + alertas)  
-**Premium:** $70K (todo + dashboard)
-
-**Control:** Sí, en todos (revisor de rechazos / alertas falsas)
+**Control:** Sí, obligatorio (revisor de rechazos / alertas falsas)  
+**Plazo:** 3–4 semanas
 
 ---
 
-#### Caso 3: Todo integrado (AUTOMATIZAR upgrade)
+#### Caso 3: Flujo punta a punta (AUTOMATIZAR completa)
+**Banda:** 2 o 3 ($2.5M–$4.5M según alcance)
 
-| Elemento | Costo | Plazo | Notas |
-|---|---|---|---|
-| Recepción + procesamiento + entrega (casos 1+2) | $70K | 3 sem | Flujo de punta a punta |
-| + Integración con SMS masivo (notificación a cliente) | $10K | 1 sem | Campaña automática "listos para retirar" |
-| + Portal cliente (puede ver estado sin pedir) | $15K | 1 sem | Cliente login → ve su teléfono |
-| + Reportes gerencial (diario/semanal) | $10K | 1 sem | "Hoy 12 terminados, 5 en cola, tiempo promedio 3.2 días" |
+Recepción + procesamiento + validación + notificación a cliente + portal cliente + reportes gerencial (diario/semanal).
 
-**Total:** $105K
-
-**Control:** Sí (revisor de alertas, revisor de rechazos)
+**Control:** Sí (revisor de alertas, revisor de rechazos)  
+**Plazo:** 4–5 semanas
 
 ---
 
-### Caso 4: Predicción de término (ANTICIPAR)
+#### Caso 4: Predicción de término (ANTICIPAR)
+**Banda:** 3 ($4.5M) + diag. adicional ($450K)
 
-**Requisito:** 6+ meses de datos (modelo, tiempo real, técnico, falla).
+**Requisito:** 6+ meses de datos limpios.
 
-| Elemento | Costo | Plazo | Notas |
-|---|---|---|---|
-| Diagnóstico de datos | $30K | 1 sem | ¿Hay suficiente historia? ¿Huecos? |
-| Modelo predictivo básico | $80K | 2 sem | Por modelo: "iPhone X termina en ~2 días con 85% confianza" |
-| + Notificación al cliente (ETA) | $15K | 1 sem | "Tu teléfono estará listo el jueves 14" |
-| + Optimización de capacidad | $25K | 1 sem | Predice picos; sugiere si contratar técnico o no |
+Diagnóstico de datos + modelo predictivo (por modelo: "iPhone X en ~2 días con 85% confianza") + notificación al cliente (ETA) + optimización de capacidad.
 
-**Entrada:** $80K + $30K diagnóstico = $110K  
-**Recomendado:** $110K + notificación = $125K  
-**Premium:** todo = $155K
-
-**Control:** Sí, obligatorio (encargado que revise predicción semanal)
+**Control:** Sí, obligatorio (encargado que revise predicción semanal)  
+**Plazo:** 4–6 semanas (+ 1 semana diag. previa)
 
 ---
 
@@ -118,11 +92,13 @@ Estos son **precios sin detalle**: se refinan en Fase 1, se confirman en Fase 2.
 
 Aplica a todos excepto Productividad (que es una herramienta).
 
-| Tipo | Costo mensual | Qué incluye |
+| Familia | Costo mensual | Qué incluye |
 |---|---|---|
-| **Digitalizar** | $2.000 | Soporte, actualizaciones, bug fixes |
-| **Automatizar** | $3.000–$5.000 | Soporte, re-entreno del modelo, ajustes de lógica |
+| **Digitalizar** | $2.000–$3.000 | Soporte, actualizaciones, bug fixes |
+| **Automatizar** | $3.000–$5.000 | Soporte, ajustes de lógica, re-validación de reglas |
 | **Anticipar** | $5.000–$10.000 | Re-entreno mensual, validación de predicción, ajustes |
+
+**Nota:** Sin lock-in. Monthly, cancelable en cualquier momento.
 
 ---
 
@@ -130,16 +106,16 @@ Aplica a todos excepto Productividad (que es una herramienta).
 
 ### Escenario 1: "Muestrame un presupuesto"
 
-> "Para un SSTT como ustedes, veo tres opciones:
+> "Para un SSTT como ustedes, después de la Fase 1 (diagnóstico), veo tres opciones:
 >
-> **Opción A (Digitalizar):** Dashboard + notificaciones = $55K, 3 semanas, $2K/mes.  
+> **Opción A (Digitalizar):** Dashboard + notificaciones = **Banda 1** ($1.2M), 2–3 semanas, $2–3K/mes.  
 > → Clientes ven estado sin llamar.
 >
-> **Opción B (Automatizar):** Recepción digital + alertas + dashboard = $50K, 3 semanas, $3K/mes.  
-> → Ustedes tienen control operativo.
+> **Opción B (Automatizar básica):** Recepción digital + alertas + control = **Banda 2** ($2.5M), 3–4 semanas, $3–5K/mes.  
+> → Ustedes tienen control operativo completo.
 >
-> **Opción C (Ambas):** Todo integrado = $105K, 4 semanas, $4K/mes.  
-> → Flujo de punta a punta, clientes + operarios + gerencia.
+> **Opción C (Automatizar completa):** Todo integrado (flujo punta a punta) = **Banda 2–3** ($2.5M–$4.5M), 4–5 semanas, $4–5K/mes.  
+> → Clientes + operarios + gerencia, todo integrado.
 >
 > ¿Cuál es la prioridad?"
 

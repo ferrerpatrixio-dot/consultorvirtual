@@ -68,12 +68,12 @@
 > **Para resolver eso, tienen dos caminos:**
 >
 > **Opción A - Diagnóstico (Fase 1):**  
-> → 2–4 semanas, $450K (Sercotec financia $315K, ustedes $135K)
+> → 2–4 semanas, $450.000 CLP (Sercotec financia $315K, ustedes $135K)
 > → Levanto el proceso completo, propongo 3–5 soluciones exactas, presupuestan las que quieran
 > → Quedas con un documento que vale más que lo que pagaste.
 >
 > **Opción B - Audit rápida:**  
-> → 1 semana, $150K (ustedes pagan todo)
+> → 1 semana, $150.000 CLP (ustedes pagan todo)
 > → Fotografía el estado, propongo 3 opciones básicas
 > → Menos detalle, pero más rápido.
 >
@@ -151,17 +151,17 @@
 
 **Preguntar:**
 
-- [ ] Nombre completo del contacto
+- [ ] Nombre completo del contacto principal
 - [ ] Email y teléfono
-- [ ] ¿Quién es el que decide (dueño, gerente)? ¿Necesito reunirme con él?
-- [ ] ¿Cuándo puedo empezar? (Fase 1) / ¿Cuándo puedo ir a observar? (Audit)
-- [ ] ¿Datos del sistema actual, si tienen? (Sistema, usuario, password — si me dejan)
+- [ ] ¿Quién es el que decide? ¿Dueño, gerente? ¿Necesito reunirme con él?
+- [ ] ¿Cuándo puedo empezar? (Fase 1, 1–2 semanas) / ¿Cuándo puedo ir a observar? (Audit, esta semana)
+- [ ] ¿Acceso al sistema actual, si tienen? (nombre del sistema, credenciales si me autorizan)
 
 **Dejar:**
 
-- [ ] Contrato firmado (tú + ellos)
-- [ ] Documentación impresa (Presentación + Valores)
-- [ ] Tu email y teléfono para preguntas
+- [ ] Contrato Fase 1 o Audit firmado (ambos)
+- [ ] Documentación impresa (Presentación Ejecutiva + Valores Tipo)
+- [ ] Tu email y teléfono para dudas
 
 ---
 

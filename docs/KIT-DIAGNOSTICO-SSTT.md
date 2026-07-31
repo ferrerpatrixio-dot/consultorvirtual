@@ -152,24 +152,22 @@
 
 ---
 
-### Fase 2: Implementación (valores tipo, sin ingeniería)
+### Fase 2: Implementación (las tres bandas)
 
-**Caso probable: DIGITALIZAR (Dashboard + notificaciones)**
+**Caso probable: DIGITALIZAR (Banda 1) o AUTOMATIZAR (Banda 2)**
 
-| Alcance | Costo tipo | Plazo | Qué incluye |
+| Banda | Costo | Plazo | Típico para SSTT |
 |---|---|---|---|
-| **Dashboard básico** | $35.000 | 2–3 semanas | En vivo: en cola, en reparación, listos. Filtro por modelo/fecha/cliente |
-| **+ Notificaciones** | +$15.000 | +1 semana | SMS/correo cuando está listo. Cliente se entera automático |
-| **+ Asistente de estado** | +$10.000 | +1 semana | Cliente pregunta por WhatsApp "¿dónde está mi 123456?" → bot responde |
-
-**Total:** $60.000 (entrada a AUTOMATIZAR)
+| **Banda 1** | $1.200.000 | 2–3 sem | Dashboard + notificaciones. Clientes ven estado. |
+| **Banda 2** | $2.500.000 | 3–4 sem | Recepción digital + control operativo. Ustedes ven quién trabaja qué. |
+| **Banda 3** | $4.500.000 | 4–5 sem | Flujo punta a punta integrado. |
 
 ---
 
 ### Modelo de pago
 
-- **Instalación:** Pago único (arriba)
-- **Mantención:** $2.000/mes (actualizaciones, ajustes, soporte)
+- **Pago único:** Según banda arriba
+- **Mantención:** $2–5K/mes (soporte, ajustes, actualizaciones)
 - **Sin lock-in:** Mensual, cancelable en cualquier momento
 
 ---
