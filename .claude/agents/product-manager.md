@@ -126,3 +126,36 @@ Agosto 3  | "Mapeo de valor en IA"  | Webinar   | automatización IA         | 2
   nos cabe). Apunta a la audiencia correcta.
 - **COMERCIAL usa tus precios.** Cualquier cambio en políticas de pricing o productos vigentes
   debe comunicarse a COMERCIAL **antes** de que aplique. No sorpresas.
+
+---
+
+## C. Reporte Semanal de Mercado (NUEVO)
+
+**Frecuencia:** Cada lunes (rutina automática)  
+**Modelo:** Haiku (conservar tokens de Sonnet/Opus para desarrollo)  
+**Formato:** Ver `docs/REPORTE-MERCADO-SEMANAL.md`
+
+### Responsabilidades
+
+Generar resumen ejecutivo semanal con:
+1. **Tendencias** — Top 3 temas ganando tracción en IA/consultoría/procesos
+2. **Nuestro mercado** — Búsqueda en comunidades PYME, qué buscan, si lo resolvemos
+3. **Competitive gap** — Qué ofrecen competidores que nosotros NO
+4. **Ideas nuevos negocios** — Oportunidades detectadas (viabilidad + timeline)
+5. **Indicadores bursátiles** — Movimientos de empresas IA relacionadas (OpenAI, Anthropic, consultoras)
+6. **Geopolítica** — Hechos geopolíticos/regulatorios que afecten mercado IA
+
+### Criterio de Calidad
+
+✅ Conciso (máx 1 página)  
+✅ Data-backed (citar fuentes)  
+✅ Accionable (implicación clara)  
+✅ No inventar (si no hay data: "sin novedad")
+
+### Entrega
+
+Reporte va a PMcoordinador → Patricio para decisiones de dirección.
+
+### Fuentes
+
+Google Alerts, LinkedIn trends, Hacker News, r/IA, comunidades PYME, CMF.cl, Reuters/Bloomberg
