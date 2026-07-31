@@ -48,7 +48,7 @@ Según lo que eligas:
 
 ## El test (hoy, 5 minutos)
 
-Respondés 5 preguntas → identificamos dónde estás → propongo qué es viable para ti.
+Respondes 5 preguntas → identificamos dónde estás → propongo qué es viable para ti.
 
 **Peldaños:**
 1. **Cimientos** → sin orden, sin datos → empieza por documentar
@@ -66,4 +66,5 @@ Respondés 5 preguntas → identificamos dónde estás → propongo qué es viab
 ---
 
 * te financia el diagnóstico. No hay riesgo: si decidís no implementar, quedaste con el plan.*
+
 

@@ -1,4 +1,4 @@
-# 📣 MENSAJE DE LA WEB NUEVA — aiprocess.cl
+﻿# 📣 MENSAJE DE LA WEB NUEVA — aiprocess.cl
 
 **Rama:** `web-nueva` · **Fecha:** 2026-07-27
 **Sistema de diseño:** se mantiene el actual. Aquí solo va el mensaje.
@@ -25,7 +25,7 @@ esto es sobre *la plata que se le está escapando*, el mensaje falló.
               empoderar · potenciar · optimizar (a secas, sin decir qué)
 
 ✅ SE ESCRIBE:  en dinero, en horas, en pedidos, en reclamos
-                tuteo, frases cortas, cero adjetivos de folleto
+                tuteo, frases cortas, cero adjetitú de folleto
                 ejemplos concretos, no categorías abstractas
 ```
 
@@ -237,7 +237,7 @@ TÍTULO
 Qué pasa si me escribes
 
 PASO 1 · El test de 5 minutos — gratis
-        Respondes 8 preguntas y ves en qué estado está tu operación.
+        Responde 8 preguntas y ve en qué estado está tu operación.
         No pido tarjeta ni te llama un vendedor.
 
 PASO 2 · Una hora de conversación — gratis
@@ -353,3 +353,4 @@ CTA → "Hacer el test"
 
 *Siguiente paso: llevar esto a componentes en la rama `web-nueva`.*
 *El sistema de diseño actual se mantiene.*
+

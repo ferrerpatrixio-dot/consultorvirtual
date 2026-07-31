@@ -16,7 +16,7 @@
 
 ## MINUTO 1–3: PRESENTACIÓN (tú hablas)
 
-**Objetivo:** Que entienda quiénes sos y qué ofrecés (sin vendedor, sin hype).
+**Objetivo:** Que entienda quiénes eres y qué ofreces (sin vendedor, sin hype).
 
 **Guion:**
 
@@ -77,7 +77,7 @@
 > → Fotografía el estado, propongo 3 opciones básicas
 > → Menos detalle, pero más rápido.
 >
-> ¿Cuál te late?"
+> ¿Cuál te parece?"
 
 ---
 
@@ -92,7 +92,7 @@
 > 3. En 1 semana empiezo el levantamiento.
 > 4. En 2–4 semanas tienen el reporte + propuestas.
 >
-> Mientras tanto, ¿necesitás que tramite lo de , o lo hacés vos?"
+> Mientras tanto, ¿necesitas que tramite lo de , o lo haces tú?"
 
 **Material:** Referencia a "Modelo de Financiamiento " (si tienen uno)
 
@@ -269,4 +269,5 @@
 
 *Versión: 2026-07-30*  
 *Casos de uso: SSTT, Pymes con desorden operativo*
+
 
