@@ -52,22 +52,50 @@ Casos de Uso Transversales»*, material de investigación del webinar.
 que no hace nadie más: cualquiera arma la lista; ordenarla por *lo que tu estado
 permite* es nuestro.
 
-| Caso de uso | Peldaño mínimo | Qué necesita antes | Si se hace antes |
-|---|---|---|---|
-| **Generación de contenido** | **Cimientos** | Nada | — (ver §3) |
-| **Facturas y OCR** | Orden sin datos | Un destino definido para el dato extraído | El dato llega a una planilla que nadie usa |
-| **Chatbot / WhatsApp** | Orden sin datos | Que las respuestas sean **las mismas** que da el equipo | Contesta más rápido sobre un proceso roto, y se contradice con la gente |
-| **Agendamiento y recordatorios** | En construcción | Proceso definido + la cita registrada digitalmente | No hay a quién recordarle: la agenda está en papel |
-| **Cotizaciones y seguimiento** | En construcción | Proceso definido + registro del prospecto | Un CRM vacío que nadie llena |
-| **Cobranza escalonada** | En construcción | Registro de quién debe y desde cuándo | Se le cobra a quien ya pagó |
-| **Inventario con alertas** | En construcción | Que el stock se registre **al mover**, no al contar | Alertas sobre un stock equivocado: peor que no tener alertas |
-| **Reportes consolidados** | **Base lista** | Datos comparables entre fuentes | Consolidar tres planillas que no cuadran produce **un número falso con más autoridad** |
+| Caso de uso | Peldaño mínimo | Qué necesita antes | Si se hace antes | ✨ Qué ofrecer HOY |
+|---|---|---|---|---|
+| **Generación de contenido** | **Cimientos** | Nada | — (ver §3) | **Productividad:** asistente de redacción, resumen de textos |
+| **Asistente de conocimiento** (ej: RAG sobre catálogos) | **Cimientos** | Documentos ya existentes | — | **Productividad:** NotebookLM o Obsidian sobre catálogos/manuales existentes, sin cambiar proceso |
+| **Facturas y OCR** | **En construcción** | Proceso de ingreso definido + persona que revisa lo dudoso | El dato llega a una planilla que nadie usa | **Digitalizar** + **regla del control** (línea 58: si el modelo se equivoca, hay que diseñar revisión) |
+| **Visión artificial** (auditoría de inventario, inspección) | **En construcción** | Proceso de conteo/inspección definido + responsable del control | Se marca como error lo que es correcto | **Digitalizar** + **regla del control** (requiere persona que valide) |
+| **Chatbot / WhatsApp** | Orden sin datos | Que las respuestas sean **las mismas** que da el equipo | Contesta más rápido sobre un proceso roto, y se contradice con la gente | **Productividad:** chatbot sobre FAQ escritas, sin responder a clientes todavía |
+| **Agendamiento y recordatorios** | En construcción | Proceso definido + la cita registrada digitalmente | No hay a quién recordarle: la agenda está en papel | Esperar a EN_CONSTRUCCION |
+| **Cotizaciones y seguimiento** | En construcción | Proceso definido + registro del prospecto | Un CRM vacío que nadie llena | Esperar a EN_CONSTRUCCION |
+| **Cobranza escalonada** | En construcción | Registro de quién debe y desde cuándo | Se le cobra a quien ya pagó | Esperar a EN_CONSTRUCCION |
+| **Inventario con alertas** | En construcción | Que el stock se registre **al mover**, no al contar | Alertas sobre un stock equivocado: peor que no tener alertas | Esperar a EN_CONSTRUCCION |
+| **RAG con base vectorial** | **En construcción** | Documentación vigente (`o1` ≥ 4) + responsable del control | Responde con cita falsa = confianza ciega | **Digitalizar** con búsqueda textual primero; vectorial solo si textual falla |
+| **Reportes consolidados** | **Base lista** | Datos comparables entre fuentes | Consolidar tres planillas que no cuadran produce **un número falso con más autoridad** | **Digitalizar:** dashboard en Power BI/Tableau sobre datos existentes |
 
 La columna «si se hace antes» es material de venta: no es una negativa, es lo que
 va a pasar. Y es verificable después.
 
+La columna «✨ Qué ofrecer HOY» es lo que transforma un «todavía no» en una
+venta honesta mientras el cliente crece. No es un pequeño ajuste: es el acceso a
+la cuenta, porque ofrece valor real **sin** romper la regla de madurez.
+
 **`Datos sin orden` no habilita ningún caso nuevo.** El trabajo ahí es ordenar
 primero — es la única ruta que exige retroceder antes de avanzar.
+
+---
+
+## 2.1 La regla del control
+
+Un modelo que puede equivocarse sin que nadie lo note obliga a **diseñar un paso
+de revisión que antes no existía**. Eso es cambio de proceso, y sube el caso de
+Digitalizar a Automatizar.
+
+**Aplica a:** OCR de facturas, visión artificial para auditoría, RAG vectorial,
+cualquier caso donde el resultado no es verificable de inmediato por la persona
+que lo usa.
+
+| | Necesita control | Por qué |
+|---|---|---|
+| **Generación de contenido, chatbot sobre FAQ** | No | La persona ve el resultado antes de usarlo |
+| **OCR, visión, RAG vectorial** | **Sí** | El modelo devuelve algo con confianza: puede estar mal y el usuario no lo nota |
+
+Si se propone un caso de esta familia sin diseñar el control, se crea la
+condición exacta que la escalera previene: *"consolida datos que no cuadran y
+produce un número falso con más autoridad que antes"*.
 
 ---
 

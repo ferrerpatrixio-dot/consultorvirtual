@@ -49,6 +49,7 @@ sirve para escribirle a un cliente.
 | plata | dinero |
 | cachar | entender · darse cuenta |
 | pololear con la idea | evaluar la idea |
+| hartos (datos, clientes...) | muchos |
 
 **Y tampoco al otro extremo.** «Fui responsable de operaciones» está bien;
 «lideré la excelencia operacional» ya volvió a ser folleto. La prueba: si no lo
