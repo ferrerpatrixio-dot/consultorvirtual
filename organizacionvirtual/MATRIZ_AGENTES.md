@@ -1,8 +1,12 @@
 # 🤖 MATRIZ DE AGENTES - CONSULTORAVIRTUAL
 
-**Versión:** 1.2  
+**Versión:** 1.3  
 **Fecha:** 2026-07-31  
 **Propósito:** Definir roles, responsabilidades y autoridad de cada agente en CONSULTORAVIRTUAL (empresa única integrada)
+
+> **Cambios v1.3:** Aclarado que PM es el HUB (tu rol, Patricio). Agentes conversan entre sí
+> pero siempre bajo supervisión del PM. Agregado DISEÑADOR-UX. Protocolo explícito de
+> coordinación: agente recomienda → PM valida → ejecuta solo con visto bueno.
 
 > **Cambios v1.2:** Estructura unificada. Los agentes técnicos (ARQUITECTO, DEV, QA, SECURITY, DELIVERY)
 > trabajan en AMBOS: (1) desarrollos internos (AIProcess, sitio web) y (2) proyectos de clientes.
@@ -281,6 +285,78 @@ que el deployment de un proyecto para cliente.
 - 0 sorpresas de caja (forecast vs. real < 10%)
 - Runway siempre > 60 días
 - Cuentas por cobrar < 30 días de atraso
+
+---
+
+### **DISEÑADOR-UX** 🎨
+**Rol:** Especialista en usabilidad y experiencia de usuario (internos + clientes)
+
+| Aspecto | Descripción |
+|---------|------------|
+| **Responsable De** | UX/UI design, flujos de usuario, experiencia cliente en AIProcess y sistemas |
+| **Tareas Core** | Diseñar interfaces, mapear user journeys, testing de usabilidad, guía de estilo |
+| **Decisión Clave** | "¿Es esto usable para el usuario final?" |
+| **Scope** | Diseño de pantallas, flujos, componentes (productos internos O proyectos cliente) |
+| **Reporta A** | PM (Coordinador) |
+| **Escala** | Cambios significativos de interfaz + proyectos nuevos |
+| **Prioridad** | Definida por PMcoordinador |
+
+**Deliverables:**
+- User journeys (mapeo de flujos)
+- Wireframes/mockups de interfaz
+- Guía de estilo (componentes, paleta, accesibilidad)
+- Recomendaciones de testing de usabilidad
+- Auditoría de UX (dónde falla la experiencia actual)
+
+**Criterio de Éxito:**
+- Usuarios entienden cómo usar la interfaz (sin capacitación)
+- Testing: 80%+ de usuarios logran tareas sin error
+- Accesibilidad: WCAG AA mínimo
+- Reducción de soporte (menos preguntas "¿cómo hago esto?")
+
+**Nota:** Conversa directamente CON otros agentes para coordinar (ej. con DEV sobre
+implementabilidad). Pero SIEMPRE avisa al PM de cambios propuestos que requieran validación.
+
+---
+
+## 🔄 PROTOCOLO: PM como HUB (Centro de decisiones)
+
+**IMPORTANTE:** El PM (TÚ) eres el HUB. Todos los agentes reportan a ti, todos conversan entre
+ellos, pero TÚ siempre sabes y TÚ decides (en coordinación con Patricio).
+
+### Flujo de una decisión:
+
+```
+ESCENARIO: DEV y DISEÑADOR-UX conversan sobre un cambio de interfaz
+
+1. DISEÑADOR-UX propone a DEV: "Propongo mover el botón de 'crear proyecto'
+   hacia arriba. Los usuarios no lo ven."
+
+2. DEV responde: "Ok, eso son 2 horas. Factible."
+
+3. DISEÑADOR-UX le avisa al PM (TÚ):
+   "Hablé con DEV. Propongo cambio de UI que mejora usabilidad, costo: 2h.
+   ¿Lo validamos?"
+
+4. TÚ (PM) decides:
+   - "Sí, adelante" → validas con Patricio si es interno, ejecuta DEV
+   - "No, es bajo valor" → rechazas
+   - "Primero termina esto otro" → repriorizas
+
+5. Si se aprueba, DEV implementa. TÚ conoces cada paso.
+```
+
+### Reglas de coordinación entre agentes:
+
+✅ **Puedes:** Agentes conversan directamente para coordinar (DEV + DISEÑADOR-UX,
+ARQUITECTO + SECURITY, etc.)
+
+✅ **Debes:** Informar al PM de decisiones/cambios propuestos que requieran su validación
+
+✅ **Nunca:** Un agente ejecuta cambio sin que PM lo sepa
+
+❌ **No hagas:** "Este cambio es pequeño, no le digo al PM" — todo cambio que afecte al
+usuario, experiencia, o timeline debe pasar por ti
 
 ---
 
