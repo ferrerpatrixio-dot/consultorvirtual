@@ -129,11 +129,12 @@ Agosto 3  | "Mapeo de valor en IA"  | Webinar   | automatización IA         | 2
 
 ---
 
-## C. Reporte Semanal de Mercado (NUEVO)
+## C. Reporte Semanal de Mercado (NUEVO — Ejecutado vía Hermes)
 
-**Frecuencia:** Cada lunes (rutina automática)  
+**Frecuencia:** Cada lunes 9:00 AM (rutina automática vía Hermes cron)  
 **Modelo:** Haiku (conservar tokens de Sonnet/Opus para desarrollo)  
-**Formato:** Ver `docs/REPORTE-MERCADO-SEMANAL.md`
+**Formato:** Ver `docs/REPORTE-MERCADO-SEMANAL.md`  
+**Ejecución:** `hermes cron run market-weekly-brief` (o automático lunes)
 
 ### Responsabilidades
 

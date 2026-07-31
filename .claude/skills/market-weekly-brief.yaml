@@ -1,0 +1,48 @@
+name: market-weekly-brief
+version: 1.0
+description: Weekly market research report for PRODUCT MANAGER (Haiku, concise, data-backed)
+author: PMcoordinador
+tags: [market, product, weekly, haiku]
+
+variables:
+  date: "{{ now.strftime('%Y-%m-%d') }}"
+  output_file: "docs/reportes/mercado-{{ date }}.md"
+
+steps:
+  - name: generate-market-brief
+    prompt: |
+      Eres el PRODUCT MANAGER de CONSULTORAVIRTUAL. Genera un reporte semanal de mercado siguiendo docs/HERMES-MARKET-BRIEF-PROMPT.md exactamente.
+
+      Tareas (6 secciones):
+      1. TENDENCIAS (Top 3 en IA/procesos/consultoría)
+      2. MERCADO PYME (pain points detectados)
+      3. COMPETITIVE GAP (qué hacen competidores que no hacemos)
+      4. IDEAS NUEVOS NEGOCIOS (oportunidades + viabilidad)
+      5. MERCADO BURSÁTIL (movimientos empresas IA)
+      6. GEOPOLÍTICA (hechos que afecten IA)
+
+      Formato: Markdown, máx 1 página (800 palabras).
+      Criterio: Data-backed, conciso, accionable, sin inventar.
+
+      Usa web search para investigación actual. Cita fuentes.
+    model: haiku
+    toolsets: [terminal, file, code_execution, memory]
+    save_output: true
+
+  - name: save-report
+    command: |
+      if [ -f "{{ output_file }}" ]; then
+        echo "✅ Reporte guardado: {{ output_file }}"
+        echo "📧 Enviar a: ferrer.patricio@gmail.com"
+      else
+        echo "❌ Error: No se guardó {{ output_file }}"
+      fi
+    shell: bash
+
+output:
+  format: markdown
+  destination: "{{ output_file }}"
+  notify:
+    - email: ferrer.patricio@gmail.com
+      subject: "📊 Reporte Mercado — {{ date }}"
+      body: "Reporte semanal de mercado completado. Ver adjunto o docs/reportes/"
