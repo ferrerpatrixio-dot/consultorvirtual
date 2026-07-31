@@ -108,6 +108,9 @@ CONSULTORAVIRTUAL Status (2026-07-27):
 2. Desarrollar /misitioweb (Next.js, sitio web)
 3. Integrar test MMA-OD en misitioweb
 4. Crear portal cliente (dashboard)
+5. **Línea de negocio 3:** Sistema de apoyo de levantamiento de procesos (SaaS/suscripciones)
+   - Fase 1: Testing interno (proyectos propios)
+   - Fase 2: Lanzamiento y promoción al mercado
 
 ¿En qué agente/proyecto te enfocas?
 ```
