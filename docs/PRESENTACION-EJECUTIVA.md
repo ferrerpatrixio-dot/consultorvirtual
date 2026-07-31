@@ -1,4 +1,4 @@
-# CONSULTORAVIRTUAL
+﻿# CONSULTORAVIRTUAL
 
 ## Quiénes somos
 
@@ -12,7 +12,7 @@ Nuestro trabajo es ordenar el proceso primero (si está roto, la IA solo lo mult
 
 ### 1️⃣ **Diagnóstico de madurez** (Fase 1)
 - **Duración:** 2–4 semanas
-- **Costo:** $450.000 CLP (inversionista SERCOTEC financia 70%)
+- **Costo:** $450.000 CLP 
 - **Entrega:** 
   - Dónde está tu operación hoy (estado MMA-OD)
   - Qué proceso duele más (y cuánto dinero devuelve)
@@ -65,4 +65,5 @@ Respondés 5 preguntas → identificamos dónde estás → propongo qué es viab
 
 ---
 
-*Sercotec te financia el diagnóstico. No hay riesgo: si decidís no implementar, quedaste con el plan.*
+* te financia el diagnóstico. No hay riesgo: si decidís no implementar, quedaste con el plan.*
+

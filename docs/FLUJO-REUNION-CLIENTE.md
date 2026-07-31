@@ -1,4 +1,4 @@
-# 🎯 FLUJO DE REUNIÓN — PASO A PASO
+﻿# 🎯 FLUJO DE REUNIÓN — PASO A PASO
 
 **Para ejecutar con el cliente del SSTT (u otros similares).**
 
@@ -25,7 +25,7 @@
 > Nos importa **ganar dinero con IA**, no tener IA. Eso significa: si tu proceso está roto, la tecnología solo lo multiplica. Primero ordenamos; después digitalizamos o automatizamos.
 >
 > **Esto es lo que hacemos:**
-> - **Fase 1:** Diagnóstico (2–4 semanas, $450K, Sercotec financia 70%).
+> - **Fase 1:** Diagnóstico (2–4 semanas, $450K, ).
 > - **Fase 2:** Implementar lo que eligieron (Productividad, Digitalizar, Automatizar, o Anticipar).
 >
 > **Nuestras reglas:**
@@ -68,7 +68,7 @@
 > **Para resolver eso, tienen dos caminos:**
 >
 > **Opción A - Diagnóstico (Fase 1):**  
-> → 2–4 semanas, $450.000 CLP (Sercotec financia $315K, ustedes $135K)
+> → 2–4 semanas, $450.000 CLP ( financia , ustedes )
 > → Levanto el proceso completo, propongo 3–5 soluciones exactas, presupuestan las que quieran
 > → Quedas con un documento que vale más que lo que pagaste.
 >
@@ -92,9 +92,9 @@
 > 3. En 1 semana empiezo el levantamiento.
 > 4. En 2–4 semanas tienen el reporte + propuestas.
 >
-> Mientras tanto, ¿necesitás que tramite lo de Sercotec, o lo hacés vos?"
+> Mientras tanto, ¿necesitás que tramite lo de , o lo hacés vos?"
 
-**Material:** Referencia a "Modelo de Financiamiento Sercotec" (si tienen uno)
+**Material:** Referencia a "Modelo de Financiamiento " (si tienen uno)
 
 ---
 
@@ -129,7 +129,7 @@
 
 > "Entiendo. Pero ojo:
 >
-> - El diagnóstico: Sercotec paga 70%. Ustedes pagan $135K.
+> - El diagnóstico:  paga 70%. Ustedes pagan .
 > - Si el dinero es realmente cero hoy: podría hacerle un audit de $50K (bien acotado), solo fotografía.
 > - O: volvemos a hablar en 3 meses cuando haya presupuesto.
 >
@@ -193,12 +193,12 @@
 > "Hola [Nombre],
 >
 > Gracias por la reunión de hoy. Adjunto confirmamos:
-> - Fase 1 (Diagnóstico): $450.000 CLP (Sercotec financia 70%)
+> - Fase 1 (Diagnóstico): $450.000 CLP 
 > - Duración: 2–4 semanas
 > - Inicio: [Fecha que acordamos]
 >
-> Para tramitar lo de Sercotec, deberás contactar a [info si la tienes].
-> Yo arranco cuando tengas confirmado que Sercotec entra.
+> Para tramitar lo de , deberás contactar a [info si la tienes].
+> Yo arranco cuando tengas confirmado que  entra.
 >
 > Cualquier duda, me escribes.
 >
@@ -263,9 +263,10 @@
 - [ ] Email intercambiado
 - [ ] Teléfono del contacto técnico (si tienen)
 - [ ] Aclarado cuándo empiezo (Fase 1) o cuándo voy a observar (Audit)
-- [ ] Preguntado sobre financiamiento Sercotec
+- [ ] Preguntado sobre financiamiento 
 
 ---
 
 *Versión: 2026-07-30*  
 *Casos de uso: SSTT, Pymes con desorden operativo*
+

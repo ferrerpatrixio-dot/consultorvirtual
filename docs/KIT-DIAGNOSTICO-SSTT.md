@@ -1,4 +1,4 @@
-# 🔧 KIT DE DIAGNÓSTICO — SSTT REPARACIÓN MÓVILES
+﻿# 🔧 KIT DE DIAGNÓSTICO — SSTT REPARACIÓN MÓVILES
 
 **Para llevar a la reunión. Usar durante y después.**
 
@@ -139,7 +139,7 @@
 ### Fase 1: Diagnóstico
 
 **Costo:** $450.000 CLP  
-**Sercotec financia:** 70% (paga $135.000)  
+** financia:** 70% (paga $135.000)  
 **Duración:** 2–4 semanas  
 
 **Incluye:**
@@ -185,7 +185,7 @@
 
 ### Si dicen "es muy caro"
 
-> "El diagnóstico cuesta $450K, pero Sercotec te financia $315K. Tú pagas $135K. Es una inversión de 2-4 semanas para tener un plan donde no hay hoy. Y si después decidís no implementar, quedaste con un documento que vale más que lo que pagaste."
+> "El diagnóstico cuesta $450K, pero  te financia . Tú pagas . Es una inversión de 2-4 semanas para tener un plan donde no hay hoy. Y si después decidís no implementar, quedaste con un documento que vale más que lo que pagaste."
 
 ### Si dicen "implementamos nosotros después"
 
@@ -194,7 +194,7 @@
 ### Si dicen "no tenemos presupuesto"
 
 > "Entendido. Te dejo dos opciones:
-> 1. Sercotec te financia el diagnóstico — 70% de los $450K se lo pedís a ellos.
+> 1.  te financia el diagnóstico — 70% de los $450K se lo pedís a ellos.
 > 2. Empezamos con una auditoría más chica: 1 semana, $150K, solo fotografía el estado actual + propuesta.
 >
 > ¿Cuál te va?"
@@ -202,3 +202,4 @@
 ---
 
 *Documento de referencia: `docs/CATALOGO-SERVICIOS.md` · `docs/ESCALERA-IA-POR-MADUREZ.md`*
+

@@ -1,4 +1,4 @@
-# 💰 VALORES TIPO PARA COTIZACIÓN — SIN INGENIERÍA
+﻿# 💰 VALORES TIPO PARA COTIZACIÓN — SIN INGENIERÍA
 
 **Referencia rápida para Fase 1 y Fase 2.**  
 Estos son **precios sin detalle**: se refinan en Fase 1, se confirman en Fase 2.
@@ -11,7 +11,7 @@ Estos son **precios sin detalle**: se refinan en Fase 1, se confirman en Fase 2.
 
 | Concepto | CLP | USD equiv | Quién lo financia |
 |---|---|---|---|
-| **Diagnóstico completo** | $450.000 | ~$450 | Sercotec 70% + Cliente 30% |
+| **Diagnóstico completo** | $450.000 | ~$450 |  70% + Cliente 30% |
 | **Diagnóstico acotado** (solo fotografía estado) | $150.000 | ~$150 | Cliente 100% |
 
 ### Qué incluye el completo
@@ -127,7 +127,7 @@ Aplica a todos excepto Productividad (que es una herramienta).
 
 > "Te dejo dos caminos:
 >
-> 1. **Fase 1 primero** ($450K, Sercotec financia 70% = $135K de tu bolsillo):  
+> 1. **Fase 1 primero** ($450K,  =  de tu bolsillo):  
 >    → Precisamos bien qué es lo que duele, quién es el responsable, cuál es el cuello.  
 >    → De ahí sale un presupuesto exacto (puede ser $30K, puede ser $100K).
 >
@@ -181,3 +181,4 @@ Aplica a todos excepto Productividad (que es una herramienta).
 *Versión: 2026-07-30*  
 *Válido para: CONSULTORAVIRTUAL Fase 1 y 2*  
 *Próxima revisión: Cuando varíe UF o cambien casos tipo*
+
