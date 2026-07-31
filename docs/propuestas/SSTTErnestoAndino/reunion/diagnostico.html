@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kit de Diagnóstico - CONSULTORAVIRTUAL</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .page-break {
+            max-width: 900px;
+            background: white;
+            margin: 20px auto;
+            padding: 60px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .nav-buttons {
+            max-width: 900px;
+            margin: 20px auto;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .nav-buttons a {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .nav-buttons a:hover { background: #764ba2; }
+        h1 { color: #667eea; margin-bottom: 30px; font-size: 2em; text-align: center; }
+        h2 { color: #667eea; margin-top: 40px; margin-bottom: 20px; font-size: 1.5em; border-bottom: 2px solid #e9ecef; padding-bottom: 10px; }
+        h3 { color: #764ba2; margin-top: 20px; margin-bottom: 15px; font-size: 1.1em; }
+        p { margin-bottom: 15px; line-height: 1.8; }
+        ul, ol { margin-left: 20px; margin-bottom: 15px; }
+        li { margin-bottom: 8px; }
+        .highlight { background: #f0f4ff; border-left: 4px solid #667eea; padding: 15px; margin: 20px 0; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #667eea; color: white; }
+        tr:nth-child(even) { background: #f8f9fa; }
+        .footer { margin-top: 50px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 0.9em; color: #999; text-align: center; }
+        .question-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 15px 0; border-radius: 4px; }
+        .answer-option { padding: 8px; margin: 5px 0; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="nav-buttons">
+        <a href="presentacion.html">← Anterior</a>
+        <a href="index.html">Inicio</a>
+        <a href="valores.html">Siguiente →</a>
+    </div>
+
+    <div class="page-break">
+        <h1>🔍 Kit de Diagnóstico — SSTT Reparación Móviles</h1>
+        <p><em>Para llevar a la reunión. Usar durante y después.</em></p>
+
+        <h2>PARTE 1: TEST RÁPIDO (5 minutos en la reunión)</h2>
+
+        <div class="question-box">
+            <h3>Pregunta 1: ¿El proceso de recepción está documentado?</h3>
+            <div class="answer-option">☐ No; cada técnico lo hace diferente</div>
+            <div class="answer-option">☐ Sí, pero solo en la cabeza del dueño</div>
+            <div class="answer-option">☐ Sí, escrito pero nadie lo sigue</div>
+            <div class="answer-option">☐ Sí, escrito y se sigue</div>
+            <p><strong>→ Si marcan las dos primeras: CIMIENTOS</strong></p>
+        </div>
+
+        <div class="question-box">
+            <h3>Pregunta 2: ¿Dónde anotas que llegó un teléfono?</h3>
+            <div class="answer-option">☐ Cuaderno; lista de WhatsApp; correo</div>
+            <div class="answer-option">☐ Planilla Excel (manual)</div>
+            <div class="answer-option">☐ Sistema / software (sin integraciones)</div>
+            <div class="answer-option">☐ Sistema integrado con el resto del flujo</div>
+            <p><strong>→ Si no es sistema: ORDEN_SIN_DATOS</strong></p>
+        </div>
+
+        <div class="question-box">
+            <h3>Pregunta 3: ¿Cómo sabe el cliente cuándo sale su teléfono?</h3>
+            <div class="answer-option">☐ Llama y pregunta</div>
+            <div class="answer-option">☐ Tú le avisas (cuando te acordás)</div>
+            <div class="answer-option">☐ Mensaje automático cuando está listo</div>
+            <div class="answer-option">☐ Portal donde ve el estado en tiempo real</div>
+            <p><strong>→ Si es las dos primeras: DATOS_SIN_ORDEN o CIMIENTOS</strong></p>
+        </div>
+
+        <div class="question-box">
+            <h3>Pregunta 4: ¿Cuánto tarda en promedio reparar + limpiar + probar un teléfono?</h3>
+            <div class="answer-option">☐ No sabemos; depende del modelo</div>
+            <div class="answer-option">☐ Sabemos el promedio general (~3 días)</div>
+            <div class="answer-option">☐ Sabemos por modelo (iPhone X: 2 días, Samsung: 3 días)</div>
+            <div class="answer-option">☐ Predecimos con 90%+ de precisión cuándo termina cada uno</div>
+            <p><strong>→ Si no saben por modelo: ORDEN_SIN_DATOS</strong></p>
+        </div>
+
+        <div class="question-box">
+            <h3>Pregunta 5: ¿Qué duele más hoy?</h3>
+            <div class="answer-option">☐ Clientes llaman diciendo "dónde está mi teléfono"</div>
+            <div class="answer-option">☐ Se pierden teléfonos en la recepción</div>
+            <div class="answer-option">☐ No sé cuántos están en cola, cuántos en reparación, cuántos listos</div>
+            <div class="answer-option">☐ Tarifa de reparación vs tiempo real de trabajo no cierra</div>
+            <p><strong>→ Marca esta; es tu caso de uso prioritario</strong></p>
+        </div>
+
+        <h2>PARTE 2: Matriz de Decisión Rápida</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Hallazgo</th>
+                    <th>Estado MMA-OD</th>
+                    <th>Siguiente paso</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>No saben cuántos en cola, sin registro</td>
+                    <td><strong>CIMIENTOS</strong></td>
+                    <td>Propón Productividad: asistente para checklist recepción</td>
+                </tr>
+                <tr>
+                    <td>Tienen Excel pero no automatizado, proceso roto</td>
+                    <td><strong>ORDEN_SIN_DATOS</strong></td>
+                    <td>Propón Digitalizar: dashboard que muestre en vivo</td>
+                </tr>
+                <tr>
+                    <td>Tienen datos en sistemas distintos, proceso indefinido</td>
+                    <td><strong>DATOS_SIN_ORDEN</strong></td>
+                    <td>Propón primero ordenar (Fase 1), después automatizar</td>
+                </tr>
+                <tr>
+                    <td>Datos + proceso, pero gestión manual</td>
+                    <td><strong>EN_CONSTRUCCION</strong></td>
+                    <td>Propón Automatizar: chatbot, alertas, notificaciones</td>
+                </tr>
+                <tr>
+                    <td>Datos limpios + proceso + quieren predictiva</td>
+                    <td><strong>BASE_LISTA</strong></td>
+                    <td>Propón Anticipar: predecir cuándo termina c/teléfono</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>PARTE 3: Oferta Tipo Para Esta Reunión</h2>
+
+        <h3>Fase 1: Diagnóstico</h3>
+        <div class="highlight">
+            <p><strong>Costo:</strong> $450.000 CLP<br>
+            <strong>Sercotec financia:</strong> 70% (tú pagas $135.000)<br>
+            <strong>Duración:</strong> 2–4 semanas</p>
+            <p><strong>Incluye:</strong></p>
+            <ul>
+                <li>Levantamiento de proceso (estado actual)</li>
+                <li>Identificación de 3 casos de uso posibles</li>
+                <li>Plan de implementación con presupuestos tipo</li>
+                <li>Documentación del proceso</li>
+            </ul>
+        </div>
+
+        <h3>Fase 2: Implementación (valores tipo)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Caso</th>
+                    <th>Banda</th>
+                    <th>Plazo</th>
+                    <th>Qué es</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Dashboard + notificaciones</strong><br>(DIGITALIZAR)</td>
+                    <td>$1.2M</td>
+                    <td>2–3 sem</td>
+                    <td>En vivo: cola, reparación, listos. Notificaciones auto.</td>
+                </tr>
+                <tr>
+                    <td><strong>Recepción digital + alertas</strong><br>(AUTOMATIZAR básica)</td>
+                    <td>$2.5M</td>
+                    <td>3–4 sem</td>
+                    <td>Formulario digital, validación, alertas, dashboard operarios</td>
+                </tr>
+                <tr>
+                    <td><strong>Flujo punta a punta</strong><br>(AUTOMATIZAR completa)</td>
+                    <td>$2.5–4.5M</td>
+                    <td>4–5 sem</td>
+                    <td>Todo integrado: recepción + procesamiento + entrega</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p><strong>+ Mantención:</strong> $2–5K/mes (sin lock-in, cancelable)</p>
+
+        <h2>PARTE 4: Mensajes Clave para Cerrar</h2>
+
+        <div class="highlight">
+            <h3>Si dicen "es muy caro"</h3>
+            <p>"El diagnóstico cuesta $450K, pero Sercotec te financia $315K. Tú pagas $135K. Es una inversión de 2-4 semanas para tener un plan donde no hay hoy."</p>
+        </div>
+
+        <div class="highlight">
+            <h3>Si dicen "implementamos nosotros después"</h3>
+            <p>"Perfecto. La Fase 1 te deja con un plan escrito, procesos documentados, y presupuestos claros. El software funciona; si alguien más lo mantiene después, la documentación está acá."</p>
+        </div>
+
+        <div class="highlight">
+            <h3>Si dicen "no tenemos presupuesto"</h3>
+            <p>"Entendido. Te dejo dos opciones: (1) Sercotec te financia el diagnóstico — 70% de los $450K. (2) Empezamos con una auditoría más chica: 1 semana, $150K, solo fotografía del estado actual + propuesta."</p>
+        </div>
+
+        <div class="footer">
+            <p>Kit de Diagnóstico | CONSULTORAVIRTUAL | 2026-07-30</p>
+        </div>
+    </div>
+
+    <div class="nav-buttons">
+        <a href="presentacion.html">← Anterior</a>
+        <a href="index.html">Inicio</a>
+        <a href="valores.html">Siguiente →</a>
+    </div>
+</body>
+</html>

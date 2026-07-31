@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expediente Cliente - SSTT Ernesto Andino</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            background: white;
+            margin: 0 auto;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        h1 { font-size: 2.2em; margin-bottom: 10px; }
+        .client-name { font-size: 1.3em; opacity: 0.9; }
+        .content {
+            padding: 40px;
+        }
+        h2 {
+            color: #667eea;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .status-card {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 4px;
+        }
+        .status-card strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .phase-box {
+            background: #fff9e6;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .docs-section {
+            margin-bottom: 30px;
+        }
+        .doc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+        .doc-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            padding: 20px;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s;
+        }
+        .doc-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+            transform: translateY(-5px);
+        }
+        .doc-icon { font-size: 2em; margin-bottom: 10px; }
+        .doc-card h3 {
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+        .doc-card p {
+            color: #666;
+            font-size: 0.85em;
+            line-height: 1.5;
+        }
+        .timeline {
+            margin: 30px 0;
+        }
+        .timeline-item {
+            padding: 15px 0;
+            border-left: 3px solid #e9ecef;
+            padding-left: 20px;
+            position: relative;
+        }
+        .timeline-item:before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 20px;
+            width: 13px;
+            height: 13px;
+            background: #667eea;
+            border-radius: 50%;
+        }
+        .timeline-item.completed:before {
+            background: #28a745;
+        }
+        .timeline-item.pending:before {
+            background: #ffc107;
+        }
+        .timeline-item strong {
+            color: #667eea;
+        }
+        .actions {
+            background: #f0f4ff;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .actions h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .action-list {
+            list-style: none;
+        }
+        .action-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .action-list li:last-child {
+            border-bottom: none;
+        }
+        .action-list li input {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+            border-top: 1px solid #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Expediente de Cliente</h1>
+            <p class="client-name">SSTT Ernesto Andino</p>
+        </div>
+
+        <div class="content">
+            <h2>📊 Estado Actual</h2>
+
+            <div class="status-grid">
+                <div class="status-card">
+                    <strong>Fase</strong>
+                    Pre-Fase 1
+                </div>
+                <div class="status-card">
+                    <strong>Estado MMA-OD</strong>
+                    Por confirmar
+                </div>
+                <div class="status-card">
+                    <strong>Contacto</strong>
+                    [A llenar]
+                </div>
+                <div class="status-card">
+                    <strong>Próximo Hito</strong>
+                    Reunión inicial
+                </div>
+            </div>
+
+            <h2>🎯 Contexto del Cliente</h2>
+
+            <div class="phase-box">
+                <p><strong>Descripción:</strong> Servicio técnico (SSTT) de reparación de teléfonos reacondicionados. Recibe móviles dañados de distribuidor, los repara y limpia, y los devuelve para comercialización.</p>
+                <p><strong>Problema Principal:</strong> Desorden en logística de recepción y entrega. Sin visibilidad de estados de reparación por lotes, fechas, modelos. Control insuficiente.</p>
+                <p><strong>Oportunidad:</strong> Digitalizar flujo completo + automatizar alertas + posible predicción de tiempos.</p>
+            </div>
+
+            <h2>📚 Documentos de Reunión</h2>
+
+            <div class="docs-section">
+                <p style="margin-bottom: 15px; color: #666;"><strong>Secuencia recomendada de lectura:</strong></p>
+
+                <div class="doc-grid">
+                    <a href="reunion/presentacion.html" class="doc-card">
+                        <div class="doc-icon">🎯</div>
+                        <h3>1. Presentación</h3>
+                        <p>Quiénes somos, qué ofrecemos</p>
+                    </a>
+
+                    <a href="reunion/diagnostico.html" class="doc-card">
+                        <div class="doc-icon">🔍</div>
+                        <h3>2. Diagnóstico</h3>
+                        <p>Test MMA-OD + casos tipo</p>
+                    </a>
+
+                    <a href="reunion/valores.html" class="doc-card">
+                        <div class="doc-icon">💰</div>
+                        <h3>3. Valores Tipo</h3>
+                        <p>Precios Fase 1 y 2</p>
+                    </a>
+
+                    <a href="reunion/flujo.html" class="doc-card">
+                        <div class="doc-icon">🎬</div>
+                        <h3>4. Flujo Reunión</h3>
+                        <p>Guión minuto a minuto</p>
+                    </a>
+
+                    <a href="reunion/cotizacion.html" class="doc-card">
+                        <div class="doc-icon">📄</div>
+                        <h3>5. Cotización</h3>
+                        <p>Propuesta borrador</p>
+                    </a>
+
+                    <a href="reunion/confidencialidad.html" class="doc-card">
+                        <div class="doc-icon">🔒</div>
+                        <h3>6. Confidencialidad</h3>
+                        <p>Contrato para firmar</p>
+                    </a>
+                </div>
+            </div>
+
+            <h2>📅 Cronograma</h2>
+
+            <div class="timeline">
+                <div class="timeline-item completed">
+                    <strong>2026-07-30:</strong> Preparación de kit de reunión
+                </div>
+                <div class="timeline-item pending">
+                    <strong>2026-07-31 a 2026-08-04:</strong> Revisión de documentos por Patricio
+                </div>
+                <div class="timeline-item pending">
+                    <strong>Próxima semana:</strong> Reunión inicial con cliente (confirmar fecha)
+                </div>
+                <div class="timeline-item pending">
+                    <strong>Post-reunión:</strong> Contratación Fase 1 (si cliente dice sí)
+                </div>
+                <div class="timeline-item pending">
+                    <strong>2–4 semanas:</strong> Ejecución de Fase 1 (diagnóstico)
+                </div>
+                <div class="timeline-item pending">
+                    <strong>Mes 2:</strong> Decisión Fase 2 + contratación si procede
+                </div>
+            </div>
+
+            <h2>✅ Checklist Pre-Reunión</h2>
+
+            <div class="actions">
+                <h3>Preparación Patricio</h3>
+                <ul class="action-list">
+                    <li><input type="checkbox"> Leer presentación ejecutiva</li>
+                    <li><input type="checkbox"> Familiarizarse con test MMA-OD (5 preguntas)</li>
+                    <li><input type="checkbox"> Revisar tabla de valores tipo (bandas)</li>
+                    <li><input type="checkbox"> Practicar guión minuto a minuto</li>
+                    <li><input type="checkbox"> Imprimir documentos clave</li>
+                    <li><input type="checkbox"> Preparar contrato de confidencialidad</li>
+                </ul>
+            </div>
+
+            <div class="actions">
+                <h3>Pre-Reunión con Cliente</h3>
+                <ul class="action-list">
+                    <li><input type="checkbox"> Confirmar fecha, hora, lugar</li>
+                    <li><input type="checkbox"> Confirmar participantes (dueño + gerente operativo)</li>
+                    <li><input type="checkbox"> Solicitar acceso a zona de recepción/reparación</li>
+                    <li><input type="checkbox"> Preparar permiso de confidencialidad para firmar</li>
+                    <li><input type="checkbox"> Llevar cotización borrador en blanco</li>
+                </ul>
+            </div>
+
+            <h2>📞 Contactos</h2>
+
+            <div class="status-grid">
+                <div class="status-card">
+                    <strong>Cliente Nombre</strong>
+                    [A llenar]
+                </div>
+                <div class="status-card">
+                    <strong>Email</strong>
+                    [A llenar]
+                </div>
+                <div class="status-card">
+                    <strong>Teléfono</strong>
+                    [A llenar]
+                </div>
+                <div class="status-card">
+                    <strong>Represente Comercial</strong>
+                    [A llenar]
+                </div>
+            </div>
+
+            <h2>🔗 Desarrollos Posteriores</h2>
+
+            <div class="phase-box">
+                <p><strong>Si se contrata Fase 2:</strong> Los desarrollos (Dashboard, Recepción Digital, etc.) estarán ubicados en:</p>
+                <p style="font-family: monospace; background: #f8f9fa; padding: 10px; border-radius: 4px; margin-top: 10px;">
+                    /desarrollo/SSTTErnestoAndino-Dashboard/<br>
+                    /desarrollo/SSTTErnestoAndino-AutomatizacionRecepcion/<br>
+                    etc.
+                </p>
+                <p style="margin-top: 10px; font-size: 0.9em; color: #666;"><em>Los agentes de la consultora atenderán estos proyectos coordinados desde acá.</em></p>
+            </div>
+
+            <h2>📝 Notas y Seguimiento</h2>
+
+            <div style="background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 6px; padding: 20px; margin: 20px 0;">
+                <p><strong>Post-Reunión:</strong> Las notas, decisiones y evolución del cliente se documentarán en:</p>
+                <p style="font-family: monospace; background: white; padding: 10px; border-radius: 4px; margin-top: 10px; border: 1px solid #ddd;">
+                    /docs/propuestas/SSTTErnestoAndino/expediente/
+                </p>
+                <p style="margin-top: 10px; font-size: 0.9em;">
+                    Archivos: <code>notas.md</code>, <code>seguimiento.md</code>, <code>contexto.json</code>
+                </p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Expediente de Cliente | CONSULTORAVIRTUAL | 2026-07-30</p>
+            <p>Cliente: SSTT Ernesto Andino | Estado: Pre-Fase 1</p>
+            <p><a href="../../" style="color: #667eea; text-decoration: none;">← Volver a kit de reunión general</a></p>
+        </div>
+    </div>
+</body>
+</html>

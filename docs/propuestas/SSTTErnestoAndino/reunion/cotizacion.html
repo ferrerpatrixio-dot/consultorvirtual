@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotización Borrador - CONSULTORAVIRTUAL</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .page-break {
+            max-width: 900px;
+            background: white;
+            margin: 20px auto;
+            padding: 60px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .nav-buttons {
+            max-width: 900px;
+            margin: 20px auto;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .nav-buttons a {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .nav-buttons a:hover { background: #764ba2; }
+        h1 { color: #667eea; margin-bottom: 10px; font-size: 2em; text-align: center; }
+        .header-line { text-align: center; color: #999; margin-bottom: 30px; font-size: 0.9em; }
+        h2 { color: #667eea; margin-top: 30px; margin-bottom: 15px; font-size: 1.3em; border-bottom: 2px solid #e9ecef; padding-bottom: 10px; }
+        h3 { color: #764ba2; margin-top: 15px; margin-bottom: 10px; font-size: 1em; }
+        p { margin-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        label { font-weight: bold; color: #667eea; display: block; margin-bottom: 5px; }
+        input, textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; }
+        textarea { resize: vertical; min-height: 60px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #667eea; color: white; }
+        tr:nth-child(even) { background: #f8f9fa; }
+        .total-row { font-weight: bold; background: #e7f3ff; }
+        .summary-box { background: #f0f4ff; border-left: 4px solid #667eea; padding: 15px; margin: 20px 0; border-radius: 4px; }
+        .print-button { text-align: center; margin: 20px 0; }
+        .print-button button {
+            padding: 10px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .print-button button:hover { background: #764ba2; }
+        .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 0.85em; color: #999; }
+        .conditions { background: #fff9e6; border-left: 4px solid #ffc107; padding: 15px; margin: 15px 0; border-radius: 4px; font-size: 0.9em; }
+        @media print {
+            .nav-buttons, .print-button { display: none; }
+            body { background: white; }
+            .page-break { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-buttons">
+        <a href="flujo.html">← Anterior</a>
+        <a href="index.html">Inicio</a>
+        <a href="confidencialidad.html">Siguiente →</a>
+    </div>
+
+    <div class="page-break">
+        <h1>📄 COTIZACIÓN — BORRADOR</h1>
+        <div class="header-line">Propuesta Fase 1 y Fase 2 | CONSULTORAVIRTUAL</div>
+
+        <h2>DATOS DEL CLIENTE</h2>
+
+        <div class="form-group">
+            <label>Nombre de la Empresa:</label>
+            <input type="text" id="empresa" placeholder="Ej: SSTT Ernesto Andino">
+        </div>
+
+        <div class="form-group">
+            <label>Contacto Principal:</label>
+            <input type="text" id="contacto" placeholder="Nombre del contacto">
+        </div>
+
+        <div class="form-group">
+            <label>Email:</label>
+            <input type="email" id="email" placeholder="email@empresa.com">
+        </div>
+
+        <div class="form-group">
+            <label>Teléfono:</label>
+            <input type="tel" id="telefono" placeholder="+56 9 XXXX XXXX">
+        </div>
+
+        <div class="form-group">
+            <label>Fecha de Cotización:</label>
+            <input type="date" id="fecha">
+        </div>
+
+        <script>
+            // Auto-llenar fecha de hoy
+            document.getElementById('fecha').valueAsDate = new Date();
+        </script>
+
+        <h2>FASE 1: DIAGNÓSTICO DE MADUREZ</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Concepto</th>
+                    <th>Descripción</th>
+                    <th>Costo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Diagnóstico Completo</strong></td>
+                    <td>Levantamiento de procesos, test MMA-OD, análisis de casos de uso, plan a 6 meses</td>
+                    <td>$450.000</td>
+                </tr>
+                <tr>
+                    <td><strong>Financiamiento Sercotec</strong></td>
+                    <td>70% financiado por Sercotec</td>
+                    <td>-$315.000</td>
+                </tr>
+                <tr class="total-row">
+                    <td colspan="2"><strong>Cliente paga (Fase 1):</strong></td>
+                    <td><strong>$135.000</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p><strong>Duración:</strong> 2–4 semanas | <strong>Inicio:</strong> [Fecha a confirmar]</p>
+
+        <h2>FASE 2: IMPLEMENTACIÓN</h2>
+
+        <h3>Selecciona la opción que se ajusta al cliente:</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Opción</th>
+                    <th>Banda</th>
+                    <th>Costo Fase 2</th>
+                    <th>Plazo</th>
+                    <th>Qué Incluye</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="radio" name="fase2" value="banda1"> <strong>A</strong></td>
+                    <td><strong>Banda 1</strong></td>
+                    <td>$1.200.000</td>
+                    <td>2–3 sem</td>
+                    <td>Dashboard + notificaciones (DIGITALIZAR)</td>
+                </tr>
+                <tr>
+                    <td><input type="radio" name="fase2" value="banda2"> <strong>B</strong></td>
+                    <td><strong>Banda 2</strong></td>
+                    <td>$2.500.000</td>
+                    <td>3–4 sem</td>
+                    <td>Recepción digital + alertas (AUTOMATIZAR básica)</td>
+                </tr>
+                <tr>
+                    <td><input type="radio" name="fase2" value="banda3"> <strong>C</strong></td>
+                    <td><strong>Banda 3</strong></td>
+                    <td>$4.500.000</td>
+                    <td>4–5 sem</td>
+                    <td>Flujo punta a punta (AUTOMATIZAR completa)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Mantención Mensual</h3>
+        <p><strong>Costo:</strong> $2.000–$5.000/mes (según complejidad) | <strong>Modelo:</strong> Sin lock-in, cancelable</p>
+
+        <h2>RESUMEN COMERCIAL</h2>
+
+        <div class="summary-box">
+            <p><strong>Propuesta:</strong></p>
+            <ul>
+                <li>✅ Fase 1 (Diagnóstico): <strong>$135.000</strong> (Sercotec cubre 70%)</li>
+                <li>✅ Fase 2 (Implementación): <strong>Banda a seleccionar</strong></li>
+                <li>✅ Mantención: <strong>Estimado $2–5K/mes</strong></li>
+                <li>✅ Modelo: Sin compromiso a largo plazo, revisable cada mes</li>
+            </ul>
+        </div>
+
+        <div class="form-group">
+            <label>Observaciones / Descuentos Aplicables:</label>
+            <textarea id="observaciones" placeholder="Ej: Se aplica 5% por bundling de Digitalizar + Automatizar..."></textarea>
+        </div>
+
+        <h2>TÉRMINOS Y CONDICIONES</h2>
+
+        <div class="conditions">
+            <p><strong>Validez de la cotización:</strong> 30 días desde la fecha</p>
+            <p><strong>Forma de pago Fase 1:</strong> 50% al firmar contrato, 50% al cierre</p>
+            <p><strong>Forma de pago Fase 2:</strong> Según progreso (hitos). Detalle en contrato Fase 2</p>
+            <p><strong>Confidencialidad:</strong> Se firmará NDA antes del inicio</p>
+            <p><strong>Cancelación:</strong> Sin penalidad antes de inicio de Fase 1. Post-inicio: se prorratea según días utilizados</p>
+            <p><strong>Responsables:</strong> Se designará revisor del cliente para control de entregas</p>
+        </div>
+
+        <div class="form-group">
+            <label>Notas Finales:</label>
+            <textarea id="notas" placeholder="Ej: Sujeto a confirmación de acceso a sistemas, disponibilidad de horarios, etc..."></textarea>
+        </div>
+
+        <h2>AUTORIZACIÓN</h2>
+
+        <table>
+            <tbody>
+                <tr>
+                    <td><strong>Preparado por:</strong> Patricio Ferrer (CONSULTORAVIRTUAL)</td>
+                    <td><strong>Email:</strong> ferrer.patricio@gmail.com</td>
+                </tr>
+                <tr>
+                    <td><strong>Representante cliente:</strong> <input type="text" style="width: 100%;" placeholder="Nombre y cargo"></td>
+                    <td><strong>Firma:</strong> ________________________</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="print-button">
+            <button onclick="window.print()">🖨️ Imprimir Cotización</button>
+        </div>
+
+        <div class="footer">
+            <p>Cotización Borrador | CONSULTORAVIRTUAL | 2026-07-30</p>
+            <p><em>Este documento es una propuesta comercial. Requiere confirmación y firma de ambas partes antes de ser válido.</em></p>
+        </div>
+    </div>
+
+    <div class="nav-buttons">
+        <a href="flujo.html">← Anterior</a>
+        <a href="index.html">Inicio</a>
+        <a href="confidencialidad.html">Siguiente →</a>
+    </div>
+</body>
+</html>

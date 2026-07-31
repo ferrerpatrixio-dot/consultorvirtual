@@ -1,0 +1,87 @@
+{
+  "cliente": {
+    "nombre": "SSTT Ernesto Andino",
+    "tipo": "Servicio Técnico de Reparación",
+    "rubro": "Reparación de teléfonos reacondicionados",
+    "estado": "Pre-Fase 1",
+    "fecha_creacion": "2026-07-30"
+  },
+  "contacto": {
+    "nombre_principal": "[A llenar en reunión]",
+    "cargo": "[A llenar]",
+    "email": "[A llenar]",
+    "telefono": "[A llenar]",
+    "nombre_gerente_operativo": "[A llenar]",
+    "email_gerente": "[A llenar]"
+  },
+  "negocio": {
+    "descripcion": "Recibe teléfonos dañados de distribuidor comercializador. Los repara, limpia, acondiciona y devuelve para comercialización como móviles reacondicionados.",
+    "volumen_semanal": "[A investigar en reunión]",
+    "modelos_principales": "[A investigar]",
+    "cantidad_tecnicos": "[A investigar]",
+    "tiempo_promedio_reparacion": "[A investigar]"
+  },
+  "problemas_identificados": {
+    "logistica_recepcion": "Desorden en registro de llegada. No hay visibilidad clara.",
+    "seguimiento_estado": "Sin visibilidad de estados por lotes, fechas, modelos.",
+    "control_operativo": "Control insuficiente. Clientes preguntan dónde está el teléfono.",
+    "visibilidad_interna": "No hay reporte de quién trabaja en qué, cuántos en cola, cuántos listos.",
+    "notificacion_cliente": "Sin automatización de notificaciones al cliente."
+  },
+  "oportunidades_ia": {
+    "corto_plazo": "Dashboard de visibilidad + notificaciones automáticas",
+    "mediano_plazo": "Automatización de recepción digital + asignación a técnico",
+    "largo_plazo": "Predicción de tiempos de reparación por modelo"
+  },
+  "estado_mma_od": {
+    "estimado": "ORDEN_SIN_DATOS o DATOS_SIN_ORDEN",
+    "confirmado": false,
+    "confirmado_fecha": null
+  },
+  "propuesta_inicial": {
+    "fase_1": {
+      "nombre": "Diagnóstico",
+      "costo": 450000,
+      "costo_cliente": 135000,
+      "sercotec_cobertura": "70%",
+      "duracion_semanas": "2-4",
+      "estado": "Por proponer"
+    },
+    "fase_2_opciones": [
+      {
+        "nombre": "Opción A: Dashboard + Notificaciones",
+        "banda": 1,
+        "costo": 1200000,
+        "plazo_semanas": "2-3",
+        "familia": "DIGITALIZAR"
+      },
+      {
+        "nombre": "Opción B: Recepción Digital + Control",
+        "banda": 2,
+        "costo": 2500000,
+        "plazo_semanas": "3-4",
+        "familia": "AUTOMATIZAR básica"
+      },
+      {
+        "nombre": "Opción C: Flujo Punta a Punta",
+        "banda": 2,
+        "costo": 2500000,
+        "plazo_semanas": "4-5",
+        "familia": "AUTOMATIZAR completa"
+      }
+    ]
+  },
+  "timeline": {
+    "preparacion_kit": "2026-07-30",
+    "revision_por_patricio": "2026-07-31 a 2026-08-04",
+    "reunión_inicial": "[A confirmar]",
+    "contratacion_fase_1": "[Pendiente reunión]",
+    "inicio_fase_1": "[A confirmar]",
+    "fin_fase_1": "[A determinar]",
+    "decision_fase_2": "[Pendiente Fase 1]"
+  },
+  "notas": {
+    "preparacion": "Kit de reunión completo. Cliente listo para abordar.",
+    "seguimiento": "[Se actualizará post-reunión]"
+  }
+}
