@@ -1,8 +1,11 @@
 # 🤖 MATRIZ DE AGENTES - CONSULTORAVIRTUAL
 
-**Versión:** 1.0  
-**Fecha:** 2026-07-27  
+**Versión:** 1.1  
+**Fecha:** 2026-07-31  
 **Propósito:** Definir roles, responsabilidades y autoridad de cada agente en la consultora virtual
+
+> **Cambios v1.1:** agregados agentes PRODUCT MANAGER, COMERCIAL, FINANCE (cash flow). Total: 11 agentes (antes 7).
+> Los agentes están formalizados en `.claude/agents/` para integración con proyectos AIProcess y otras herramientas IA.
 
 ---
 
@@ -183,6 +186,81 @@
 
 ---
 
+### **PRODUCT MANAGER** 📊
+**Rol:** Estratega de producto y modelo de negocio
+
+| Aspecto | Descripción |
+|---------|------------|
+| **Responsable De** | Estrategia de precio, lanzamiento, difusión, investigación de competencia |
+| **Tareas Core** | Modelar costos por cliente, evaluar viabilidad comercial, research de mercado |
+| **Decisión Clave** | "¿Este proyecto es rentable y encaja con la estrategia?" |
+| **Scope** | Portafolio de productos / modelos de negocio |
+| **Reporta A** | PM (Coordinador) + Patricio Ferrer |
+| **Escala** | Decisiones de precio, lanzamiento, discontinuación |
+
+**Deliverables:**
+- Modelo de pricing (por proyecto, por cliente, por suscripción)
+- Análisis de viabilidad comercial
+- Estrategia de difusión y go-to-market
+- Competitive analysis
+
+**Criterio de Éxito:**
+- Modelo de precio validado con clientes reales
+- Rentabilidad clara por línea de negocio
+- Margen de ganancia alineado a meta (15% base)
+
+---
+
+### **COMERCIAL** 💼
+**Rol:** Generador de oportunidades y closer de contratos
+
+| Aspecto | Descripción |
+|---------|------------|
+| **Responsable De** | Prospecting, propuestas, negociación, cierre |
+| **Tareas Core** | Armar cotizaciones, negociar términos, cerrar contratos |
+| **Decisión Clave** | "¿Aceptamos este cliente con estos términos?" |
+| **Scope** | Ciclo comercial (pre-contrato hasta firma) |
+| **Reporta A** | PM (Coordinador) |
+| **Escala** | Descuentos >30%, clientes atípicos, términos no estándar |
+
+**Deliverables:**
+- Propuesta de valor (adaptada a cliente)
+- Cotización (con desglose de costos ocultos)
+- Contrato negociado (para LEGAL)
+- Pipeline de oportunidades (forecast de revenue)
+
+**Criterio de Éxito:**
+- Tasa de cierre >40% (propuestas → contrato firmado)
+- Valor promedio de contrato en meta mensual
+- Clientes satisfechos (NPS > 8 post-venta)
+
+---
+
+### **FINANCE (Financiero-Contable)** 💰
+**Rol:** Guardian del flujo de caja y tesorería
+
+| Aspecto | Descripción |
+|---------|------------|
+| **Responsable De** | Forecast de cash flow, runway, alertas de tesorería |
+| **Tareas Core** | Registrar ingresos/egresos, proyectar flujo, alertar riesgos |
+| **Decisión Clave** | "¿Tenemos caja para pagar esto?" / "¿Cuántos meses podemos operar?" |
+| **Scope** | Tesorería de la consultora (global) |
+| **Reporta A** | PM (Coordinador) + Patricio Ferrer |
+| **Escala** | Runway < 30 días, clientes >45 días sin pagar |
+
+**Deliverables:**
+- Cash flow forecast (3 meses)
+- Runway report (días/meses de operación)
+- Análisis por proyecto (ingresos vs. costos)
+- Alertas de tesorería (diarias si critical)
+
+**Criterio de Éxito:**
+- 0 sorpresas de caja (forecast vs. real < 10%)
+- Runway siempre > 60 días
+- Cuentas por cobrar < 30 días de atraso
+
+---
+
 ## 🔄 FLUJO DE TRABAJO PARALELO
 
 ```
@@ -224,18 +302,26 @@ NIVEL 1 (Agente decide solo)
 ├─ ARQUITECTO: propuesta técnica
 ├─ DEV: cómo codificar algo
 ├─ QA: test case específico
-└─ SECURITY: recomendación de control
+├─ SECURITY: recomendación de control
+├─ DELIVERY: plan de go-live
+└─ COMERCIAL: términos estándar de contrato
 
 NIVEL 2 (PM decide con agentes)
 ├─ Cambio de scope (PM + ARQUITECTO)
 ├─ Delay de timeline (PM + DEV)
 ├─ Bloqueador de compliance (PM + SECURITY)
-└─ Riesgo en testing (PM + QA)
+├─ Riesgo en testing (PM + QA)
+├─ Descuento comercial (PM + COMERCIAL) si < 20%
+├─ Forecast de revenue (PM + PRODUCT MANAGER)
+└─ Alerta de tesorería (PM + FINANCE)
 
 NIVEL 3 (Patricio Ferrer decide)
 ├─ Sacar agente del proyecto
 ├─ Extender presupuesto >20%
+├─ Descuento comercial >30%
 ├─ Cambiar cliente/producto
+├─ Decisión de precio/modelo de negocio (PRODUCT MANAGER)
+├─ Runway crítica < 30 días (FINANCE)
 └─ Escalar a instancia legal (LEGAL + PM)
 ```
 
