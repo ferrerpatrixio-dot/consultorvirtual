@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cotizador IAProcess</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+    }
+    .container {
+        max-width: 960px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+    }
+    header h1 { font-size: 1.8em; margin-bottom: 8px; }
+    header p { opacity: 0.9; font-size: 1.05em; }
+    .content { padding: 30px; }
+    .section {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border-left: 4px solid #667eea;
+    }
+    .section h2 { color: #333; margin-bottom: 6px; font-size: 1.2em; }
+    .section > .subtitulo { color: #666; font-size: 0.9em; margin-bottom: 15px; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-weight: 600; margin-bottom: 6px; color: #333; font-size: 0.95em; }
+    .form-group input, .form-group select {
+        width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 1em;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .form-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+
+    .opcion-radio {
+        display: block;
+        padding: 14px;
+        border: 2px solid #ddd;
+        border-radius: 6px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        background: white;
+    }
+    .opcion-radio:hover { border-color: #667eea; }
+    .opcion-radio.checked { border-color: #667eea; background: #f0f2f5; }
+    .opcion-radio input[type="radio"] { margin-right: 10px; }
+    .opcion-radio .titulo { font-weight: 600; color: #333; }
+    .opcion-radio .precio { float: right; font-weight: bold; color: #667eea; }
+    .opcion-radio .explicacion { font-size: 0.88em; color: #555; margin-top: 8px; line-height: 1.5; }
+    .opcion-radio .detalle-tecnico { font-size: 0.78em; color: #999; margin-top: 6px; }
+
+    .familia-toggle {
+        display: flex; align-items: center; gap: 10px;
+        padding: 12px; background: white; border: 2px solid #ddd; border-radius: 6px;
+        margin-bottom: 12px; cursor: pointer;
+    }
+    .familia-toggle.on { border-color: #667eea; background: #f0f2f5; }
+    .familia-toggle input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; flex-shrink: 0; }
+    .familia-toggle .titulo { font-weight: 600; color: #333; flex: 1; }
+    .familia-body {
+        display: none;
+        padding: 15px; background: white; border-radius: 6px; margin: -5px 0 15px; border: 1px solid #eee;
+    }
+    .familia-body.show { display: block; }
+
+    .banda-selector { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 10px 0; }
+    .banda-card {
+        padding: 12px; border: 2px solid #ddd; border-radius: 6px; text-align: center; cursor: pointer;
+    }
+    .banda-card:hover { border-color: #667eea; }
+    .banda-card.active { border-color: #667eea; background: #f0f2f5; }
+    .banda-card .nombre { font-weight: 600; font-size: 0.9em; }
+    .banda-card .precio { color: #667eea; font-weight: bold; margin-top: 4px; }
+    .banda-card .plazo { font-size: 0.8em; color: #666; margin-top: 2px; }
+
+    .checkbox-line { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .checkbox-line input { width: 16px; height: 16px; flex-shrink: 0; }
+    .checkbox-line label { font-size: 0.9em; color: #444; margin: 0; font-weight: normal; }
+
+    .tabla { width: 100%; border-collapse: collapse; margin: 15px 0; background: white; border-radius: 6px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .tabla th { background: #667eea; color: white; padding: 10px; text-align: left; font-size: 0.9em; }
+    .tabla td { padding: 10px; border-bottom: 1px solid #eee; font-size: 0.9em; }
+    .tabla tr:last-child td { border-bottom: none; font-weight: 600; background: #f0f2f5; }
+
+    .resumen { background: #667eea; color: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
+    .resumen .fila.total { font-size: 1.4em; font-weight: bold; display: flex; justify-content: space-between; }
+    .resumen .mantencion {
+        font-size: 1.05em; margin-top: 15px; line-height: 1.8; padding: 14px;
+        background: rgba(255,255,255,0.15); border-radius: 6px; border: 1px solid rgba(255,255,255,0.3);
+    }
+    .resumen .mantencion strong { font-size: 1.1em; }
+
+    .botones { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    button {
+        padding: 12px 20px; font-size: 1em; font-weight: 600; border: none; border-radius: 6px;
+        background: #667eea; color: white; cursor: pointer; transition: all 0.2s;
+    }
+    button:hover { background: #5568d3; }
+
+    .nota { font-size: 0.8em; color: #888; margin-top: 4px; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>🎯 Cotizador IAProcess</h1>
+        <p id="headerProyecto">Proyecto</p>
+    </header>
+
+    <div class="content">
+
+        <!-- CLIENTE / PROYECTO -->
+        <div class="section">
+            <h2>Cliente y Proyecto</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Cliente</label>
+                    <input type="text" id="inputCliente" value="SSTT Ernesto Andino" oninput="actualizar()">
+                </div>
+                <div class="form-group">
+                    <label>Proyecto</label>
+                    <input type="text" id="inputProyecto" value="Reacondicionamiento técnico de teléfonos móviles" oninput="actualizar()">
+                </div>
+            </div>
+        </div>
+
+        <!-- FASE 1 -->
+        <div class="section">
+            <h2>Fase 1 · Consultoría inicial</h2>
+            <label class="opcion-radio" id="f1-tramoA">
+                <input type="radio" name="fase1" value="tramoA" onchange="actualizar()" checked>
+                <span class="titulo">Tramo A — hasta 10 personas</span>
+                <span class="precio">$450.000</span>
+                <div class="explicacion">
+                    Vamos a tu local: entrevistamos al dueño y al equipo, y revisamos en terreno cómo funciona
+                    el proceso hoy, paso a paso. Con un test simple medimos en qué etapa de madurez digital
+                    están. Con eso identificamos entre 3 y 5 formas concretas en que la tecnología podría
+                    ayudarte, cada una con un precio estimado. Al final entregamos un documento con el plan
+                    a 6 meses.
+                </div>
+                <div class="detalle-tecnico">Financiamiento particular · 1–2 semanas · informe en máximo 10 días</div>
+            </label>
+            <label class="opcion-radio" id="f1-tramoB">
+                <input type="radio" name="fase1" value="tramoB" onchange="actualizar()">
+                <span class="titulo">Tramo B — más de 10 personas</span>
+                <span class="precio">$600.000</span>
+                <div class="explicacion">
+                    Mismo alcance que el Tramo A. El precio sube porque una empresa con más gente y más áreas
+                    toma más tiempo de mapear. El headcount es el único dato que define el tramo.
+                </div>
+                <div class="detalle-tecnico">Financiamiento particular · 1–2 semanas · informe en máximo 10 días</div>
+            </label>
+            <label class="opcion-radio" id="f1-acotado">
+                <input type="radio" name="fase1" value="acotado" onchange="actualizar()">
+                <span class="titulo">Diagnóstico acotado</span>
+                <span class="precio">$150.000</span>
+                <div class="explicacion">
+                    Versión más rápida y económica: solo fotografiamos cómo está tu proceso hoy y te dejamos
+                    una propuesta con opciones, sin el detalle completo del diagnóstico. Ideal si quieres una
+                    primera mirada antes de comprometerte con más.
+                </div>
+                <div class="detalle-tecnico">100% a cargo del cliente · 1 semana</div>
+            </label>
+            <label class="opcion-radio" id="f1-ninguno">
+                <input type="radio" name="fase1" value="ninguno" onchange="actualizar()">
+                <span class="titulo">Sin Fase 1 (ya se hizo)</span>
+                <span class="precio">$0</span>
+            </label>
+        </div>
+
+        <!-- PRODUCTIVIDAD (independiente, no requiere Fase 1, cualquier madurez) -->
+        <div class="section">
+            <h2>① Productividad con IA</h2>
+            <p class="subtitulo">Herramienta personal — no toca el proceso. Independiente: no requiere Fase 1 ni un estado de madurez mínimo.</p>
+
+            <label class="familia-toggle" id="toggle-productividad">
+                <input type="checkbox" id="chk-productividad" onchange="onToggle('productividad', this)">
+                <span class="titulo">Incluir Productividad con IA — pago único por persona</span>
+            </label>
+            <div class="familia-body" id="body-productividad">
+                <div class="form-group">
+                    <label>Tipo de Proyecto</label>
+                    <select id="prodOpcion" onchange="actualizar()">
+                        <option value="completo">Puesta en marcha completa (curso + entorno)</option>
+                        <option value="curso">Solo curso (fundamentos IA)</option>
+                        <option value="entorno">Solo entorno (instalación, ej. Hermes)</option>
+                    </select>
+                </div>
+                <div class="form-row3">
+                    <div class="form-group">
+                        <label># Personas</label>
+                        <input type="number" id="prodPersonas" value="1" min="1" oninput="actualizar()">
+                    </div>
+                    <div class="form-group">
+                        <label>Precio curso / persona (CLP)</label>
+                        <input type="number" id="prodPrecioCurso" value="80000" step="5000" oninput="actualizar()">
+                    </div>
+                    <div class="form-group">
+                        <label>Precio entorno / persona (CLP)</label>
+                        <input type="number" id="prodPrecioEntorno" value="60000" step="5000" oninput="actualizar()">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Mantención</label>
+                    <p style="color: #555; font-size: 0.95em; margin-bottom: 10px; line-height: 1.5;">Bolsa de horas mensual plana — una sola bolsa por empresa, no escala con el número de personas.</p>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Costo bolsa mensual (CLP)</label>
+                        <input type="number" id="prodMantencion" value="40000" step="5000" oninput="actualizar()">
+                    </div>
+                    <div class="form-group">
+                        <label>Horas incluidas / mes</label>
+                        <input type="number" id="prodMantencionHoras" value="2" step="1" min="0" oninput="actualizar()">
+                    </div>
+                </div>
+                <p class="nota">Precios editables — no hay valor oficial fijado aún en el catálogo (docs/CATALOGO-SERVICIOS.md).</p>
+            </div>
+        </div>
+
+        <!-- PROYECTO: DIGITALIZAR / AUTOMATIZAR / ANTICIPAR (secuencial, requiere Fase 1 o madurez confirmada) -->
+        <div class="section">
+            <h2>Proyecto — Digitalizar / Automatizar / Anticipar</h2>
+            <p class="subtitulo">Toca el proceso. Secuencial: normalmente requiere Fase 1 (diagnóstico) primero, o un estado de madurez ya confirmado. Precio fijo por banda.</p>
+
+            <label class="familia-toggle" id="toggle-proyecto">
+                <input type="checkbox" id="chk-proyecto" onchange="onToggle('proyecto', this)">
+                <span class="titulo">Incluir Proyecto (precio fijo por banda)</span>
+            </label>
+            <div class="familia-body" id="body-proyecto">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Familia</label>
+                        <select id="proyectoFamilia" onchange="onFamiliaChange()">
+                            <option value="digitalizar">Digitalizar — el medio cambia, el proceso no</option>
+                            <option value="automatizar">Automatizar — se redefine quién hace qué</option>
+                            <option value="anticipar">Anticipar — predicción (requiere BASE_LISTA + 6-12 meses de datos limpios)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Ejemplo / caso de uso</label>
+                        <select id="proyectoEjemplo" onchange="actualizar()"></select>
+                        <p class="nota">Solo referencia para elegir — el precio es el de la banda, no cambia por ejemplo.</p>
+                    </div>
+                </div>
+
+                <label>Banda</label>
+                <div class="banda-selector">
+                    <div class="banda-card active" id="banda-1" onclick="selectBanda(1)">
+                        <div class="nombre">Banda 1</div>
+                        <div class="precio">$1.200.000</div>
+                        <div class="plazo">2-3 semanas</div>
+                    </div>
+                    <div class="banda-card" id="banda-2" onclick="selectBanda(2)">
+                        <div class="nombre">Banda 2</div>
+                        <div class="precio">$2.500.000</div>
+                        <div class="plazo">3-4 semanas</div>
+                    </div>
+                    <div class="banda-card" id="banda-3" onclick="selectBanda(3)">
+                        <div class="nombre">Banda 3</div>
+                        <div class="precio">$4.500.000</div>
+                        <div class="plazo">4-5 semanas</div>
+                    </div>
+                </div>
+
+                <div class="checkbox-line">
+                    <input type="checkbox" id="proyectoControl" onchange="actualizar()">
+                    <label for="proyectoControl">Requiere control (revisor de resultados dudosos) — obligatorio si el modelo puede equivocarse</label>
+                </div>
+
+                <div class="form-group">
+                    <label>Mantención</label>
+                    <p style="color: #555; font-size: 0.95em; margin-bottom: 10px; line-height: 1.5;">Bolsa de horas mensual — soporte, ajustes, re-validación de reglas.</p>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Costo bolsa mensual (CLP)</label>
+                        <input type="number" id="proyectoMantencion" value="3000" step="500" oninput="actualizar()">
+                        <p class="nota">Referencia: Digitalizar $2-3K · Automatizar $3-5K · Anticipar $5-10K</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Horas incluidas / mes</label>
+                        <input type="number" id="proyectoMantencionHoras" value="4" step="1" min="0" oninput="actualizar()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DESCUENTOS -->
+        <div class="section">
+            <h2>Descuentos</h2>
+            <div class="checkbox-line">
+                <input type="checkbox" id="descNuevoCliente" onchange="actualizar()">
+                <label for="descNuevoCliente"><strong>Cliente nuevo — oferta de lanzamiento (50%)</strong></label>
+            </div>
+            <div class="checkbox-line">
+                <input type="checkbox" id="descBundle" onchange="actualizar()">
+                <label for="descBundle">Digitalizar + Automatizar combinados (5%)</label>
+            </div>
+            <div class="checkbox-line">
+                <input type="checkbox" id="descTresCasos" onchange="actualizar()">
+                <label for="descTresCasos">3+ casos en Fase 2 (10%)</label>
+            </div>
+            <p class="nota" style="margin: -6px 0 10px 24px;">"Fase 2" = todo lo que no es el Diagnóstico inicial: Productividad + Proyecto. Aplica si el cliente contrata 3 o más servicios/casos en total (ej: curso + entorno + un Proyecto = 3).</p>
+            <div class="checkbox-line">
+                <input type="checkbox" id="descAnual" onchange="actualizar()">
+                <label for="descAnual">Contrato anual + prepago (10%)</label>
+            </div>
+        </div>
+
+        <!-- CONDICIONES -->
+        <div class="section">
+            <h2>Condiciones</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Condiciones de pago</label>
+                    <select id="condicionesPago" onchange="actualizar()">
+                        <option value="50-50">50% Adelanto | 50% Al Término</option>
+                        <option value="100">100% Adelanto</option>
+                        <option value="30-70">30% Adelanto | 70% Al Término</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Vigencia de la oferta (días)</label>
+                    <input type="number" id="vigenciaOferta" value="30" min="7" max="90" oninput="actualizar()">
+                </div>
+            </div>
+        </div>
+
+        <!-- DESGLOSE -->
+        <table class="tabla">
+            <thead><tr><th>Concepto</th><th>Detalle</th><th>Plazo</th><th>CLP</th></tr></thead>
+            <tbody id="tablaBody">
+                <tr><td colspan="4" style="text-align:center; color:#999;">Selecciona Fase 1 y/o Proyecto</td></tr>
+            </tbody>
+        </table>
+
+        <!-- RESUMEN -->
+        <div class="resumen" id="resumenBox">
+            <div class="fila total"><span>TOTAL PROYECTO</span><span id="totalGeneral">$0</span></div>
+        </div>
+
+        <div class="botones">
+            <button onclick="verDocumentos()">📄 Ver Documentos</button>
+            <button onclick="exportarPDF()">📥 Exportar PDF</button>
+            <button onclick="continuar()">✅ Continuar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    var bandaSeleccionada = 1;
+
+    var EJEMPLOS = {
+        digitalizar: [
+            'Dashboard en vivo sobre el Excel que ya existe (Power BI / Tableau)',
+            'Ingreso automático de datos de una planilla Excel al sistema',
+            'Actualizar / modernizar el dashboard actual',
+            'Mejorar la web sin tocar los datos ni el proceso (rediseño, velocidad)',
+            'Búsqueda de documentos (Obsidian sobre carpeta compartida)',
+            'Mail automático según lista (N8n dispara correos)',
+            'OCR simple: boletas o facturas a Excel (requiere control)',
+            'RAG textual: "buscar en mis manuales" por palabra clave'
+        ],
+        automatizar: [
+            'Chatbot que atiende consultas y escala a humano si no sabe',
+            'Web funcional con lógica (formulario que dispara un proceso)',
+            'Flujo de trabajo automático (orquestación de pasos, ej. n8n)',
+            'Reportes o resúmenes de análisis agénticos (agente arma el informe)',
+            'Agendamiento automático (se agenda y confirma solo)',
+            'Cobranza escalonada (aviso → cobro → escalamiento por días)',
+            'Factura con OCR + validación automática',
+            'Inventario con alertas (se registra al mover, alerta si baja de X)',
+            'RAG vectorial: asistente responde consultas de clientes, con supervisor'
+        ],
+        anticipar: [
+            'Modelo de predicción de demanda',
+            'Modelo de predicción de inasistencias / atrasos',
+            'Modelo de predicción de fuga de clientes',
+            'Modelo de clasificación (ej. clasificar tickets, fallas, prioridad)',
+            'Predicción de término de proceso (ej. cuándo termina cada reparación)'
+        ]
+    };
+
+    function onFamiliaChange() {
+        var familia = document.getElementById('proyectoFamilia').value;
+        var select = document.getElementById('proyectoEjemplo');
+        select.innerHTML = EJEMPLOS[familia].map(function(e) {
+            return '<option value="' + e.replace(/"/g, '&quot;') + '">' + e + '</option>';
+        }).join('');
+        actualizar();
+    }
+
+    function onToggle(nombre, chk) {
+        document.getElementById('toggle-' + nombre).classList.toggle('on', chk.checked);
+        document.getElementById('body-' + nombre).classList.toggle('show', chk.checked);
+        actualizar();
+    }
+
+    function selectBanda(n) {
+        bandaSeleccionada = n;
+        [1, 2, 3].forEach(function(i) {
+            document.getElementById('banda-' + i).classList.toggle('active', i === n);
+        });
+        actualizar();
+    }
+
+    function fmt(n) {
+        return '$' + Math.round(n).toLocaleString('es-CL');
+    }
+
+    function actualizar() {
+        document.getElementById('headerProyecto').textContent = document.getElementById('inputProyecto').value || 'Proyecto';
+
+        ['tramoA', 'tramoB', 'acotado', 'ninguno'].forEach(function(v) {
+            var checked = document.querySelector('input[name="fase1"]:checked');
+            document.getElementById('f1-' + v).classList.toggle('checked', checked && checked.value === v);
+        });
+
+        var filas = [];
+        var total = 0;
+        var mantenciones = [];
+
+        // FASE 1
+        var fase1Input = document.querySelector('input[name="fase1"]:checked');
+        var fase1 = fase1Input ? fase1Input.value : 'ninguno';
+        if (fase1 === 'tramoA') {
+            filas.push(['Fase 1 · Consultoría inicial (Tramo A, hasta 10 personas)', 'Financiamiento particular', '1-2 semanas', 450000]);
+            total += 450000;
+        } else if (fase1 === 'tramoB') {
+            filas.push(['Fase 1 · Consultoría inicial (Tramo B, más de 10 personas)', 'Financiamiento particular', '1-2 semanas', 600000]);
+            total += 600000;
+        } else if (fase1 === 'acotado') {
+            filas.push(['Fase 1 · Diagnóstico acotado', '100% cliente', '1 semana', 150000]);
+            total += 150000;
+        }
+
+        // PRODUCTIVIDAD
+        if (document.getElementById('chk-productividad').checked) {
+            var opcion = document.getElementById('prodOpcion').value;
+            var personas = parseInt(document.getElementById('prodPersonas').value) || 1;
+            var pCurso = parseFloat(document.getElementById('prodPrecioCurso').value) || 0;
+            var pEntorno = parseFloat(document.getElementById('prodPrecioEntorno').value) || 0;
+            var mant = parseFloat(document.getElementById('prodMantencion').value) || 0;
+            var mantHoras = parseFloat(document.getElementById('prodMantencionHoras').value) || 0;
+
+            if (opcion === 'completo' || opcion === 'curso') {
+                filas.push(['Productividad · Curso', personas + ' persona(s)', '1 día', pCurso * personas]);
+                total += pCurso * personas;
+            }
+            if (opcion === 'completo' || opcion === 'entorno') {
+                filas.push(['Productividad · Entorno', personas + ' persona(s)', '1 día', pEntorno * personas]);
+                total += pEntorno * personas;
+            }
+            mantenciones.push('Productividad: ' + fmt(mant) + '/mes · bolsa de ' + mantHoras + 'h (1 por empresa)');
+        }
+
+        // PROYECTO (Digitalizar/Automatizar/Anticipar)
+        if (document.getElementById('chk-proyecto').checked) {
+            var familia = document.getElementById('proyectoFamilia').value;
+            var precios = { 1: 1200000, 2: 2500000, 3: 4500000 };
+            var precio = precios[bandaSeleccionada];
+            var nombreFamilia = { digitalizar: 'Digitalizar', automatizar: 'Automatizar', anticipar: 'Anticipar' }[familia];
+            var control = document.getElementById('proyectoControl').checked ? ' · con control' : '';
+            var ejemploSel = document.getElementById('proyectoEjemplo');
+            var ejemplo = ejemploSel.options.length ? ejemploSel.value : '';
+            var plazosBanda = { 1: '2-3 semanas', 2: '3-4 semanas', 3: '4-5 semanas' };
+            filas.push([nombreFamilia + ' · Banda ' + bandaSeleccionada, (ejemplo || 'Proyecto') + control, plazosBanda[bandaSeleccionada], precio]);
+            total += precio;
+
+            if (familia === 'anticipar') {
+                filas.push(['Anticipar · Diagnóstico de datos adicional', 'Requiere BASE_LISTA + 6-12 meses de historia', '+1 semana', 450000]);
+                total += 450000;
+            }
+
+            var mantP = parseFloat(document.getElementById('proyectoMantencion').value) || 0;
+            var mantPHoras = parseFloat(document.getElementById('proyectoMantencionHoras').value) || 0;
+            mantenciones.push(nombreFamilia + ': ' + fmt(mantP) + '/mes · bolsa de ' + mantPHoras + 'h');
+        }
+
+        // DESCUENTOS
+        var descuentoPct = 0;
+        if (document.getElementById('descNuevoCliente').checked) descuentoPct += 50;
+        if (document.getElementById('descBundle').checked) descuentoPct += 5;
+        if (document.getElementById('descTresCasos').checked) descuentoPct += 10;
+        if (document.getElementById('descAnual').checked) descuentoPct += 10;
+
+        var totalConDescuento = total;
+        if (descuentoPct > 0 && total > 0) {
+            var montoDescuento = total * (descuentoPct / 100);
+            filas.push(['Descuento (' + descuentoPct + '%)', '', '', -montoDescuento]);
+            totalConDescuento = total - montoDescuento;
+        }
+
+        // Render tabla
+        var tbody = document.getElementById('tablaBody');
+        if (filas.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#999;">Selecciona Fase 1 y/o Proyecto</td></tr>';
+        } else {
+            var html = filas.map(function(f) {
+                return '<tr><td>' + f[0] + '</td><td>' + f[1] + '</td><td>' + f[2] + '</td><td>' + fmt(f[3]) + '</td></tr>';
+            }).join('');
+            html += '<tr><td colspan="3"><strong>TOTAL</strong></td><td><strong>' + fmt(totalConDescuento) + '</strong></td></tr>';
+            tbody.innerHTML = html;
+        }
+
+        document.getElementById('totalGeneral').textContent = fmt(totalConDescuento);
+    }
+
+    function verDocumentos() {
+        alert('📄 Documentos disponibles:\n\n✅ Contrato de Servicios\n✅ Términos y Condiciones\n✅ NDA (Confidencialidad)\n\nCarpeta: docs/contratos/');
+    }
+    function exportarPDF() {
+        alert('📥 Exportar como PDF\n\nUsa Ctrl+P (o Cmd+P) → "Guardar como PDF"');
+    }
+    function continuar() {
+        var cliente = document.getElementById('inputCliente').value;
+        alert('✅ Cotización generada para: ' + cliente + '\n\nSiguiente paso: revisar documentos y firmar.');
+    }
+
+    onFamiliaChange();
+</script>
+</body>
+</html>
