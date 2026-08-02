@@ -224,19 +224,19 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Mantención</label>
-                    <p style="color: #555; font-size: 0.95em; margin-bottom: 10px; line-height: 1.5;">Bolsa de horas mensual plana — una sola bolsa por empresa, no escala con el número de personas.</p>
+                    <label>Mantención del entorno</label>
+                    <p style="color: #555; font-size: 0.95em; margin-bottom: 10px; line-height: 1.5;">Bolsa mensual dimensionada por la cantidad de usuarios iniciales. Solo aplica si se instala el entorno — el curso no lleva mantención.</p>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Horas incluidas / mes</label>
-                        <input type="number" id="prodMantencionHoras" value="1" step="0.5" min="0" oninput="actualizar()">
-                        <p class="nota">Bolsa plana por empresa, no por persona</p>
+                        <label>Horas / mes por usuario</label>
+                        <input type="number" id="prodHorasPorUsuario" value="0.25" step="0.05" min="0" oninput="actualizar()">
+                        <p class="nota">0,25 h = 15 min por usuario al mes. Mínimo 1 h por empresa.</p>
                     </div>
                     <div class="form-group">
                         <label>Costo bolsa mensual</label>
                         <div id="prodMantencionCalc" style="padding: 8px 0; font-weight: bold; color: #667eea;">—</div>
-                        <p class="nota">Calculado: horas × tarifa</p>
+                        <p class="nota" id="prodMantencionDetalle">Se calcula al marcar el entorno</p>
                     </div>
                 </div>
                 <p class="nota">Los precios de curso y entorno son editables — no hay valor oficial fijado aún en el catálogo (docs/CATALOGO-SERVICIOS.md).</p>
@@ -295,18 +295,18 @@
 
                 <div class="form-group">
                     <label>Mantención</label>
-                    <p style="color: #555; font-size: 0.95em; margin-bottom: 10px; line-height: 1.5;">Bolsa de horas mensual — soporte, ajustes, re-validación de reglas.</p>
+                    <p style="color: #555; font-size: 0.95em; margin-bottom: 10px; line-height: 1.5;">Porcentaje anual del valor del servicio — soporte, ajustes, re-validación de reglas. Estándar de industria: 15–20%.</p>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Horas incluidas / mes</label>
-                        <input type="number" id="proyectoMantencionHoras" value="1" step="0.5" min="0" oninput="actualizar()">
-                        <p class="nota">A 3 UF/hora, cada hora mensual cuesta ~10% del valor de una Banda 1. Dimensiona la bolsa contra el tamaño del proyecto, no fija.</p>
+                        <label>% anual del valor</label>
+                        <input type="number" id="proyectoMantencionPctAnual" value="15" step="1" min="0" max="30" oninput="actualizar()">
+                        <p class="nota">15% para Digitalizar · 18% Automatizar · 20% Anticipar</p>
                     </div>
                     <div class="form-group">
-                        <label>Costo bolsa mensual</label>
+                        <label>Costo mensual</label>
                         <div id="proyectoMantencionCalc" style="padding: 8px 0; font-weight: bold; color: #667eea;">—</div>
-                        <p class="nota" id="proyectoMantencionPct">Calculado: horas × tarifa</p>
+                        <p class="nota" id="proyectoMantencionDetalle">Se calcula al elegir la banda</p>
                     </div>
                 </div>
             </div>
@@ -314,26 +314,36 @@
 
         <!-- DESCUENTOS -->
         <div class="section">
-            <h2>Descuentos</h2>
-            <p class="subtitulo"><strong>No se acumulan.</strong> Si marcas más de uno se aplica solo el mayor — no hay descuento sobre descuento.</p>
-            <div id="avisoDescuento" style="display: none; background: #fff9e6; border-left: 4px solid #ffc107; padding: 12px 15px; margin-bottom: 12px; border-radius: 4px; font-size: 0.92em;"></div>
+            <h2>Descuento de primer contrato</h2>
+            <p class="subtitulo">Un solo descuento, nunca acumulado. Su valor sube con la cantidad de servicios y con cuánto se paga por adelantado. <strong>Solo aplica al primer contrato del cliente.</strong></p>
+
             <div class="checkbox-line">
-                <input type="checkbox" id="descNuevoCliente" onchange="actualizar()">
-                <label for="descNuevoCliente"><strong>Cliente nuevo — oferta de lanzamiento (50%)</strong></label>
+                <input type="checkbox" id="descPrimerContrato" onchange="actualizar()">
+                <label for="descPrimerContrato"><strong>Es el primer contrato de este cliente</strong></label>
             </div>
-            <div class="checkbox-line">
-                <input type="checkbox" id="descBundle" onchange="actualizar()">
-                <label for="descBundle">Digitalizar + Automatizar combinados (5%)</label>
+
+            <div id="matrizDescuento" style="display: none;">
+                <table style="width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.92em;">
+                    <thead>
+                        <tr>
+                            <th style="border: 1px solid #ddd; padding: 8px; background: #667eea; color: white;">Servicios</th>
+                            <th style="border: 1px solid #ddd; padding: 8px; background: #667eea; color: white;">30/70</th>
+                            <th style="border: 1px solid #ddd; padding: 8px; background: #667eea; color: white;">50/50</th>
+                            <th style="border: 1px solid #ddd; padding: 8px; background: #667eea; color: white;">100% adelanto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="fila-serv-1"><td style="border: 1px solid #ddd; padding: 8px;">1 servicio</td><td style="border: 1px solid #ddd; padding: 8px;">—</td><td style="border: 1px solid #ddd; padding: 8px;">5%</td><td style="border: 1px solid #ddd; padding: 8px;">10%</td></tr>
+                        <tr id="fila-serv-2"><td style="border: 1px solid #ddd; padding: 8px;">2 servicios</td><td style="border: 1px solid #ddd; padding: 8px;">5%</td><td style="border: 1px solid #ddd; padding: 8px;">12%</td><td style="border: 1px solid #ddd; padding: 8px;">20%</td></tr>
+                        <tr id="fila-serv-3"><td style="border: 1px solid #ddd; padding: 8px;">3 o más</td><td style="border: 1px solid #ddd; padding: 8px;">10%</td><td style="border: 1px solid #ddd; padding: 8px;">20%</td><td style="border: 1px solid #ddd; padding: 8px;"><strong>30%</strong></td></tr>
+                    </tbody>
+                </table>
+
+                <div id="estadoDescuento" style="background: #f0f4ff; border-left: 4px solid #667eea; padding: 15px; border-radius: 4px; font-size: 0.95em;"></div>
+                <div id="palancaDescuento" style="display: none; background: #f0fff4; border-left: 4px solid #28a745; padding: 15px; border-radius: 4px; font-size: 0.95em; margin-top: 10px;"></div>
             </div>
-            <div class="checkbox-line">
-                <input type="checkbox" id="descTresCasos" onchange="actualizar()">
-                <label for="descTresCasos">3+ casos en Fase 2 (10%)</label>
-            </div>
-            <p class="nota" style="margin: -6px 0 10px 24px;">"Fase 2" = todo lo que no es el Diagnóstico inicial: Productividad + Proyecto. Aplica si el cliente contrata 3 o más servicios/casos en total (ej: curso + entorno + un Proyecto = 3).</p>
-            <div class="checkbox-line">
-                <input type="checkbox" id="descAnual" onchange="actualizar()">
-                <label for="descAnual">Contrato anual + prepago (10%)</label>
-            </div>
+
+            <p class="nota"><strong>La Fase 1 nunca se descuenta.</strong> A 3 UF/hora ya se vende bajo el costo del tiempo que toma: $450.000 compra 3,7 h y solo las reuniones presenciales son 4,25 h. El descuento se calcula sobre Productividad y Proyecto. La Fase 1 sí cuenta para el número de servicios.</p>
         </div>
 
         <!-- CONDICIONES -->
@@ -450,11 +460,6 @@
         var vh = valorHora();
         document.getElementById('valorHora').textContent = vh ? fmt(vh) + ' / hora' : '—';
 
-        var prodH = parseFloat(document.getElementById('prodMantencionHoras').value) || 0;
-        var proyH = parseFloat(document.getElementById('proyectoMantencionHoras').value) || 0;
-        document.getElementById('prodMantencionCalc').textContent = vh ? fmt(prodH * vh) + ' / mes' : '—';
-        document.getElementById('proyectoMantencionCalc').textContent = vh ? fmt(proyH * vh) + ' / mes' : '—';
-
         ['tramoA', 'tramoB', 'ninguno'].forEach(function(v) {
             var checked = document.querySelector('input[name="fase1"]:checked');
             document.getElementById('f1-' + v).classList.toggle('checked', checked && checked.value === v);
@@ -463,6 +468,9 @@
         var filas = [];
         var total = 0;
         var mantenciones = [];
+        var montoFase1 = 0;   // nunca se descuenta
+        var descontable = 0;  // Productividad + Proyecto: la base del descuento
+        var numServicios = 0; // cuenta para el nivel de descuento
 
         // FASE 1
         var fase1Input = document.querySelector('input[name="fase1"]:checked');
@@ -470,9 +478,13 @@
         if (fase1 === 'tramoA') {
             filas.push(['Fase 1 · Consultoría inicial (Tramo A, hasta 10 personas)', 'Financiamiento particular', '1-2 semanas', 450000]);
             total += 450000;
+            montoFase1 = 450000;
+            numServicios++;
         } else if (fase1 === 'tramoB') {
             filas.push(['Fase 1 · Consultoría inicial (Tramo B, más de 10 personas)', 'Financiamiento particular', '1-2 semanas', 600000]);
             total += 600000;
+            montoFase1 = 600000;
+            numServicios++;
         }
 
         // PRODUCTIVIDAD
@@ -481,18 +493,28 @@
             var personas = parseInt(document.getElementById('prodPersonas').value) || 1;
             var pCurso = parseFloat(document.getElementById('prodPrecioCurso').value) || 0;
             var pEntorno = parseFloat(document.getElementById('prodPrecioEntorno').value) || 0;
-            var mantHoras = parseFloat(document.getElementById('prodMantencionHoras').value) || 0;
-            var mant = mantHoras * vh;
 
             if (opcion === 'completo' || opcion === 'curso') {
                 filas.push(['Productividad · Curso', personas + ' persona(s)', '1 día', pCurso * personas]);
                 total += pCurso * personas;
+                descontable += pCurso * personas;
+                numServicios++;
             }
             if (opcion === 'completo' || opcion === 'entorno') {
                 filas.push(['Productividad · Entorno', personas + ' persona(s)', '1 día', pEntorno * personas]);
                 total += pEntorno * personas;
+                descontable += pEntorno * personas;
+                numServicios++;
+
+                // Mantención del entorno: bolsa mensual dimensionada por usuarios iniciales
+                var hxu = parseFloat(document.getElementById('prodHorasPorUsuario').value) || 0;
+                var mantHoras = Math.max(1, Math.round(personas * hxu * 4) / 4);
+                var mant = mantHoras * vh;
+                document.getElementById('prodMantencionCalc').textContent = fmt(mant) + ' / mes';
+                document.getElementById('prodMantencionDetalle').textContent =
+                    mantHoras + ' h/mes para ' + personas + ' usuario(s)' + (personas * hxu < 1 ? ' (mínimo 1 h)' : '');
+                mantenciones.push('Productividad · entorno: ' + fmt(mant) + '/mes · bolsa de ' + mantHoras + ' h para ' + personas + ' usuario(s)');
             }
-            mantenciones.push('Productividad: ' + fmt(mant) + '/mes · bolsa de ' + mantHoras + 'h (1 por empresa)');
         }
 
         // PROYECTO (Digitalizar/Automatizar/Anticipar)
@@ -507,53 +529,92 @@
             var plazosBanda = { 1: '2-3 semanas', 2: '3-4 semanas', 3: '4-5 semanas' };
             filas.push([nombreFamilia + ' · Banda ' + bandaSeleccionada, (ejemplo || 'Proyecto') + control, plazosBanda[bandaSeleccionada], precio]);
             total += precio;
+            descontable += precio;
+            numServicios++;
 
             if (familia === 'anticipar') {
                 filas.push(['Anticipar · Diagnóstico de datos adicional', 'Requiere BASE_LISTA + 6-12 meses de historia', '+1 semana', 450000]);
                 total += 450000;
+                descontable += 450000;
             }
 
-            var mantPHoras = parseFloat(document.getElementById('proyectoMantencionHoras').value) || 0;
-            var mantP = mantPHoras * vh;
+            // Mantención del proyecto: % anual del valor (estándar de industria 15-20%)
+            var pctAnual = parseFloat(document.getElementById('proyectoMantencionPctAnual').value) || 0;
+            var mantP = precio * (pctAnual / 100) / 12;
+            var horasQueCubre = vh ? mantP / vh : 0;
 
-            var pctMes = precio ? (mantP / precio) * 100 : 0;
-            var avisoPct = document.getElementById('proyectoMantencionPct');
-            if (!pctMes) {
-                avisoPct.textContent = 'Calculado: horas × tarifa';
-                avisoPct.style.color = '';
+            document.getElementById('proyectoMantencionCalc').textContent = fmt(mantP) + ' / mes';
+            var detalle = document.getElementById('proyectoMantencionDetalle');
+            detalle.textContent = pctAnual + '% anual de ' + fmt(precio) + ' · cubre ' +
+                (Math.round(horasQueCubre * 60)) + ' min de trabajo al mes';
+            detalle.style.color = horasQueCubre < 0.5 ? '#dc3545' : '#28a745';
+
+            mantenciones.push(nombreFamilia + ': ' + fmt(mantP) + '/mes (' + pctAnual + '% anual del proyecto)');
+        }
+
+        // DESCUENTO DE PRIMER CONTRATO — uno solo, nunca acumulado.
+        // Sube con la cantidad de servicios y con cuánto se paga por adelantado.
+        var esPrimero = document.getElementById('descPrimerContrato').checked;
+        var pago = document.getElementById('condicionesPago').value;
+        document.getElementById('matrizDescuento').style.display = esPrimero ? '' : 'none';
+
+        var MATRIZ = {
+            '30-70': { 1: 0,  2: 5,  3: 10 },
+            '50-50': { 1: 5,  2: 12, 3: 20 },
+            '100':   { 1: 10, 2: 20, 3: 30 }
+        };
+        var NOMBRE_PAGO = { '30-70': '30/70', '50-50': '50/50', '100': '100% adelanto' };
+
+        var nivelServicios = Math.min(3, numServicios) || 1;
+        var descuentoPct = esPrimero ? (MATRIZ[pago][nivelServicios] || 0) : 0;
+
+        if (esPrimero) {
+            ['1', '2', '3'].forEach(function (n) {
+                var fila = document.getElementById('fila-serv-' + n);
+                var activa = String(nivelServicios) === n;
+                fila.style.background = activa ? '#e7f3ff' : '';
+                fila.style.fontWeight = activa ? 'bold' : '';
+            });
+
+            document.getElementById('estadoDescuento').innerHTML =
+                '<strong>' + numServicios + ' servicio(s)</strong> · pago <strong>' + NOMBRE_PAGO[pago] + '</strong> → ' +
+                '<strong style="color:#667eea;">' + descuentoPct + '% de descuento</strong>' +
+                (descontable > 0
+                    ? '<br>Se aplica sobre ' + fmt(descontable) + ' (la Fase 1 no se descuenta)'
+                    : '<br>Todavía no hay servicios descontables: agrega Productividad o un Proyecto.');
+
+            // Qué le falta para subir de nivel
+            var palanca = document.getElementById('palancaDescuento');
+            var sugerencias = [];
+            if (nivelServicios < 3) {
+                var faltan = 3 - numServicios;
+                var subeA = MATRIZ[pago][3];
+                if (subeA > descuentoPct) {
+                    sugerencias.push('Con <strong>' + faltan + ' servicio(s) más</strong> sube a <strong>' + subeA + '%</strong>');
+                }
+            }
+            if (pago !== '100') {
+                var conPrepago = MATRIZ['100'][nivelServicios];
+                if (conPrepago > descuentoPct) {
+                    sugerencias.push('Pagando <strong>100% por adelantado</strong> sube a <strong>' + conPrepago + '%</strong>');
+                }
+            }
+            if (sugerencias.length && descontable > 0) {
+                var maximo = MATRIZ['100'][3];
+                palanca.innerHTML = '<strong>Palancas para la conversación:</strong><br>· ' + sugerencias.join('<br>· ') +
+                    '<br><br>El máximo es <strong>' + maximo + '%</strong>, con 3 o más servicios y pago total anticipado.';
+                palanca.style.display = '';
             } else {
-                avisoPct.textContent = Math.round(pctMes * 10) / 10 + '% del proyecto al mes · ' +
-                    Math.round(pctMes * 12) + '% al año';
-                avisoPct.style.color = pctMes > 5 ? '#dc3545' : '#28a745';
+                palanca.style.display = 'none';
             }
-            mantenciones.push(nombreFamilia + ': ' + fmt(mantP) + '/mes · bolsa de ' + mantPHoras + 'h');
         }
 
-        // DESCUENTOS — no se acumulan: se aplica solo el mayor
-        var candidatos = [];
-        if (document.getElementById('descNuevoCliente').checked) candidatos.push({ pct: 50, nombre: 'Cliente nuevo — oferta de lanzamiento' });
-        if (document.getElementById('descBundle').checked) candidatos.push({ pct: 5, nombre: 'Digitalizar + Automatizar combinados' });
-        if (document.getElementById('descTresCasos').checked) candidatos.push({ pct: 10, nombre: '3+ casos en Fase 2' });
-        if (document.getElementById('descAnual').checked) candidatos.push({ pct: 10, nombre: 'Contrato anual + prepago' });
-
-        candidatos.sort(function(a, b) { return b.pct - a.pct; });
-
-        var descuentoPct = candidatos.length ? candidatos[0].pct : 0;
-        var descuentoNombre = candidatos.length ? candidatos[0].nombre : '';
-
-        var avisoDesc = document.getElementById('avisoDescuento');
-        if (candidatos.length > 1) {
-            avisoDesc.textContent = 'Hay ' + candidatos.length + ' descuentos marcados. Los descuentos no se acumulan: se aplica solo el mayor (' +
-                descuentoNombre + ', ' + descuentoPct + '%).';
-            avisoDesc.style.display = '';
-        } else {
-            avisoDesc.style.display = 'none';
-        }
+        var descuentoNombre = 'Primer contrato · ' + numServicios + ' servicio(s), pago ' + (NOMBRE_PAGO[pago] || '');
 
         var totalConDescuento = total;
-        if (descuentoPct > 0 && total > 0) {
-            var montoDescuento = total * (descuentoPct / 100);
-            filas.push(['Descuento · ' + descuentoNombre + ' (' + descuentoPct + '%)', '', '', -montoDescuento]);
+        if (descuentoPct > 0 && descontable > 0) {
+            var montoDescuento = descontable * (descuentoPct / 100);
+            filas.push(['Descuento · ' + descuentoNombre + ' (' + descuentoPct + '%)', 'No aplica a Fase 1', '', -montoDescuento]);
             totalConDescuento = total - montoDescuento;
         }
 

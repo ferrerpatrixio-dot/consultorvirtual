@@ -106,51 +106,50 @@ Diagnóstico de datos + modelo predictivo (por modelo: "iPhone X en ~2 días con
 > magnitud** y se retiraron: $3.000 CLP no compra ni dos minutos de trabajo a la
 > tarifa vigente. Cualquier valor nuevo se calcula desde la tarifa, no se inventa.
 
-### La regla
+Se calcula distinto según qué se mantiene, porque el costo se comporta distinto.
 
-**Mantención = horas de la bolsa × tarifa.** La tarifa es **3 UF/hora**, así que
-el costo se mueve con la UF y no hay que reescribir este documento cada año.
+### Proyecto (Digitalizar · Automatizar · Anticipar) — % anual del valor
 
-| Bolsa | Costo mensual (UF) | Referencia en CLP con UF a $40.845 |
+**Mantención mensual = valor del servicio × % anual ÷ 12.** Es el estándar de la
+industria: **15–20% anual**.
+
+| Familia | % anual | Banda 1 ($1.2M) | Banda 2 ($2.5M) | Banda 3 ($4.5M) |
+|---|---|---|---|---|
+| **Digitalizar** | 15% | $15.000/mes | $31.250/mes | — |
+| **Automatizar** | 18% | $18.000/mes | $37.500/mes | $67.500/mes |
+| **Anticipar** | 20% | — | $41.667/mes | $75.000/mes |
+
+> ⚠️ **Lo que hay que tener presente al comprometerse.** A 3 UF/hora, $15.000/mes
+> compra unos **7 minutos** de trabajo. El porcentaje es correcto como precio de
+> mercado, pero no financia soporte ilimitado: la mantención cubre disponibilidad
+> y ajustes menores, no rehacer cosas. Todo lo que exceda se cotiza aparte por
+> hora. El cotizador muestra cuántos minutos cubre para que quede a la vista antes
+> de prometer.
+
+### Productividad con IA — bolsa por usuarios iniciales
+
+Acá no aplica el porcentaje: el costo de soportar el entorno escala con **cuánta
+gente lo usa**, no con lo que se pagó por instalarlo.
+
+**Bolsa mensual = usuarios iniciales × horas por usuario × tarifa**, con un
+**mínimo de 1 hora** por empresa.
+
+| Usuarios | Bolsa (a 0,25 h por usuario) | Costo con UF a $40.845 |
 |---|---|---|
-| 0,5 h | 1,5 UF | ~$61.000 |
-| 1 h | 3 UF | ~$122.500 |
-| 2 h | 6 UF | ~$245.000 |
-| 4 h | 12 UF | ~$490.000 |
+| 1–4 | 1 h (mínimo) | ~$122.500 |
+| 8 | 2 h | ~$245.000 |
+| 12 | 3 h | ~$367.500 |
+| 20 | 5 h | ~$612.500 |
 
-Aplica también a **Productividad** (bolsa del entorno). Corrige la versión
-anterior de este documento, que decía que Productividad no llevaba mantención:
-`CATALOGO-SERVICIOS.md` sí la contempla, como bolsa plana **por empresa**, no
-por persona.
+**Solo aplica si se instala el entorno.** El curso de fundamentos no lleva
+mantención: se dicta y se acaba.
 
-### ⚠️ Tensión sin resolver — decisión pendiente de Patricio
+Esto corrige dos cosas de la versión anterior: decía que Productividad no llevaba
+mantención (sí lleva), y `CATALOGO-SERVICIOS.md` la definía como bolsa plana por
+empresa que no escalaba con usuarios (decisión revisada por Patricio 2026-08-02:
+sí escala, porque el soporte real escala).
 
-A 3 UF/hora, **cualquier bolsa mensual queda desproporcionada** frente al precio
-de los proyectos:
-
-| Banda | Precio | Horas que paga | Bolsa de 1 h/mes equivale a |
-|---|---|---|---|
-| 1 | $1.200.000 | ~9,8 h | **10,2% del proyecto al mes · 123% al año** |
-| 2 | $2.500.000 | ~20,4 h | 4,9% al mes · 59% al año |
-| 3 | $4.500.000 | ~36,7 h | 2,7% al mes · 33% al año |
-
-El estándar de la industria es **15–20% anual** del valor del proyecto. Para
-llegar ahí en Banda 1 habría que cobrar ~$20.000/mes, que a 3 UF/hora compra
-**10 minutos**. No alcanza para sostener un compromiso de soporte.
-
-**Las tres salidas posibles:**
-
-1. **Soporte reactivo, sin mensualidad.** No se cobra bolsa; se cobra por hora
-   cuando el cliente llama, a la tarifa vigente. Elimina la desproporción y no
-   compromete horas que no se van a usar.
-2. **Bolsa solo desde Banda 2.** En Banda 1 el proyecto es muy chico para
-   sostener una mantención mensual.
-3. **Subir el precio de los proyectos** para que la mantención sea proporcional.
-
-Hasta que se decida, el cotizador calcula la bolsa desde la tarifa y muestra en
-rojo el porcentaje cuando supera el 5% mensual.
-
-**Sin lock-in en cualquier caso:** mensual, cancelable en cualquier momento.
+**Sin lock-in en ningún caso:** mensual, cancelable en cualquier momento.
 
 ---
 
@@ -204,30 +203,53 @@ reunión. Si presiona, la respuesta es el escalón más liviano, no un descuento
 
 ---
 
-## DESCUENTOS / AJUSTES
+## DESCUENTO DE PRIMER CONTRATO
 
-> 🚫 **Los descuentos NO se acumulan.** Si aplican varios, se usa **solo el
-> mayor**. No hay descuento sobre descuento. El cotizador lo hace automático y
-> avisa cuando hay más de uno marcado.
+> 🚫 **Un solo descuento, nunca acumulado.** No hay descuento sobre descuento.
+> El porcentaje sale de una matriz según **cuántos servicios toma** y **cuánto
+> paga por adelantado** — las dos conductas que queremos provocar.
 
-| Motivo | Descuento |
+**Solo aplica al primer contrato del cliente.** No se repite.
+
+| Servicios | Pago 30/70 | Pago 50/50 | 100% adelantado |
+|---|---|---|---|
+| 1 servicio | — | 5% | 10% |
+| 2 servicios | 5% | 12% | 20% |
+| **3 o más** | 10% | 20% | **30%** |
+
+El tope de 30% **hay que ganárselo**: exige tres servicios y pago total
+anticipado. Un cliente que toma uno solo y paga contra hitos no recibe nada.
+
+### 🚫 La Fase 1 nunca se descuenta
+
+El descuento se calcula **solo sobre Productividad y Proyecto**. Razón dura: a
+3 UF/hora, la Fase 1 ya se vende bajo costo.
+
+| | Horas |
 |---|---|
-| **Cliente nuevo — oferta de lanzamiento** | **50%** |
-| 3+ casos en Fase 2 | 10% |
-| Contrato anual + prepago | 10% |
-| Digitalizar + Automatizar combinados | 5% |
+| Lo que compran $450.000 | 3,7 h |
+| Solo lo presencial (entrevista + 4 visitas + entrega) | 4,25 h |
+| Con BPMN, análisis e informe | 9–14 h |
 
-**Por qué el orden importa:** con la oferta de lanzamiento marcada, ningún otro
-descuento cambia nada — el 50% ya absorbe a todos. Marcar los cuatro da 50%, no
-75%.
+Descontarla la deja en 1,8 horas — menos de la mitad de solo las reuniones.
+**La Fase 1 sí cuenta** para el número de servicios, así que ayuda a alcanzar el
+tramo sin costar margen.
 
-### Por antigüedad de cliente
+### Cómo usarlo en la conversación
 
-- **Primer proyecto:** aplica la oferta de lanzamiento si corresponde (50%)
+El cotizador muestra en qué nivel está el cliente y **qué le falta para subir**:
+
+> "Con lo que llevamos vas en 12%. Si lo pagas todo por adelantado se va a 20%,
+> y si sumas el entorno para tu gente llegamos a 30%. Es tu decisión."
+
+Eso convierte el descuento en una palanca de dos ejes en vez de una rebaja suelta.
+
+### Clientes que ya trabajaron con nosotros
+
 - Segundo proyecto: 5% (si el primero salió bien)
-- Tercero+: 10%
+- Tercero en adelante: 10%
 
-Estos tampoco se suman a los de la tabla de arriba: se toma el mayor de todos.
+Tampoco se suman a la matriz de arriba: se toma el mayor de todos.
 
 ---
 
