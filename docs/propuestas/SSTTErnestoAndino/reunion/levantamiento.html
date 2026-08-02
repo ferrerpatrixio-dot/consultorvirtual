@@ -427,8 +427,14 @@
                     <tr><td>"¿Has postulado antes a algún fondo? ¿Te adjudicaste?"</td><td><textarea></textarea></td></tr>
                     <tr><td>"Si es fondo: ¿a cuál, y sabes cuándo abre la convocatoria?"<br><em style="font-size: 0.85em;">Su calendario fija nuestra fecha de inicio, no nosotros</em></td><td><textarea></textarea></td></tr>
                     <tr><td>"¿Podrías financiar un primer paso acotado con recursos propios, y postular después para la solución mayor?"</td><td><textarea></textarea></td></tr>
+                    <tr><td><strong>"Para arreglar esto que te está costando $____ al mes, ¿en qué orden de plata estabas pensando? ¿Cientos de miles, o millones?"</strong><br><em style="font-size: 0.85em; color: #dc3545;">Techo real de presupuesto. Sin esto no sabes por dónde entrar</em></td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Y en cuánto tiempo necesitarías ver que se paga solo?"<br><em style="font-size: 0.85em;">Su tolerancia de payback. Casi siempre es «rápido»</em></td><td><textarea></textarea></td></tr>
                 </tbody>
             </table>
+
+            <div class="nota">
+                <strong>Cómo preguntar el presupuesto sin que se cierre:</strong> nunca "¿cuánto tienes?". Se pregunta después de que él dijo su cifra de pérdida, y en órdenes de magnitud, no en montos exactos. La respuesta te dice por cuál escalón entrar — no cuánto cobrar.
+            </div>
 
             <div class="alerta">
                 <p><strong>Argumento si duda:</strong> "El informe que te entrego es justo el papel que te piden para postular: el diagnóstico, el plan y la cotización. Lo pagas ahora chico, y con eso postulas a lo grande."</p>
@@ -437,13 +443,85 @@
         </div>
 
         <h2>4. Qué se puede hacer — mostrar el abanico</h2>
-        <p><em>Ahora que sabes qué le duele, muéstrale el rango. El objetivo no es cotizar: es que entienda que hay escalas muy distintas y que no todo cuesta lo mismo ni demora lo mismo.</em></p>
 
-        <div class="nota">
-            <strong>La pregunta que ordena todo:</strong> ¿la solución toca el proceso o no? Si no lo toca, es una herramienta personal y se resuelve rápido y barato. Si lo toca, hay que rediseñar quién hace qué — y eso es otro orden de magnitud.
+        <div class="alerta">
+            <p style="margin-bottom: 8px;"><strong>Al cliente solo le importan dos cosas:</strong></p>
+            <ol style="margin-bottom: 8px;">
+                <li><strong>No perder tiempo.</strong></li>
+                <li><strong>No sentir que está botando plata</strong> — que lo que pone vuelve, y vuelve pronto.</li>
+            </ol>
+            <p style="margin-bottom: 0;">Todo lo demás es andamiaje nuestro. <strong>«Fase 1», «Fase 2», «MMA-OD» y los nombres de las familias son nuestro método para ordenarnos, no argumentos de venta.</strong> Si te encuentras explicándole nuestra numeración, perdiste el hilo: vuelve a su plata y a su tiempo.</p>
         </div>
 
-        <h3>Las cuatro escalas</h3>
+        <h3>💵 En cuánto se paga solo</h3>
+        <p>Esta es la conversación que sí le interesa. Con la cifra de pérdida que él mismo te dio, cada escalón tiene un tiempo de retorno distinto.</p>
+
+        <div class="captura">
+            <div class="campo">
+                <label>Pérdida mensual declarada por el cliente (se toma del Bloque C)</label>
+                <input type="number" id="payback-perdida" placeholder="$ al mes">
+            </div>
+            <table style="margin-bottom: 0;">
+                <thead>
+                    <tr>
+                        <th>Escalón</th>
+                        <th>Inversión aprox.</th>
+                        <th>Se paga solo en</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Puerta de entrada</strong><br><em style="font-size: 0.85em;">Que tu gente trabaje con IA — entorno y/o curso</em></td>
+                        <td>~$300.000<br><em style="font-size: 0.8em;">referencial, 4 personas</em></td>
+                        <td id="pb-1" style="font-weight: bold;">—</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Verlo funcionando</strong><br><em style="font-size: 0.85em;">Lo que ya tienes, en una pantalla que se actualiza sola</em></td>
+                        <td>$1.200.000</td>
+                        <td id="pb-2" style="font-weight: bold;">—</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Que el sistema haga el paso</strong><br><em style="font-size: 0.85em;">Se rediseña el flujo; alguien revisa las excepciones</em></td>
+                        <td>$2.500.000</td>
+                        <td id="pb-3" style="font-weight: bold;">—</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="pb-nota" class="nota" style="margin-bottom: 0;">Ingresa la pérdida mensual para ver los tiempos de retorno.</div>
+        </div>
+
+        <div class="nota">
+            <strong>Cómo usar esta tabla:</strong> no se la entregues impresa ni la dejes. Es para que <em>tú</em> tengas el número en la cabeza y puedas decirlo en voz alta cuando corresponda: «esto se te paga solo en dos meses y medio». Los montos son órdenes de magnitud para calibrar, no una cotización.
+        </div>
+
+        <h3>La estrategia: entrar por lo chico, dejar sembrado lo robusto</h3>
+
+        <table>
+            <thead>
+                <tr><th style="width: 30%;">Qué haces</th><th>Por qué</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Le propones entrar por el escalón bajo</strong></td>
+                    <td>Riesgo chico, resultado en días, y comprueba que trabajamos en serio antes de comprometer millones. Un cliente que ya vio algo funcionar compra el segundo paso sin regatear.</td>
+                </tr>
+                <tr>
+                    <td><strong>Le muestras por qué eso no resuelve el fondo</strong></td>
+                    <td>Sin decirle que es insuficiente. Se muestra con su propio caso: «esto le ahorra tiempo a tu gente, pero el pedido se va a seguir cayendo en el mismo punto, porque ahí el problema no es la herramienta, es que nadie sabe en qué estado está».</td>
+                </tr>
+                <tr>
+                    <td><strong>Dejas el número grande dicho, no cotizado</strong></td>
+                    <td>Que sepa que existe y cuánto es del orden, para que no se sorprenda después. Pero sin propuesta formal: eso sale de la Fase 1.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="alerta">
+            <p style="margin: 0;"><strong>El error que hay que evitar:</strong> vender el escalón chico como si resolviera todo. Si el cliente cree que con eso queda listo y a los dos meses el problema sigue, la culpa es nuestra y perdimos el segundo paso. <strong>Se entra por lo chico diciendo que es lo chico.</strong></p>
+        </div>
+
+        <h3>Las cuatro escalas — referencia técnica para ti</h3>
+        <p style="font-size: 0.9em; color: #666;"><em>Esto es para que tú ubiques el caso, no para mostrárselo al cliente.</em></p>
         <table>
             <thead>
                 <tr>
@@ -515,11 +593,13 @@
         </table>
 
         <div class="guion">
-            <p>"Mira, hay cosas que se pueden hacer de tres maneras muy distintas y conviene que veas la diferencia antes de que hablemos de plata.</p>
-            <p>Lo más liviano es que tu gente trabaje con IA en lo suyo. Eso se instala en un día, es por persona, y no toca nada de tu operación.</p>
-            <p>Después está llevar lo que ya tienes a una pantalla donde se vea solo — eso son semanas y del orden del millón.</p>
-            <p>Y arriba está que el sistema haga un paso del proceso por ti. Eso ya es rediseñar cómo trabajan, toma más de un mes, cuesta varios millones y necesita que alguien acá revise lo que el sistema no sepa resolver.</p>
-            <p>Lo que yo hago en la Fase 1 es decirte cuál de esos tres te conviene de verdad, con tus números. No cuál me conviene venderte."</p>
+            <p>"Te lo pongo en plata, que es lo que importa.</p>
+            <p>Tú me dijiste que esto te está costando del orden de [su cifra] al mes. Eso es lo que ya estás pagando hoy, todos los meses, sin recibir nada a cambio.</p>
+            <p>Hay tres maneras de atacarlo y son muy distintas entre sí.</p>
+            <p>La más liviana es que tu gente trabaje con IA en lo suyo. Eso se instala en un día, se paga por persona, y no toca nada de tu operación. Con lo que pierdes, se te paga solo en [X] — y lo ves funcionando esta misma semana.</p>
+            <p>La segunda es llevar lo que ya tienes a una pantalla donde se vea solo, sin que nadie arme el informe a mano. Eso son semanas, no meses.</p>
+            <p>Y la tercera es que el sistema haga un paso del proceso por ti. Ahí ya estamos rediseñando cómo trabajan, y necesita que alguien acá revise lo que el sistema no sepa resolver. Es la que de verdad resuelve el fondo, y es la más cara.</p>
+            <p>Mi recomendación honesta es que partas por lo chico. No porque sea lo que te resuelve el problema — no lo es, y te lo digo de frente — sino porque en una semana ves si esto funciona conmigo antes de meter plata en serio. Y mientras tanto yo levanto lo tuyo y te digo con tus números cuál de los otros dos te conviene."</p>
         </div>
 
         <div class="alerta">
@@ -809,10 +889,58 @@
             }
         }
 
+        function plazoLegible(meses) {
+            if (meses < 1) return 'menos de un mes';
+            if (meses < 2) return 'poco más de un mes';
+            if (meses <= 12) return Math.round(meses * 10) / 10 + ' meses';
+            return 'más de un año';
+        }
+
+        function calcularPayback() {
+            const perdida = Number(document.getElementById('payback-perdida').value) || 0;
+            const escalones = [['pb-1', 300000], ['pb-2', 1200000], ['pb-3', 2500000]];
+            const nota = document.getElementById('pb-nota');
+
+            if (!perdida) {
+                escalones.forEach(function (e) { document.getElementById(e[0]).textContent = '—'; });
+                nota.textContent = 'Ingresa la pérdida mensual para ver los tiempos de retorno.';
+                nota.style.color = '#555';
+                return;
+            }
+
+            escalones.forEach(function (e) {
+                const celda = document.getElementById(e[0]);
+                const meses = e[1] / perdida;
+                celda.textContent = plazoLegible(meses);
+                celda.style.color = meses <= 3 ? '#28a745' : (meses <= 12 ? '#b8860b' : '#dc3545');
+            });
+
+            if (2500000 / perdida > 12) {
+                nota.innerHTML = 'Con esta pérdida, el escalón grande tarda más de un año en pagarse. <strong>Entra por lo chico y no menciones el número grande como propuesta</strong> — solo como referencia de que existe.';
+                nota.style.color = '#dc3545';
+            } else {
+                nota.innerHTML = 'Verde: se paga en 3 meses o menos, es el argumento más fuerte que tienes. Rojo: no lo uses como propuesta.';
+                nota.style.color = '#555';
+            }
+        }
+
         document.querySelectorAll('.calc').forEach(function (input) {
-            input.addEventListener('input', calcularTotal);
+            input.addEventListener('input', function () {
+                calcularTotal();
+                const total = Array.prototype.reduce.call(
+                    document.querySelectorAll('.calc'),
+                    function (acc, c) { return acc + (Number(c.value) || 0); },
+                    0
+                );
+                if (total) {
+                    document.getElementById('payback-perdida').value = total;
+                    calcularPayback();
+                }
+            });
         });
+        document.getElementById('payback-perdida').addEventListener('input', calcularPayback);
         calcularTotal();
+        calcularPayback();
 
         document.getElementById('headcount').addEventListener('input', function () {
             const n = Number(this.value);
