@@ -224,8 +224,8 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Mantención del entorno</label>
-                    <p style="color: #555; font-size: 0.95em; margin-bottom: 10px; line-height: 1.5;">Bolsa mensual dimensionada por la cantidad de usuarios iniciales. Solo aplica si se instala el entorno — el curso no lleva mantención.</p>
+                    <label>Soporte al equipo</label>
+                    <p style="color: #555; font-size: 0.95em; margin-bottom: 10px; line-height: 1.5;">Acá no hay mantención: no existe un sistema en producción que pueda caerse. Se atiende a las personas que usan el entorno. Bolsa mensual dimensionada por usuarios iniciales — el curso no lleva bolsa.</p>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -234,7 +234,7 @@
                         <p class="nota">0,25 h = 15 min por usuario al mes. Mínimo 1 h por empresa.</p>
                     </div>
                     <div class="form-group">
-                        <label>Costo bolsa mensual</label>
+                        <label>Bolsa de soporte mensual</label>
                         <div id="prodMantencionCalc" style="padding: 8px 0; font-weight: bold; color: #667eea;">—</div>
                         <p class="nota" id="prodMantencionDetalle">Se calcula al marcar el entorno</p>
                     </div>
@@ -294,8 +294,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Mantención</label>
-                    <p style="color: #555; font-size: 0.95em; margin-bottom: 10px; line-height: 1.5;">Porcentaje anual del valor del servicio — soporte, ajustes, re-validación de reglas. Estándar de industria: 15–20%.</p>
+                    <label>Mantención de operación</label>
+                    <p style="color: #555; font-size: 0.95em; margin-bottom: 10px; line-height: 1.5;">Que el servicio siga arriba: si se cae se levanta, si deja de responder se restablece. <strong>No cubre cambios</strong> — reglas nuevas, funcionalidades o re-entrenamiento se cotizan por hora. Estándar de industria: 15–20% anual.</p>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -377,6 +377,12 @@
         <!-- RESUMEN -->
         <div class="resumen" id="resumenBox">
             <div class="fila total"><span>TOTAL PROYECTO</span><span id="totalGeneral">$0</span></div>
+        </div>
+
+        <div id="recurrentesBox" style="display: none; background: #f0f4ff; border-left: 4px solid #667eea; padding: 18px; border-radius: 4px; margin-top: 15px;">
+            <p style="font-weight: bold; color: #667eea; margin-bottom: 10px;">Compromisos mensuales — aparte del total</p>
+            <div id="recurrentesLista" style="font-size: 0.95em; line-height: 1.8;"></div>
+            <p style="font-size: 0.88em; color: #666; margin-top: 12px; margin-bottom: 0;">Sin lock-in: mensual, cancelable en cualquier momento. La mantención cubre que el servicio siga funcionando; los cambios se cotizan por hora.</p>
         </div>
 
         <div class="botones">
@@ -514,7 +520,7 @@
                 document.getElementById('prodMantencionCalc').textContent = fmt(mant) + ' / mes';
                 document.getElementById('prodMantencionDetalle').textContent =
                     mantHoras + ' h/mes para ' + personas + ' usuario(s)' + (personas * hxu < 1 ? ' (mínimo 1 h)' : '');
-                mantenciones.push('Productividad · entorno: ' + fmt(mant) + '/mes · bolsa de ' + mantHoras + ' h para ' + personas + ' usuario(s)');
+                mantenciones.push('Soporte al equipo: ' + fmt(mant) + '/mes · bolsa de ' + mantHoras + ' h para ' + personas + ' usuario(s)');
             }
         }
 
@@ -646,6 +652,16 @@
         }
 
         document.getElementById('totalGeneral').textContent = fmt(totalConDescuento);
+
+        // Render de compromisos mensuales (no suman al total: son recurrentes)
+        var boxRec = document.getElementById('recurrentesBox');
+        if (mantenciones.length) {
+            document.getElementById('recurrentesLista').innerHTML =
+                mantenciones.map(function(m) { return '· ' + m; }).join('<br>');
+            boxRec.style.display = '';
+        } else {
+            boxRec.style.display = 'none';
+        }
     }
 
     function verDocumentos() {

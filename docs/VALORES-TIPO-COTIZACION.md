@@ -106,7 +106,61 @@ Diagnóstico de datos + modelo predictivo (por modelo: "iPhone X en ~2 días con
 > magnitud** y se retiraron: $3.000 CLP no compra ni dos minutos de trabajo a la
 > tarifa vigente. Cualquier valor nuevo se calcula desde la tarifa, no se inventa.
 
-Se calcula distinto según qué se mantiene, porque el costo se comporta distinto.
+### 🔑 Son dos cosas distintas y no hay que mezclarlas
+
+| | **Mantención de operación** | **Soporte al equipo** |
+|---|---|---|
+| **Aplica a** | Proyecto (Digitalizar · Automatizar · Anticipar) | Productividad con IA |
+| **Qué atiende** | Un sistema en producción | Personas usando un entorno |
+| **Se cobra** | % anual del valor del servicio | Bolsa de horas por usuarios |
+| **La pregunta que responde** | ¿Sigue funcionando? | ¿Mi gente sabe usarlo? |
+
+**En Productividad no existe mantención**, porque no hay un sistema productivo
+que pueda caerse: hay usuarios que necesitan ayuda. Llamarlo «mantención» promete
+algo que no aplica y esconde lo que el cliente sí está comprando.
+
+---
+
+### Mantención de operación — qué cubre y qué no
+
+**Mantener la operación andando. Nada más.**
+
+| ✅ Cubierto por la mensualidad | ❌ Se cobra por hora, a tarifa vigente |
+|---|---|
+| Se cayó → se levanta | Cambiar una regla de negocio |
+| Dejó de responder o no hace nada → se restablece | Agregar una funcionalidad nueva |
+| Falla de lo que entregamos → se corrige | Adaptar a un cambio en un sistema de tercero |
+| Disponibilidad del servicio | Re-entrenar el modelo |
+| | Capacitar gente nueva · cualquier cambio de alcance |
+
+**Por qué importa decirlo así.** Un 15% anual sobre Banda 1 son $15.000/mes, que
+a 3 UF/hora compran unos 7 minutos. Eso es coherente **solo** si lo que se promete
+es disponibilidad: la mayoría de los meses no pasa nada, y cuando pasa se resuelve
+rápido. Si el cliente entiende «mantención» como «me van a hacer cambios todos los
+meses», la cifra no alcanza ni de lejos, y el problema es nuestro por no haberlo
+definido.
+
+> **Frase para la reunión:** *"La mantención es para que esto siga funcionando: si
+> se cae, lo levanto. Si después quieres que haga algo distinto a lo que
+> acordamos, eso es trabajo nuevo y te lo cotizo por hora. Así no te cobro todos
+> los meses por algo que capaz no necesitas."*
+
+### Soporte al equipo — qué cubre y qué no
+
+**Atender al grupo de usuarios del entorno.**
+
+| ✅ Cubierto por la bolsa | ❌ Se cotiza aparte |
+|---|---|
+| Consultas de uso del entorno | Instalar a usuarios nuevos (cargo único por persona) |
+| Ayuda para resolver casos nuevos con las herramientas | Curso de fundamentos para gente que entra después |
+| Problemas de acceso o configuración | Desarrollos a medida sobre el entorno |
+| Ajustes de la instalación existente | |
+
+**El curso de fundamentos no lleva bolsa mensual:** se dicta y se cierra.
+
+---
+
+Cada uno se calcula distinto, porque el costo se comporta distinto.
 
 ### Proyecto (Digitalizar · Automatizar · Anticipar) — % anual del valor
 
@@ -126,9 +180,9 @@ industria: **15–20% anual**.
 > hora. El cotizador muestra cuántos minutos cubre para que quede a la vista antes
 > de prometer.
 
-### Productividad con IA — bolsa por usuarios iniciales
+### Soporte al equipo (Productividad con IA) — bolsa por usuarios
 
-Acá no aplica el porcentaje: el costo de soportar el entorno escala con **cuánta
+Acá no aplica el porcentaje: el costo de atender al grupo escala con **cuánta
 gente lo usa**, no con lo que se pagó por instalarlo.
 
 **Bolsa mensual = usuarios iniciales × horas por usuario × tarifa**, con un

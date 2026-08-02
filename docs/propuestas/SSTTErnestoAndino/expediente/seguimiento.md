@@ -135,7 +135,8 @@
 - Soporte inicial (2 semanas)
 
 **Presupuesto:** [Según banda elegida]  
-**Mantención post-lanzamiento:** $2-5K/mes
+**Mantención de operación post-lanzamiento:** 15-20% anual del valor del servicio  
+**Soporte al equipo (si contrata Productividad):** bolsa mensual según usuarios
 
 **Responsable:** [A llenar]  
 **Estatus:** [A llenar]
