@@ -238,7 +238,54 @@
             <p><strong>Confidencialidad:</strong> Se firmará NDA antes del inicio</p>
             <p><strong>Cancelación:</strong> Sin penalidad antes de inicio de Fase 1. Post-inicio: se prorratea según días utilizados</p>
             <p><strong>Responsables:</strong> Se designará revisor del cliente para control de entregas</p>
+            <p><strong>Documento tributario:</strong> El servicio se documenta con <strong>boleta de honorarios electrónica</strong> emitida por Patricio Ferrer, persona natural. <strong>No se emite factura y la operación no está afecta a IVA</strong>, por lo que no genera crédito fiscal para el CLIENTE. El gasto se acredita con la boleta.</p>
+            <p><strong>Retención:</strong> Los valores de esta cotización son <strong>netos para el prestador</strong>. Si el CLIENTE es contribuyente de primera categoría, debe practicar la retención de impuesto vigente sobre la boleta y enterarla en Tesorería; <strong>dicha retención se agrega al valor cotizado</strong>, de modo que el prestador perciba el monto neto aquí indicado. Si el CLIENTE no está obligado a retener, el prestador declara y paga el impuesto por su cuenta.</p>
         </div>
+
+        <div class="summary-box" style="border-left-color: #ffc107; background: #fff9e6;">
+            <p style="margin-bottom: 8px;"><strong>Desembolso total del cliente</strong></p>
+            <p style="margin-bottom: 10px; font-size: 0.9em;">Confirma la tasa vigente en sii.cl antes de entregar la cotización: la retención de honorarios está en alza gradual programada por ley, así que el valor cambia de un año a otro.</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px;">
+                <div>
+                    <label style="font-size: 0.85em;">Valor neto cotizado</label>
+                    <input type="number" id="neto" placeholder="450000">
+                </div>
+                <div>
+                    <label style="font-size: 0.85em;">Retención vigente (%)</label>
+                    <input type="number" id="tasa" step="0.25" value="10">
+                </div>
+            </div>
+            <table style="margin-top: 12px; margin-bottom: 0;">
+                <tbody>
+                    <tr><td>Monto bruto de la boleta</td><td id="bruto" style="font-weight: bold;">—</td></tr>
+                    <tr><td>Retención que entera el cliente</td><td id="retencion">—</td></tr>
+                    <tr><td><strong>Recibe el prestador</strong></td><td id="liquido" style="font-weight: bold;">—</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <script>
+            (function () {
+                function pesos(n) { return '$' + Math.round(n).toLocaleString('es-CL'); }
+                function calcular() {
+                    var neto = Number(document.getElementById('neto').value) || 0;
+                    var tasa = Number(document.getElementById('tasa').value) || 0;
+                    var bruto = document.getElementById('bruto');
+                    var ret = document.getElementById('retencion');
+                    var liq = document.getElementById('liquido');
+                    if (!neto || tasa <= 0 || tasa >= 100) {
+                        bruto.textContent = ret.textContent = liq.textContent = '—';
+                        return;
+                    }
+                    var montoBruto = neto / (1 - tasa / 100);
+                    bruto.textContent = pesos(montoBruto);
+                    ret.textContent = pesos(montoBruto - neto);
+                    liq.textContent = pesos(neto);
+                }
+                document.getElementById('neto').addEventListener('input', calcular);
+                document.getElementById('tasa').addEventListener('input', calcular);
+            })();
+        </script>
 
         <div class="form-group">
             <label>Notas Finales:</label>
