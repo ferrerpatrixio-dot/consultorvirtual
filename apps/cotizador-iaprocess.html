@@ -353,10 +353,11 @@
                 <div class="form-group">
                     <label>Condiciones de pago</label>
                     <select id="condicionesPago" onchange="actualizar()">
-                        <option value="50-50">50% Adelanto | 50% Al Término</option>
-                        <option value="100">100% Adelanto</option>
                         <option value="30-70">30% Adelanto | 70% Al Término</option>
+                        <option value="50-50" selected>50% Adelanto | 50% Al Término</option>
+                        <option value="100">100% Adelanto</option>
                     </select>
+                    <p class="nota" id="notaPago">Mientras antes paga, mayor el descuento de primer contrato.</p>
                 </div>
                 <div class="form-group">
                     <label>Vigencia de la oferta (días)</label>
@@ -607,6 +608,20 @@
             } else {
                 palanca.style.display = 'none';
             }
+        }
+
+        // La nota bajo el selector de pago muestra qué gana el cliente por pagar antes
+        var notaPago = document.getElementById('notaPago');
+        if (esPrimero && descontable > 0) {
+            var comparativa = ['30-70', '50-50', '100'].map(function (p) {
+                var pct = MATRIZ[p][nivelServicios];
+                var monto = descontable * (pct / 100);
+                var texto = NOMBRE_PAGO[p] + ': ' + pct + '%' + (monto ? ' (' + fmt(monto) + ')' : '');
+                return p === pago ? '<strong style="color:#667eea;">' + texto + '</strong>' : texto;
+            }).join(' · ');
+            notaPago.innerHTML = 'Con ' + numServicios + ' servicio(s) — ' + comparativa;
+        } else {
+            notaPago.textContent = 'Mientras antes paga, mayor el descuento de primer contrato.';
         }
 
         var descuentoNombre = 'Primer contrato · ' + numServicios + ' servicio(s), pago ' + (NOMBRE_PAGO[pago] || '');
