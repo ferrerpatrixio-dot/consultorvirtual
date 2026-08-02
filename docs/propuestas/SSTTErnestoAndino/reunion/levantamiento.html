@@ -1,0 +1,835 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Levantamiento - CONSULTORAVIRTUAL</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .page-break {
+            max-width: 900px;
+            background: white;
+            margin: 20px auto;
+            padding: 60px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .nav-buttons {
+            max-width: 900px;
+            margin: 20px auto;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .nav-buttons a {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .nav-buttons a:hover { background: #764ba2; }
+        h1 { color: #667eea; margin-bottom: 15px; font-size: 2em; text-align: center; }
+        h2 { color: #667eea; margin-top: 40px; margin-bottom: 20px; font-size: 1.5em; border-bottom: 2px solid #e9ecef; padding-bottom: 10px; }
+        h3 { color: #764ba2; margin-top: 25px; margin-bottom: 15px; font-size: 1.1em; }
+        p { margin-bottom: 15px; }
+        ul, ol { margin-left: 20px; margin-bottom: 15px; }
+        li { margin-bottom: 8px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; vertical-align: top; }
+        th { background: #667eea; color: white; }
+        tr:nth-child(even) { background: #f8f9fa; }
+        .termometro {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 25px 0;
+            text-align: center;
+        }
+        .termometro h3 { color: white; margin-top: 0; }
+        .termometro a {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 12px 30px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 1.1em;
+        }
+        .guion {
+            background: #fff9e6;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-style: italic;
+        }
+        .bloque {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        .bloque-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .bloque-header h3 { margin: 0; color: #667eea; font-size: 1.2em; }
+        .tiempo {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        .critico { border-left-color: #dc3545; background: #fff5f5; }
+        .critico .bloque-header h3 { color: #dc3545; }
+        .critico .tiempo { background: #dc3545; }
+        .alerta {
+            background: #fff5f5;
+            border: 2px solid #dc3545;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .alerta strong { color: #dc3545; }
+        .nota {
+            background: #f8f9fa;
+            border-left: 3px solid #999;
+            padding: 12px 15px;
+            margin: 15px 0;
+            font-size: 0.92em;
+            color: #555;
+        }
+        input[type="text"], input[type="number"], input[type="tel"], input[type="date"], textarea, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95em;
+        }
+        textarea { min-height: 60px; resize: vertical; }
+        .campo { margin-bottom: 12px; }
+        .campo label { display: block; font-weight: 600; margin-bottom: 4px; font-size: 0.9em; color: #555; }
+        .campo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .captura {
+            background: #f8f9fa;
+            border: 2px solid #667eea;
+            padding: 25px;
+            border-radius: 6px;
+            margin: 25px 0;
+        }
+        .calc-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 10px;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .calc-total {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 10px;
+            align-items: center;
+            padding: 15px 0 5px;
+            border-top: 3px solid #667eea;
+            margin-top: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .semaforo-box { padding: 18px; border-radius: 6px; margin: 15px 0; }
+        .rojo { background: #fff5f5; border-left: 5px solid #dc3545; }
+        .amarillo { background: #fff9e6; border-left: 5px solid #ffc107; }
+        .verde { background: #f0fff4; border-left: 5px solid #28a745; }
+        .rojo h3 { color: #dc3545; margin-top: 0; }
+        .amarillo h3 { color: #b8860b; margin-top: 0; }
+        .verde h3 { color: #28a745; margin-top: 0; }
+        .checklist li { list-style: none; margin-left: -20px; }
+        .checklist input { margin-right: 8px; }
+        .cta-cotizacion {
+            background: #f0fff4;
+            border: 3px solid #28a745;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .cta-cotizacion h3 { color: #28a745; margin-top: 0; }
+        .cta-cotizacion a {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 14px 35px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 1.05em;
+        }
+        .prohibido {
+            background: #fff5f5;
+            border: 2px dashed #dc3545;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .footer { margin-top: 50px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 0.9em; color: #999; text-align: center; }
+        .print-button { text-align: center; margin: 30px 0; }
+        .print-button button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            border-radius: 4px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        @media print {
+            body { background: white; padding: 0; }
+            .nav-buttons, .print-button, .termometro a { display: none; }
+            .page-break { box-shadow: none; padding: 20px; max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-buttons">
+        <a href="presentacion.html">← Presentación</a>
+        <a href="../index.html">Inicio</a>
+        <a href="cotizacion.html">Cotización →</a>
+    </div>
+
+    <div class="page-break">
+        <h1>🎤 Formulario de Levantamiento</h1>
+        <p style="text-align: center; color: #666;"><em>Primera entrevista con el cliente · 1 hora exacta · Esta reunión es gratis</em></p>
+
+        <div class="alerta">
+            <p style="margin: 0;"><strong>Objetivo real de esta reunión:</strong> salir con las visitas de la semana agendadas y la cifra de dinero perdido validada en voz alta por el cliente. <strong>No es cerrar el diagnóstico.</strong></p>
+        </div>
+
+        <div class="prohibido">
+            <p style="margin-bottom: 8px;"><strong>Reglas de oro</strong></p>
+            <ul style="margin-bottom: 0;">
+                <li>El dueño te da 4 horas en TODO el proyecto. Esta gasta 1 de esas 4.</li>
+                <li>Hablas de plata, máquinas y trabajo. <strong>Nunca de software.</strong></li>
+                <li><strong>Prohibido decir:</strong> transformación digital · sinergia · escalabilidad · innovación · "solución tecnológica".</li>
+            </ul>
+        </div>
+
+        <div class="termometro">
+            <h3>🌡️ Termómetro de Madurez (Fase 0)</h3>
+            <p style="margin-bottom: 5px;">Si el cliente todavía no lo respondió, que lo haga antes o durante la reunión.</p>
+            <p style="margin-bottom: 0; font-size: 0.9em; opacity: 0.9;">8 preguntas · 5 minutos · sin costo</p>
+            <a href="https://aiprocess.cl/test" target="_blank">Abrir el test →</a>
+        </div>
+
+        <div class="campo">
+            <label>Resultado del termómetro (si ya lo hizo):</label>
+            <select id="estado-mmaod">
+                <option value="">— No lo ha respondido —</option>
+                <option>CIMIENTOS — sin orden, sin datos</option>
+                <option>ORDEN_SIN_DATOS — proceso definido, nada registrado</option>
+                <option>DATOS_SIN_ORDEN — hay datos, proceso indefinido</option>
+                <option>EN_CONSTRUCCION — avanzando en ambos ejes</option>
+                <option>BASE_LISTA — orden + datos suficientes</option>
+            </select>
+        </div>
+
+        <h2>1. Antes de entrar — 5 minutos</h2>
+
+        <table>
+            <thead>
+                <tr><th style="width: 55%;">Revisa</th><th>Anota</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Web / Instagram / Facebook: ¿qué venden y a quién?</td><td><input type="text" placeholder="Rubro y producto en 1 línea"></td></tr>
+                <tr><td>Cuántos locales, sucursales, camiones o bodegas</td><td><input type="text" placeholder="¿Todo en un lugar o repartido?"></td></tr>
+                <tr><td>Región / comuna</td><td><input type="text" placeholder="Fuera de la RM: ojo con internet"></td></tr>
+                <tr><td>¿Aparece equipo, fotos de personal?</td><td><input type="text" placeholder="Estimación de headcount"></td></tr>
+                <tr><td>¿Carro de compra, Bsale/Transbank visible?</td><td><input type="text" placeholder="Pista del software de facturación"></td></tr>
+            </tbody>
+        </table>
+
+        <div class="nota">
+            <strong>Lleva:</strong> cuaderno o el celular con esta guía. Nada de notebook abierto ni presentación en pantalla.
+        </div>
+
+        <h2>2. Apertura — 3 minutos</h2>
+
+        <div class="guion">
+            <p>"Gracias por el tiempo. Te voy a robar una hora y no más, porque sé que tu hora es cara.</p>
+            <p>Yo no vengo a venderte un sistema. Vengo a mirar dónde se te está yendo plata todos los días sin que te des cuenta: repetir trabajo, esperar, corregir, pedidos que se caen.</p>
+            <p>Lo que hacemos es esto: yo miro tu operación, te digo con números cuánto te cuesta hoy, y tú decides si vale la pena arreglarlo. Si no vale la pena, te lo digo y no te cobro por venderte humo.</p>
+            <p>En esta hora te hago preguntas. La próxima semana vengo a ver el trabajo con tu gente — a ti no te molesto más. Y después te entrego un informe con el mapa de tu proceso, dónde está el problema y qué se hace.</p>
+            <p>¿Te parece? Partamos por lo que más te está doliendo hoy."</p>
+        </div>
+
+        <div class="nota">
+            <strong>Si pregunta el precio de inmediato:</strong> "Todavía no sé qué tienes. Si te tiro un número ahora te estoy mintiendo. Dame la hora, la semana de visitas, y el informe te llega con el número. Ahí decides."
+        </div>
+
+        <h2>3. Bloques de preguntas — 45 minutos</h2>
+
+        <div class="bloque">
+            <div class="bloque-header">
+                <h3>BLOQUE A — Dolor y qué ya intentó</h3>
+                <span class="tiempo">7 min</span>
+            </div>
+            <table>
+                <thead><tr><th style="width: 50%;">Pregunta</th><th>Respuesta</th></tr></thead>
+                <tbody>
+                    <tr><td>"Si mañana pudieras arreglar UNA sola cosa del negocio, ¿cuál?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Qué es lo que te tiene despierto en la noche del negocio?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Hace cuánto que pasa esto? ¿Qué lo empeoró?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Ya intentaste arreglarlo? ¿Con quién? ¿Cómo terminó?"<br><em style="font-size: 0.85em; color: #dc3545;">Si dice "vino uno, hizo un informe y desapareció" → debes prometer implementación, no diagnóstico</em></td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Tienes algún sistema que compraste y que hoy nadie usa?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Quién decide acá si esto se hace o no?"<br><em style="font-size: 0.85em;">Si no es él, la reunión valió la mitad</em></td><td><textarea></textarea></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="bloque">
+            <div class="bloque-header">
+                <h3>BLOQUE B — Operación: cómo entra y sale el trabajo</h3>
+                <span class="tiempo">10 min</span>
+            </div>
+            <p style="font-size: 0.9em; color: #666;"><em>Todo este bloque es la materia prima del BPMN que arma ARQUITECTO.</em></p>
+            <table>
+                <thead><tr><th style="width: 50%;">Pregunta</th><th>Respuesta</th></tr></thead>
+                <tbody>
+                    <tr><td>"Cuéntame un pedido de principio a fin: ¿cómo te llega?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Y después qué pasa? ¿Quién lo toma?"<br><em style="font-size: 0.85em;">Repetir "¿y después?" hasta la entrega</em></td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Dónde se anota? ¿En qué queda escrito?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿En qué parte se te atasca siempre?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Qué pasa cuando algo sale mal — un cliente que reclama?"<br><em style="font-size: 0.85em;">La ruta de excepción es la que más plata quema</em></td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Cuántos de esos haces al día / semana? ¿En temporada alta?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Cuánto se demora hoy? ¿Cuánto debería demorarse?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"Si mañana falta [la persona clave], ¿el proceso sigue?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Hay algo que se anote dos veces, en dos partes distintas?"<br><em style="font-size: 0.85em;">Doble digitación = ahorro fácil y medible</em></td><td><textarea></textarea></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="bloque critico">
+            <div class="bloque-header">
+                <h3>⭐ BLOQUE C — Dinero perdido</h3>
+                <span class="tiempo">10 min</span>
+            </div>
+            <div class="alerta">
+                <p style="margin: 0;"><strong>Sin una cifra en pesos no hay propuesta.</strong> No salgas de este bloque sin un número, aunque sea estimado a ojo. Repite en voz alta: <em>"O sea, más o menos $X al mes. ¿Te suena razonable?"</em></p>
+            </div>
+            <table>
+                <thead><tr><th style="width: 50%;">Pregunta</th><th>Respuesta</th></tr></thead>
+                <tbody>
+                    <tr><td>"¿Cuántas horas al día se van en [el atasco]? ¿De cuánta gente?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Cuánto le pagas más o menos a esa persona al mes?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Se pagan horas extra por esto? ¿Cuánto al mes?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Cuántas veces al mes hay que rehacer algo? ¿Cuánto cuesta cada vez?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Se pierde material, se vence, se echa a perder? ¿Cuánto al mes?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Se te han caído ventas por no llegar a tiempo o no tener stock?"<br><em style="font-size: 0.85em;">Casi siempre es el número más grande</em></td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Pagas multas, devoluciones o notas de crédito por errores?"</td><td><textarea></textarea></td></tr>
+                    <tr><td><strong>⭐ "¿Cuántos llamados, mensajes o correos reciben al día que no deberían existir?"</strong></td><td><textarea></textarea></td></tr>
+                    <tr><td style="padding-left: 30px;">↳ "¿Cuánto se demoran en atender cada uno?"</td><td><textarea></textarea></td></tr>
+                    <tr><td style="padding-left: 30px;">↳ "¿Qué es lo que más preguntan?"</td><td><textarea></textarea></td></tr>
+                </tbody>
+            </table>
+
+            <h3>💡 Por qué el contacto evitable es la mejor pregunta del bloque</h3>
+            <p>Las otras preguntas obligan al dueño a <strong>estimar</strong> algo que nunca midió. El contacto evitable se <strong>cuenta</strong>: el volumen lo sabe, o lo sabe quien contesta el teléfono, y sale de inmediato.</p>
+            <p>Y tiene una ventaja doble: <strong>el número y el diagnóstico salen juntos.</strong> Cada llamado que no debería existir es un proceso que falló antes.</p>
+            <table>
+                <thead><tr><th>Lo que más preguntan</th><th>El proceso que falló</th></tr></thead>
+                <tbody>
+                    <tr><td>«¿A qué hora era mi hora?»</td><td>Nadie confirma la cita</td></tr>
+                    <tr><td>«¿Ya llegó mi pedido?»</td><td>El estado no es visible para el cliente</td></tr>
+                    <tr><td>«¿Me llegó la factura?»</td><td>El envío no queda registrado</td></tr>
+                    <tr><td>«¿Con quién hablo de esto?»</td><td>No hay responsable del proceso</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="bloque">
+            <div class="bloque-header">
+                <h3>BLOQUE D — Sistemas y conectividad</h3>
+                <span class="tiempo">7 min</span>
+            </div>
+            <table>
+                <thead><tr><th style="width: 50%;">Pregunta</th><th>Respuesta</th></tr></thead>
+                <tbody>
+                    <tr><td>"¿Con qué facturas? ¿Nubox, Defontana, Bsale, Softland?"<br><em style="font-size: 0.85em; color: #dc3545;">NO se toca. Se convive. Anota el nombre exacto</em></td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Quién lo eligió, tú o tu contador?"<br><em style="font-size: 0.85em;">Si fue el contador, hay veto externo. Nunca propongas cambiarlo</em></td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Qué se lleva en Excel? ¿Quién lo mantiene?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Cuánto se maneja por WhatsApp? ¿Grupo o chats sueltos?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Qué queda en papel o en cuaderno?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Cómo es el internet acá? ¿Se te cae?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿La gente en terreno / bodega tiene señal?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Los computadores de acá son nuevos o viejos?"</td><td><textarea></textarea></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="bloque">
+            <div class="bloque-header">
+                <h3>BLOQUE E — Equipo <span style="font-size: 0.75em; color: #dc3545;">(define el precio)</span></h3>
+                <span class="tiempo">5 min</span>
+            </div>
+            <table>
+                <thead><tr><th style="width: 50%;">Pregunta</th><th>Respuesta</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>"¿Cuántos son en total? ¿Cuántos en [el proceso]?"</strong><br><em style="font-size: 0.85em; color: #dc3545;">Este dato define el tramo de precio. Nada más se negocia</em></td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Cuánto lleva la gente contigo? ¿Se te va seguido?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Quién sería la persona que usa esto todos los días?"<br><em style="font-size: 0.85em;">No es el dueño</em></td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Esa persona maneja bien el computador y el celular?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Hay alguien acá que sepa de computación?"<br><em style="font-size: 0.85em; color: #dc3545;">Pregunta crítica: si la solución NECESITA a esa persona, el proyecto muere</em></td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Quién manda en ese proceso día a día?"<br><em style="font-size: 0.85em;">A quién visito la próxima semana</em></td><td><textarea></textarea></td></tr>
+                    <tr><td><strong>"¿Te interesaría que tu gente trabajara con IA en el día a día — no para cambiar el proceso, sino para que cada uno rinda más?"</strong><br><em style="font-size: 0.85em;">Abre «Puesta en marcha de IA». Se vende suelto, sin Fase 1 y sin madurez mínima</em></td><td><textarea></textarea></td></tr>
+                    <tr><td>↳ Si dice que sí: "¿cuántos de ellos?" y "¿alguno ya usa ChatGPT o similar?"<br><em style="font-size: 0.85em;">Define cuántos van a curso y cuántos solo a entorno</em></td><td><textarea></textarea></td></tr>
+                </tbody>
+            </table>
+
+            <div class="alerta">
+                <p style="margin: 0;"><strong>Nunca lo llames «capacitación» ni «alfabetización».</strong> Ponen al cliente en posición de ignorante. Se nombra lo que gana, no lo que le falta: «puesta en marcha», «que tu gente trabaje con IA».</p>
+            </div>
+        </div>
+
+        <div class="bloque">
+            <div class="bloque-header">
+                <h3>BLOQUE F — Financiamiento <span style="font-size: 0.75em;">(obligatorio)</span></h3>
+                <span class="tiempo">6 min</span>
+            </div>
+            <table>
+                <thead><tr><th style="width: 50%;">Pregunta</th><th>Respuesta</th></tr></thead>
+                <tbody>
+                    <tr><td>"¿Cómo piensas financiar esto: con recursos propios o postulando a algún instrumento (Sercotec, CORFO, otro)?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Has postulado antes a algún fondo? ¿Te adjudicaste?"</td><td><textarea></textarea></td></tr>
+                    <tr><td>"Si es fondo: ¿a cuál, y sabes cuándo abre la convocatoria?"<br><em style="font-size: 0.85em;">Su calendario fija nuestra fecha de inicio, no nosotros</em></td><td><textarea></textarea></td></tr>
+                    <tr><td>"¿Podrías financiar un primer paso acotado con recursos propios, y postular después para la solución mayor?"</td><td><textarea></textarea></td></tr>
+                </tbody>
+            </table>
+
+            <div class="alerta">
+                <p><strong>Argumento si duda:</strong> "El informe que te entrego es justo el papel que te piden para postular: el diagnóstico, el plan y la cotización. Lo pagas ahora chico, y con eso postulas a lo grande."</p>
+                <p style="margin-bottom: 0;"><strong>La Fase 1 siempre la paga el cliente.</strong> Las bases Crece solo permiten rendir compras posteriores a la firma con el Agente Operador, así que un diagnóstico hecho para postular nunca es reembolsable. <strong>No prometas plazos ni porcentajes de Sercotec.</strong></p>
+            </div>
+        </div>
+
+        <h2>4. Qué se puede hacer — mostrar el abanico</h2>
+        <p><em>Ahora que sabes qué le duele, muéstrale el rango. El objetivo no es cotizar: es que entienda que hay escalas muy distintas y que no todo cuesta lo mismo ni demora lo mismo.</em></p>
+
+        <div class="nota">
+            <strong>La pregunta que ordena todo:</strong> ¿la solución toca el proceso o no? Si no lo toca, es una herramienta personal y se resuelve rápido y barato. Si lo toca, hay que rediseñar quién hace qué — y eso es otro orden de magnitud.
+        </div>
+
+        <h3>Las cuatro escalas</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Qué es</th>
+                    <th>¿Toca el proceso?</th>
+                    <th>Plazo</th>
+                    <th>Orden de precio</th>
+                    <th>¿Necesita alguien que lo controle?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Que tu gente trabaje con IA</strong><br><em style="font-size: 0.85em;">Curso de fundamentos y/o entorno instalado (tipo Hermes)</em></td>
+                    <td>No. Si la persona se va, el proceso sigue igual</td>
+                    <td><strong>1 día</strong></td>
+                    <td>Del orden de <strong>decenas de miles por persona</strong></td>
+                    <td>No</td>
+                </tr>
+                <tr>
+                    <td><strong>Digitalizar</strong><br><em style="font-size: 0.85em;">Dashboard sobre el Excel que ya existe, búsqueda de documentos, correos automáticos</em></td>
+                    <td>No. Cambia el medio, no quién hace qué</td>
+                    <td><strong>2–4 semanas</strong></td>
+                    <td><strong>$1.200.000</strong></td>
+                    <td>Solo si el sistema puede equivocarse (ej. OCR)</td>
+                </tr>
+                <tr>
+                    <td><strong>Automatizar</strong><br><em style="font-size: 0.85em;">Asistente que atiende consultas, agendamiento, validación automática — lo que suele llamarse «modelo agéntico»</em></td>
+                    <td><strong>Sí.</strong> Hay que redefinir quién hace qué y qué pasa con las excepciones</td>
+                    <td><strong>4–8 semanas</strong></td>
+                    <td><strong>$2.500.000 – $4.500.000</strong></td>
+                    <td><strong>Sí, obligatorio.</strong> Alguien con nombre revisa lo que el sistema rechaza o escala</td>
+                </tr>
+                <tr>
+                    <td><strong>Anticipar</strong><br><em style="font-size: 0.85em;">Predecir demanda, inasistencias, fuga de clientes</em></td>
+                    <td>Sí. Cambia cómo se decide</td>
+                    <td><strong>6–12 semanas</strong></td>
+                    <td>Se evalúa caso a caso</td>
+                    <td>Sí, y además exige 6–12 meses de datos limpios</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="alerta">
+            <p style="margin-bottom: 8px;"><strong>El contraste que hay que dejar claro</strong></p>
+            <p style="margin-bottom: 0;">Instalar un entorno de trabajo con IA y montar un asistente que atiende consultas <strong>suenan parecido y no lo son</strong>: uno se resuelve en un día y cuesta decenas de miles por persona; el otro toma más de un mes, cuesta millones, y obliga a rediseñar el proceso y a poner a alguien a revisarlo. Si el cliente no ve esa diferencia, va a comparar peras con camiones y cualquier precio le va a parecer caro.</p>
+        </div>
+
+        <h3>Para su dolor concreto</h3>
+        <p>Llena estas dos filas <strong>en la reunión</strong>, con lo que acabas de escuchar. Es lo que convierte la tabla genérica en algo suyo.</p>
+
+        <table>
+            <thead>
+                <tr><th style="width: 30%;">Camino</th><th>Qué le dices</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Lo que se puede hacer ya, con lo que hoy tiene</strong><br><em style="font-size: 0.85em;">Sin invertir en sistemas, sin cambiar el proceso</em></td>
+                    <td><textarea placeholder="Ej: con la planilla que ya llevan se arma un tablero de estado y se deja de contestar «dónde está mi pedido» por teléfono"></textarea></td>
+                </tr>
+                <tr>
+                    <td><strong>El plan robusto</strong><br><em style="font-size: 0.85em;">Lo que de verdad resuelve el problema de raíz</em></td>
+                    <td><textarea placeholder="Ej: recepción digital + asignación automática + aviso al cliente; se rediseña el flujo y alguien revisa las excepciones"></textarea></td>
+                </tr>
+                <tr>
+                    <td><strong>Qué gana su equipo en el intertanto</strong><br><em style="font-size: 0.85em;">Puesta en marcha de IA — se vende suelto, no espera a la Fase 1</em></td>
+                    <td><textarea placeholder="Ej: 4 personas con el entorno instalado y curso de fundamentos"></textarea></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="guion">
+            <p>"Mira, hay cosas que se pueden hacer de tres maneras muy distintas y conviene que veas la diferencia antes de que hablemos de plata.</p>
+            <p>Lo más liviano es que tu gente trabaje con IA en lo suyo. Eso se instala en un día, es por persona, y no toca nada de tu operación.</p>
+            <p>Después está llevar lo que ya tienes a una pantalla donde se vea solo — eso son semanas y del orden del millón.</p>
+            <p>Y arriba está que el sistema haga un paso del proceso por ti. Eso ya es rediseñar cómo trabajan, toma más de un mes, cuesta varios millones y necesita que alguien acá revise lo que el sistema no sepa resolver.</p>
+            <p>Lo que yo hago en la Fase 1 es decirte cuál de esos tres te conviene de verdad, con tus números. No cuál me conviene venderte."</p>
+        </div>
+
+        <div class="alerta">
+            <p style="margin-bottom: 8px;"><strong>No cotices la Fase 2 en esta reunión.</strong> Los órdenes de precio son para calibrar expectativas, no una propuesta. El número exacto sale de la Fase 1, después de las visitas.</p>
+            <p style="margin-bottom: 0;"><strong>Nunca prometas un porcentaje de ahorro</strong> ni una cantidad de mejoras. Un número prometido es una deuda sobre algo que todavía no mediste.</p>
+        </div>
+
+        <h2>5. Cierre y agendamiento — 10 minutos</h2>
+        <p><em>Esto es la reunión. Todo lo anterior existe para llegar acá.</em></p>
+
+        <div class="guion">
+            <p>"Perfecto. Con lo que me contaste ya tengo dónde mirar. Ahora necesito ver el trabajo funcionando, y para eso NO te necesito a ti — necesito a tu gente, media hora cada uno, mientras trabajan.</p>
+            <p>¿Te sirve el martes y el jueves de esta semana? Yo llego, miro, pregunto, y me voy.</p>
+            <p>El [FECHA, máximo 10 días desde hoy] te traigo el informe: el mapa de tu proceso, dónde se está yendo la plata y qué se hace para pararla. Esa reunión te toma otra hora y ahí decides."</p>
+        </div>
+
+        <h3>A quién visitar (nunca al dueño)</h3>
+        <table>
+            <thead><tr><th>Persona</th><th>Duración</th><th>Nombre y celular</th><th>Fecha/hora</th></tr></thead>
+            <tbody>
+                <tr><td>Quien recibe el trabajo</td><td>30 min</td><td><input type="text"></td><td><input type="text"></td></tr>
+                <tr><td>Quien ejecuta el proceso</td><td>45 min</td><td><input type="text"></td><td><input type="text"></td></tr>
+                <tr><td>Quien factura / cierra</td><td>30 min</td><td><input type="text"></td><td><input type="text"></td></tr>
+                <tr><td>Encargado / jefe de turno</td><td>30 min</td><td><input type="text"></td><td><input type="text"></td></tr>
+            </tbody>
+        </table>
+
+        <h3>Datos que debe tener listos para la visita</h3>
+        <p style="font-size: 0.9em; color: #666;"><em>Pídelos por WhatsApp al salir, en lista corta.</em></p>
+        <ul class="checklist">
+            <li><input type="checkbox"> Un mes de registros del proceso (tal cual está)</li>
+            <li><input type="checkbox"> Cuántas unidades/pedidos en los últimos 3 meses</li>
+            <li><input type="checkbox"> La planilla Excel que usan a diario (una copia)</li>
+            <li><input type="checkbox"> Nombre del software de facturación y quién tiene la clave</li>
+            <li><input type="checkbox"> Lista de reclamos o devoluciones de los últimos 3 meses</li>
+        </ul>
+
+        <div class="alerta">
+            <p style="margin-bottom: 8px;"><strong>Antes de pararte de la silla, deja amarrado:</strong></p>
+            <ul class="checklist" style="margin-bottom: 0;">
+                <li><input type="checkbox"> Fecha y hora de cada visita, <strong>escritas</strong> y confirmadas por WhatsApp ese mismo día</li>
+                <li><input type="checkbox"> Nombre y celular de cada persona a visitar</li>
+                <li><input type="checkbox"> <strong>Fecha comprometida del primer informe</strong> (dicha en voz alta y anotada)</li>
+                <li><input type="checkbox"> Fecha de la reunión de entrega del informe</li>
+            </ul>
+        </div>
+
+        <h2>6. Hoja de captura</h2>
+        <p style="font-size: 0.9em; color: #666;"><em>Llénala al salir, en el auto, antes de moverte. No durante la reunión.</em></p>
+
+        <div class="captura">
+            <h3 style="margin-top: 0;">Identificación</h3>
+            <div class="campo-grid">
+                <div class="campo"><label>Empresa</label><input type="text"></div>
+                <div class="campo"><label>RUT</label><input type="text"></div>
+                <div class="campo"><label>Fecha</label><input type="date" id="fecha-reunion"></div>
+                <div class="campo"><label>Contacto</label><input type="text"></div>
+                <div class="campo"><label>Cargo</label><input type="text"></div>
+                <div class="campo"><label>Celular</label><input type="tel"></div>
+                <div class="campo"><label>Rubro</label><input type="text"></div>
+                <div class="campo"><label>Comuna / Región</label><input type="text"></div>
+                <div class="campo"><label>Ventas aprox. mes</label><input type="text" placeholder="$"></div>
+            </div>
+            <div class="campo">
+                <label>¿Es el que decide?</label>
+                <select><option>Sí</option><option>No — decide otra persona</option></select>
+            </div>
+
+            <h3>Headcount → define el precio</h3>
+            <div class="campo-grid">
+                <div class="campo">
+                    <label>Headcount total</label>
+                    <input type="number" id="headcount" placeholder="Nº de personas">
+                </div>
+                <div class="campo">
+                    <label>En el proceso</label>
+                    <input type="number" placeholder="Nº de personas">
+                </div>
+            </div>
+            <div id="tramo-resultado" class="nota" style="font-size: 1em;">
+                Ingresa el headcount para ver el tramo de precio.
+            </div>
+
+            <h3>Proceso a atacar (uno solo)</h3>
+            <div class="campo"><textarea placeholder="El proceso concreto que se va a abordar"></textarea></div>
+            <div class="campo-grid">
+                <div class="campo"><label>Entra por</label><input type="text" placeholder="WhatsApp / Teléfono / Mostrador / Correo"></div>
+                <div class="campo"><label>Volumen</label><input type="text" placeholder="por día / semana"></div>
+                <div class="campo"><label>Tiempo hoy</label><input type="text"></div>
+                <div class="campo"><label>Debería ser</label><input type="text"></div>
+            </div>
+            <div class="campo"><label>Atasco principal</label><textarea></textarea></div>
+
+            <h3>💰 Dinero perdido / mes</h3>
+            <div class="calc-row"><span>Horas perdidas (h/día × $/h × 22)</span><input type="number" class="calc" placeholder="$"></div>
+            <div class="calc-row"><span>Horas extra</span><input type="number" class="calc" placeholder="$"></div>
+            <div class="calc-row"><span>Reprocesos</span><input type="number" class="calc" placeholder="$"></div>
+            <div class="calc-row"><span>Mermas</span><input type="number" class="calc" placeholder="$"></div>
+            <div class="calc-row"><span>Ventas perdidas</span><input type="number" class="calc" placeholder="$"></div>
+            <div class="calc-row"><span>Multas / devoluciones / notas de crédito</span><input type="number" class="calc" placeholder="$"></div>
+            <div class="calc-row"><span>Contacto evitable</span><input type="number" class="calc" placeholder="$"></div>
+            <div class="calc-total"><span>TOTAL ESTIMADO / MES</span><span id="total-perdido">$0</span></div>
+            <div id="veredicto-plata" class="nota" style="margin-top: 15px;"></div>
+
+            <div class="campo" style="margin-top: 15px;">
+                <label>¿El cliente validó la cifra en voz alta?</label>
+                <select><option>— Seleccionar —</option><option>Sí</option><option>No</option></select>
+            </div>
+
+            <h3>🖥️ Sistemas</h3>
+            <div class="campo-grid">
+                <div class="campo"><label>Software de facturación</label><input type="text" placeholder="Nubox / Defontana / Bsale / Softland / Otro"></div>
+                <div class="campo"><label>Lo eligió</label><select><option>Dueño</option><option>Contador (veto externo)</option></select></div>
+                <div class="campo"><label>Internet</label><select><option>Estable</option><option>Se cae</option><option>Malo</option></select></div>
+                <div class="campo"><label>Señal en terreno</label><select><option>Sí</option><option>No</option></select></div>
+                <div class="campo"><label>Computadores</label><select><option>Nuevos</option><option>Viejos</option></select></div>
+            </div>
+
+            <h3>👥 Equipo</h3>
+            <div class="campo"><label>Usuario final real (nombre y cargo)</label><input type="text"></div>
+            <div class="campo-grid">
+                <div class="campo"><label>Rotación</label><select><option>Baja</option><option>Media</option><option>Alta</option></select></div>
+                <div class="campo"><label>Nivel digital del usuario</label><select><option>Bajo</option><option>Medio</option><option>Alto</option></select></div>
+                <div class="campo"><label>¿Hay alguien técnico?</label><select><option>No</option><option>Sí — ¿es imprescindible?</option></select></div>
+            </div>
+
+            <h3>📜 Historial</h3>
+            <div class="campo"><label>¿Intentó antes? ¿Con quién? ¿Cómo terminó?</label><textarea></textarea></div>
+
+            <h3>💵 Financiamiento</h3>
+            <div class="campo">
+                <select>
+                    <option>— Seleccionar —</option>
+                    <option>PARTICULAR</option>
+                    <option>PÚBLICO — ADJUDICADO</option>
+                    <option>PÚBLICO — EN POSTULACIÓN (baja a amarillo)</option>
+                </select>
+            </div>
+            <div class="campo-grid">
+                <div class="campo"><label>Fondo</label><input type="text"></div>
+                <div class="campo"><label>Convocatoria abre</label><input type="text"></div>
+            </div>
+            <div class="campo"><label>¿Acepta Fase 1 con plata propia?</label><select><option>Sí</option><option>No</option></select></div>
+
+            <h3>📅 Comprometido</h3>
+            <div class="campo-grid">
+                <div class="campo"><label>Fecha del informe</label><input type="date"></div>
+                <div class="campo"><label>Reunión de entrega</label><input type="date"></div>
+            </div>
+        </div>
+
+        <h2>7. Semáforo de calificación</h2>
+        <p><em>Decides al salir, en el auto.</em></p>
+
+        <div class="semaforo-box rojo">
+            <h3>🔴 DESCARTO AUTOMÁTICO — basta UNO</h3>
+            <ul class="checklist">
+                <li><input type="checkbox"> La solución obligaría al cliente a tener o contratar personal técnico</li>
+                <li><input type="checkbox"> Exige reemplazar el software contable, o el contador ya vetó tocarlo</li>
+                <li><input type="checkbox"> El dinero perdido es menor a <strong>$150.000/mes</strong></li>
+                <li><input type="checkbox"> No hay ninguna cifra en pesos y el cliente se niega a estimarla</li>
+                <li><input type="checkbox"> No cabe en 6 semanas, o quiere "arreglar todo" y no acepta acotar</li>
+                <li><input type="checkbox"> Requiere comprar máquinas o equipos nuevos</li>
+                <li><input type="checkbox"> Quien me recibió no decide y no me consigue al que decide</li>
+                <li><input type="checkbox"> No hay internet ni señal celular donde ocurre el proceso</li>
+            </ul>
+        </div>
+
+        <div class="semaforo-box amarillo">
+            <h3>🟡 DUDOSO — sigo, pero con red</h3>
+            <ul>
+                <li>Headcount &lt; 5 y ventas bajo $2M/mes → probablemente no paga ni la Fase 1</li>
+                <li>Depende 100% de un fondo aún NO adjudicado → no entra a proyección de caja</li>
+                <li>Convocatoria del fondo cae en enero–abril → difiere el cierre</li>
+                <li>Quemado por un consultor anterior → hay que comprometer implementación</li>
+                <li>Rotación altísima o usuario con nivel digital muy bajo → solución de ≤2 h de aprendizaje</li>
+                <li>Dinero perdido entre $150.000 y $400.000/mes → valida en las visitas antes de cotizar</li>
+            </ul>
+        </div>
+
+        <div class="semaforo-box verde">
+            <h3>🟢 SIGO — deben darse TODOS</h3>
+            <ul class="checklist">
+                <li><input type="checkbox"> Un proceso concreto identificado, acotable a ≤6 semanas</li>
+                <li><input type="checkbox"> Dinero perdido ≥ $400.000/mes, <strong>validado en voz alta</strong></li>
+                <li><input type="checkbox"> Software contable identificado y acordado que NO se toca</li>
+                <li><input type="checkbox"> Nadie técnico requerido del lado del cliente</li>
+                <li><input type="checkbox"> Usuario final real identificado con nombre</li>
+                <li><input type="checkbox"> Financiamiento marcado</li>
+                <li><input type="checkbox"> Al menos 2 visitas agendadas con fecha, hora y nombre</li>
+                <li><input type="checkbox"> Fecha del informe comprometida en voz alta</li>
+            </ul>
+        </div>
+
+        <div class="campo">
+            <label>Veredicto y motivo</label>
+            <textarea placeholder="🟢 SIGO / 🟡 DUDOSO / 🔴 DESCARTO — motivo"></textarea>
+        </div>
+
+        <div class="cta-cotizacion">
+            <h3>Si el semáforo da 🟢 — entrega la cotización AHORA</h3>
+            <p>No "te la mando el lunes". El momento de máxima intención de compra es justo cuando el dueño acaba de decir en voz alta cuánta plata está perdiendo. Tres días después ya se enfrió.</p>
+            <p style="font-size: 0.9em; color: #666;">Completas a mano solo tres cosas: nombre del cliente · el proceso acotado · la cifra de dinero perdido.</p>
+            <a href="cotizacion.html">Abrir cotización Fase 1 →</a>
+        </div>
+
+        <h2>8. Qué haces al salir, ese mismo día</h2>
+        <ol>
+            <li>WhatsApp confirmando visitas + la lista de datos a preparar</li>
+            <li>Hoja de captura digitalizada → PM</li>
+            <li>Bloque B (operación) → ARQUITECTO, para que empiece el BPMN</li>
+            <li>Marcador de financiamiento → FINANCE</li>
+            <li>Semáforo → si es 🔴, avisa al cliente con honestidad y cierra bien. Un descarte limpio trae referidos</li>
+        </ol>
+
+        <h2>🎙️ Cómo capturar la reunión</h2>
+        <p><strong>Recomendación: grabar con permiso + hoja de captura después. No escribir durante.</strong></p>
+        <table>
+            <thead><tr><th>Método</th><th>Veredicto</th></tr></thead>
+            <tbody>
+                <tr><td>Grabar (con permiso)</td><td>✅ <strong>Recomendado.</strong> Estás presente, miras a los ojos, repreguntas. La cifra queda en la voz del cliente</td></tr>
+                <tr><td>Llenar la hoja en el celular durante</td><td>❌ <strong>No.</strong> Te ve tomando datos, no escuchando</td></tr>
+                <tr><td>Hoja de captura al salir (≤15 min)</td><td>✅ <strong>Obligatorio siempre</strong>, grabes o no</td></tr>
+                <tr><td>Papel para 3-4 números sueltos</td><td>✅ Anotar cifras al vuelo valida ("esto me lo anoto")</td></tr>
+            </tbody>
+        </table>
+
+        <div class="guion">
+            <p><strong>Cómo pedir el permiso (15 segundos):</strong></p>
+            <p>"¿Te molesta si grabo la conversación? Es solo para no hacerte repetir las cosas dos veces ni que se me pase ningún número. Queda entre nosotros y si quieres te la borro apenas entregue el informe."</p>
+        </div>
+
+        <div class="nota">
+            <strong>Si dice que no: no insistas, ni una vez.</strong> Anota a mano y llena la hoja al salir. Una negativa acá es señal de desconfianza — dato útil para el semáforo.
+        </div>
+
+        <div class="alerta">
+            <p style="margin-bottom: 8px;"><strong>🔒 La jugada de confianza</strong></p>
+            <p style="margin-bottom: 8px;">Pedir permiso para grabar abre la puerta natural para ofrecer el NDA en la primera reunión, antes de que exista contrato:</p>
+            <p style="margin-bottom: 8px;"><em>"De hecho, si quieres te mando hoy mismo un acuerdo de confidencialidad firmado por mí. Vas a mostrarme cómo funciona tu negocio por dentro, es lo mínimo."</em></p>
+            <p style="margin-bottom: 0;">Ataca de frente la objeción #1 del segmento: el consultor previo que cobró y desapareció. Casi nadie lo hace en reunión 1. → <a href="confidencialidad.html">Abrir NDA</a></p>
+        </div>
+
+        <div class="print-button">
+            <button onclick="window.print()">🖨️ Imprimir formulario</button>
+        </div>
+
+        <div class="footer">
+            <p>Formulario de Levantamiento | CONSULTORAVIRTUAL</p>
+            <p>Basado en GUIA-PRIMERA-ENTREVISTA-CLIENTE.md v1.0 y MODELO-FASES-Y-PRECIOS.md</p>
+        </div>
+    </div>
+
+    <div class="nav-buttons">
+        <a href="presentacion.html">← Presentación</a>
+        <a href="../index.html">Inicio</a>
+        <a href="cotizacion.html">Cotización →</a>
+    </div>
+
+    <script>
+        document.getElementById('fecha-reunion').valueAsDate = new Date();
+
+        function formatearPesos(n) {
+            return '$' + n.toLocaleString('es-CL');
+        }
+
+        function calcularTotal() {
+            let total = 0;
+            document.querySelectorAll('.calc').forEach(function (input) {
+                total += Number(input.value) || 0;
+            });
+            document.getElementById('total-perdido').textContent = formatearPesos(total);
+
+            const veredicto = document.getElementById('veredicto-plata');
+            if (total === 0) {
+                veredicto.textContent = 'Sin cifra no hay propuesta. No salgas de la reunión sin un número.';
+                veredicto.style.color = '#555';
+            } else if (total < 150000) {
+                veredicto.innerHTML = '<strong>🔴 DESCARTE.</strong> Bajo $150.000/mes no hay payback posible para una Fase 1.';
+                veredicto.style.color = '#dc3545';
+            } else if (total < 400000) {
+                veredicto.innerHTML = '<strong>🟡 DUDOSO.</strong> Margen justo: valida la cifra en las visitas antes de cotizar.';
+                veredicto.style.color = '#b8860b';
+            } else {
+                veredicto.innerHTML = '<strong>🟢 Cifra suficiente.</strong> Confirma que el cliente la validó en voz alta.';
+                veredicto.style.color = '#28a745';
+            }
+        }
+
+        document.querySelectorAll('.calc').forEach(function (input) {
+            input.addEventListener('input', calcularTotal);
+        });
+        calcularTotal();
+
+        document.getElementById('headcount').addEventListener('input', function () {
+            const n = Number(this.value);
+            const salida = document.getElementById('tramo-resultado');
+            if (!n) {
+                salida.textContent = 'Ingresa el headcount para ver el tramo de precio.';
+                salida.style.color = '#555';
+            } else if (n <= 10) {
+                salida.innerHTML = '<strong>TRAMO A — Fase 1: $450.000 CLP</strong> (≤ 10 personas)';
+                salida.style.color = '#667eea';
+            } else {
+                salida.innerHTML = '<strong>TRAMO B — Fase 1: $600.000 CLP</strong> (más de 10 personas)';
+                salida.style.color = '#667eea';
+            }
+        });
+    </script>
+</body>
+</html>
+
+

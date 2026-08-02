@@ -39,12 +39,20 @@
     "confirmado_fecha": null
   },
   "propuesta_inicial": {
+    "fase_0": {
+      "nombre": "Termómetro + reunión inicial",
+      "costo": 0,
+      "estado": "Por realizar"
+    },
     "fase_1": {
-      "nombre": "Diagnóstico",
-      "costo": 450000,
-      "costo_cliente": 135000,
-      "sercotec_cobertura": "70%",
-      "duracion_semanas": "2-4",
+      "nombre": "Consultoría inicial",
+      "costo_tramo_a": 450000,
+      "costo_tramo_b": 600000,
+      "tramo_aplicable": null,
+      "headcount": null,
+      "financiamiento": "particular",
+      "duracion_semanas": "1-2",
+      "entrega_informe_dias_max": 10,
       "estado": "Por proponer"
     },
     "fase_2_opciones": [

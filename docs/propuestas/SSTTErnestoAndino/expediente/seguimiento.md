@@ -50,21 +50,20 @@
 **Fecha estimada:** [A llenar]  
 
 **Tareas:**
+- [ ] Confirmar headcount → define tramo (A: $450.000 hasta 10 personas · B: $600.000 sobre 10)
 - [ ] Preparar contrato Fase 1 (con datos cliente)
-- [ ] Cliente envía datos para Sercotec
-- [ ] Coordinación financiamiento Sercotec
 - [ ] Firma de contrato + confidencialidad
-- [ ] Primer pago ($135K)
+- [ ] Primer pago (50% al firmar)
 
 **Responsable:** [A llenar]  
 **Estatus:** [A llenar]
 
 ---
 
-### Fase: Ejecución Fase 1 (Diagnóstico)
+### Fase: Ejecución Fase 1 (Consultoría inicial)
 **Status:** ⏳ Pendiente  
-**Hito:** Diagnóstico completado  
-**Duración estimada:** 2-4 semanas  
+**Hito:** Informe entregado  
+**Duración estimada:** 1-2 semanas (informe en máximo 10 días)  
 **Fecha inicio:** [A llenar]  
 **Fecha fin:** [A llenar]  
 

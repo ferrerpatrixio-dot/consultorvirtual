@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flujo de Reunión - CONSULTORAVIRTUAL</title>
+    <title>Objeciones y Seguimiento - CONSULTORAVIRTUAL</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -27,6 +27,7 @@
             display: flex;
             gap: 10px;
             justify-content: center;
+            flex-wrap: wrap;
         }
         .nav-buttons a {
             padding: 10px 20px;
@@ -36,190 +37,194 @@
             border-radius: 4px;
         }
         .nav-buttons a:hover { background: #764ba2; }
-        h1 { color: #667eea; margin-bottom: 30px; font-size: 2em; text-align: center; }
+        h1 { color: #667eea; margin-bottom: 15px; font-size: 2em; text-align: center; }
         h2 { color: #667eea; margin-top: 40px; margin-bottom: 20px; font-size: 1.5em; border-bottom: 2px solid #e9ecef; padding-bottom: 10px; }
-        h3 { color: #764ba2; margin-top: 20px; margin-bottom: 15px; font-size: 1.1em; }
-        p { margin-bottom: 15px; line-height: 1.8; }
+        h3 { color: #764ba2; margin-top: 25px; margin-bottom: 12px; font-size: 1.1em; }
+        p { margin-bottom: 15px; }
         ul, ol { margin-left: 20px; margin-bottom: 15px; }
         li { margin-bottom: 8px; }
-        .highlight { background: #f0f4ff; border-left: 4px solid #667eea; padding: 15px; margin: 20px 0; border-radius: 4px; }
-        .step-box { background: #f0f4ff; border-left: 4px solid #667eea; padding: 20px; margin: 15px 0; border-radius: 4px; }
-        .guion { background: #fff9e6; border-left: 4px solid #ffc107; padding: 15px; margin: 15px 0; border-radius: 4px; font-style: italic; }
-        .checklist { background: #f0f4ff; padding: 15px; margin: 15px 0; border-radius: 4px; }
-        .checklist li { margin-bottom: 5px; }
         table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; vertical-align: top; }
         th { background: #667eea; color: white; }
         tr:nth-child(even) { background: #f8f9fa; }
+        .guion { background: #fff9e6; border-left: 4px solid #ffc107; padding: 20px; margin: 15px 0; border-radius: 4px; font-style: italic; }
+        .objecion {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        .objecion h3 { margin-top: 0; color: #667eea; }
+        .alerta { background: #fff5f5; border: 2px solid #dc3545; padding: 15px; border-radius: 4px; margin: 20px 0; }
+        .alerta strong { color: #dc3545; }
+        .nota { background: #f8f9fa; border-left: 3px solid #999; padding: 12px 15px; margin: 15px 0; font-size: 0.92em; color: #555; }
+        .checklist { background: #f0f4ff; padding: 20px; margin: 20px 0; border-radius: 4px; }
+        .checklist ul { list-style: none; margin-left: 0; }
+        .checklist input { margin-right: 8px; }
         .footer { margin-top: 50px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 0.9em; color: #999; text-align: center; }
+        @media print {
+            body { background: white; padding: 0; }
+            .nav-buttons { display: none; }
+            .page-break { box-shadow: none; padding: 20px; max-width: 100%; }
+        }
     </style>
 </head>
 <body>
     <div class="nav-buttons">
         <a href="valores.html">← Anterior</a>
-        <a href="index.html">Inicio</a>
+        <a href="../index.html">Inicio</a>
         <a href="cotizacion.html">Siguiente →</a>
     </div>
 
     <div class="page-break">
-        <h1>🎬 Flujo de Reunión — Paso a Paso</h1>
-        <p><em>Para ejecutar con el cliente. Minuto a minuto.</em></p>
+        <h1>🛡️ Objeciones y Seguimiento</h1>
+        <p style="text-align: center; color: #666;"><em>Qué responder cuando se traba, y qué hacer los días después.</em></p>
 
-        <h2>PRE-REUNIÓN</h2>
-        <div class="checklist">
-            <ul>
-                <li>☐ Llevas: Presentación Ejecutiva (impresa)</li>
-                <li>☐ Llevas: Kit de Diagnóstico (impresa o en phone)</li>
-                <li>☐ Llevas: Tabla de Valores Tipo (referencia personal)</li>
-                <li>☐ Llevas: Contrato de confidencialidad (en blanco para firmar)</li>
-                <li>☐ Datos del cliente: nombre, email, teléfono contacto</li>
-            </ul>
+        <div class="nota">
+            El guión de la reunión en sí está en el <a href="levantamiento.html">Formulario de Levantamiento</a>. Este documento cubre solo lo que pasa cuando el cliente objeta, y el seguimiento posterior.
         </div>
 
-        <h2>MINUTO 1–3: PRESENTACIÓN (tú hablas)</h2>
-        <div class="step-box">
-            <p><strong>Objetivo:</strong> Que entienda quiénes eres y qué ofreces (sin vendedor, sin hype).</p>
+        <h2>Las objeciones y qué responder</h2>
+
+        <div class="objecion">
+            <h3>"¿Cuánto me va a costar?" — preguntado al principio</h3>
+            <div class="guion">
+                <p>"Todavía no sé qué tienes. Si te tiro un número ahora te estoy mintiendo. Dame la hora, la semana de visitas, y el informe te llega con el número. Ahí decides."</p>
+            </div>
+            <p><strong>Por qué:</strong> dar un precio antes de conocer el dolor te deja sin ancla. El precio se entrega al cierre, cuando el cliente ya dijo en voz alta cuánta plata pierde.</p>
         </div>
 
-        <div class="guion">
-            <p>"Hola. Soy Patricio, de CONSULTORAVIRTUAL. Hacemos un trabajo que es raro en Chile: nos importa ganar dinero con IA, no tener IA. Eso significa: si tu proceso está roto, la tecnología solo lo multiplica. Primero ordenamos; después digitalizamos o automatizamos.</p>
-            <p>Esto es lo que hacemos:</p>
-            <ul>
-                <li><strong>Fase 1:</strong> Diagnóstico (2–4 semanas, $450K, ).</li>
-                <li><strong>Fase 2:</strong> Implementar lo que eligieron (Productividad, Digitalizar, Automatizar, o Anticipar).</li>
-            </ul>
-            <p>Nuestras reglas: no necesitan personas técnicas nuevas, sin lock-in, resultados verificables.</p>
-            <p>Entonces: te propongo que hoy hagamos un test rápido (5 minutos), vemos dónde estás, y de eso sale si tiene sentido que hablemos de un diagnóstico."</p>
+        <div class="objecion">
+            <h3>"Es caro"</h3>
+            <div class="guion">
+                <p>"Comparémoslo con lo que ya estás perdiendo. Tú me dijiste que son del orden de [la cifra que él dio] al mes. La Fase 1 cuesta una fracción de eso, una sola vez.</p>
+                <p>Y si al final resulta que no vale la pena arreglarlo, te lo digo y paramos ahí. No te voy a cobrar por venderte humo."</p>
+            </div>
+            <div class="alerta">
+                <p style="margin: 0;"><strong>No bajes el precio.</strong> Está fijado por tramo de headcount y no se negocia en la reunión. Si presiona, la respuesta es el alcance más acotado, no un descuento.</p>
+            </div>
         </div>
 
-        <h2>MINUTO 4–9: TEST MMA-OD (5 preguntas)</h2>
-        <div class="step-box">
-            <p><strong>Objetivo:</strong> Identificar en qué estado están.</p>
-            <p><strong>Usa:</strong> Las 5 preguntas del Kit de Diagnóstico.</p>
-            <p><strong>Nota mientras responden.</strong> Marca cuál sería el estado probable.</p>
+        <div class="objecion">
+            <h3>"Suena a proyecto largo y caro"</h3>
+            <div class="guion">
+                <p>"Mira, parte del trabajo es justamente separar lo que se arregla de inmediato —sin invertir nada y con tu propia gente— de lo que sí necesita un proyecto.</p>
+                <p>Si durante el diagnóstico veo algo obvio, te lo digo en el momento, no espero a la entrega."</p>
+            </div>
+            <div class="alerta">
+                <p style="margin: 0;"><strong>Nunca prometas una cantidad ni un porcentaje de ahorro.</strong> "No te prometo cuántas cosas van a aparecer porque depende de tu operación, pero si están, las vas a saber." Un número prometido es una deuda sobre algo que no controlas.</p>
+            </div>
         </div>
 
-        <h2>MINUTO 10–15: SÍNTESIS (tú analiza en vivo)</h2>
-        <div class="step-box">
-            <p><strong>Objetivo:</strong> Mostrar que entendiste y que tienes un plan.</p>
+        <div class="objecion">
+            <h3>"¿Esto me lo financia Sercotec?"</h3>
+            <div class="guion">
+                <p>"La implementación sí puede postularse. El diagnóstico no, y te explico por qué: las bases solo dejan rendir lo que compras <em>después</em> de firmar con el Agente Operador. Un diagnóstico hecho para postular queda fuera por definición.</p>
+                <p>Pero mira el orden: el informe que te entrego es justo el papel que te van a pedir para postular — el diagnóstico, el plan y la cotización. Lo pagas ahora, chico, y con eso postulas a lo grande."</p>
+            </div>
+            <div class="alerta">
+                <p style="margin: 0;"><strong>No prometas plazos de pago ni porcentajes de Sercotec.</strong> No están verificados, y las bases cambian por región y por convocatoria. Si el cliente va a postular, hay que bajar las bases específicas de SU región antes de decir cualquier cifra.</p>
+            </div>
         </div>
 
-        <div class="guion">
-            <p>"Ojo, esto es un 'termómetro' rápido, no un diagnóstico. Pero veo que:</p>
-            <p><strong>Hoy están en:</strong> [ORDEN_SIN_DATOS / DATOS_SIN_ORDEN / EN_CONSTRUCCION]</p>
-            <p><strong>Lo urgente es:</strong> [El dolor que marcaron]</p>
-            <p><strong>Para resolver eso, tienen dos caminos:</strong></p>
-            <p><strong>Opción A - Diagnóstico (Fase 1):</strong><br>
-            → 2–4 semanas, $450.000 CLP (cotización sujeta a negociación)<br>
-            → Levanto el proceso completo, propongo 3–5 soluciones exactas, presupuestan las que quieran<br>
-            → Quedas con un documento que vale más que lo que pagaste.</p>
-            <p><strong>Opción B - Audit rápida:</strong><br>
-            → 1 semana, $150.000 CLP (ustedes pagan todo)<br>
-            → Fotografía el estado, propongo 3 opciones básicas<br>
-            → Menos detalle, pero más rápido.</p>
-            <p>¿Cuál te parece?"</p>
+        <div class="objecion">
+            <h3>"Ya me pasó: vino uno, hizo un informe y desapareció"</h3>
+            <div class="guion">
+                <p>"Te entiendo, y es la razón por la que la Fase 1 termina en un plan de implementación con plazos y valores, no en un PDF con recomendaciones.</p>
+                <p>Y si quieres, te mando hoy mismo el acuerdo de confidencialidad firmado por mí, antes de que exista contrato. Vas a mostrarme cómo funciona tu negocio por dentro, es lo mínimo."</p>
+            </div>
+            <p><strong>Señal para el semáforo:</strong> si el cliente quedó quemado por un consultor previo, el informe solo no basta. Hay que comprometer implementación o baja a 🟡.</p>
         </div>
 
-        <h2>MINUTO 16–20: RESPUESTA DEL CLIENTE</h2>
-
-        <h3>Si dice "Opción A" (Diagnóstico completo)</h3>
-        <div class="guion">
-            <p>"Excelente. Entonces:</p>
-            <p>1. Te dejo el contrato hoy (o mañana, como prefieras).<br>
-            2. Me dan acceso a: zona de recepción, sistema actual, nombres de técnicos principales.<br>
-            3. En 1 semana empiezo el levantamiento.<br>
-            4. En 2–4 semanas tienen el reporte + propuestas.</p>
-            <p>Mientras tanto, ¿necesitas que tramite el financiamiento, o lo haces tú?"</p>
+        <div class="objecion">
+            <h3>"Necesito pensarlo"</h3>
+            <div class="guion">
+                <p>"Perfecto. Te dejo la propuesta y el acuerdo de confidencialidad firmado.</p>
+                <p>Una cosa: lo que sí me gustaría dejar amarrado hoy son las visitas. No te cuestan nada y no te ocupan a ti — es media hora con tu gente. Si después decides que no, las cancelamos y no pasó nada.</p>
+                <p>¿Te sirve el martes?"</p>
+            </div>
+            <p><strong>Por qué:</strong> agendar las visitas mantiene el proceso vivo aunque la decisión quede pendiente. Es lo único que hay que rescatar de una reunión que no cierra.</p>
         </div>
 
-        <h3>Si dice "Opción B" (Audit rápida)</h3>
-        <div class="guion">
-            <p>"Dale. Entonces:</p>
-            <p>1. Te dejo contrato hoy (1 página).<br>
-            2. Voy 1 o 2 días a observar: recepción, reparación, entrega.<br>
-            3. En 1 semana tienen reporte + 3 propuestas de Fase 2 con valores.<br>
-            4. De ahí deciden si avanzan o no.</p>
-            <p>¿Cuándo podría venir a observar?"</p>
+        <div class="objecion">
+            <h3>"No, gracias"</h3>
+            <div class="guion">
+                <p>"Dale, lo respeto. Una cosa: si en unos meses esto sigue siendo un problema, me escribes y retomamos donde quedamos."</p>
+            </div>
+            <p><strong>Un descarte limpio trae referidos.</strong> Si el semáforo te dio 🔴, dilo con honestidad tú mismo: "mirando lo que me contaste, creo que hoy no te conviene meterte en esto". Esa franqueza es lo que hace que te recomienden.</p>
         </div>
 
-        <h3>Si dice "Necesito pensarlo"</h3>
-        <div class="guion">
-            <p>"Perfecto. Entonces:</p>
-            <p>1. Te dejo esta documentación (muestra: Presentación + Valores).<br>
-            2. Si tienen preguntas, me escriben o me llaman.<br>
-            3. Volvemos a hablar en [X días] con el dueño, si hace falta.</p>
-            <p>¿Para cuándo estaría bien que te llame de nuevo?"</p>
-        </div>
-
-        <h3>Si dice "Es caro"</h3>
-        <div class="guion">
-            <p>"Entiendo. Pero ojo: el diagnóstico: Sercotec paga 70%. Ustedes pagan $135K. Si el dinero es realmente cero hoy, podría hacerle un audit de $50K (bien acotado), solo fotografía.</p>
-            <p>¿Cuál de las dos?"</p>
-        </div>
-
-        <h3>Si dice "No, gracias"</h3>
-        <div class="guion">
-            <p>"Dale, respeto. Una cosa: si en 6 meses la logística sigue siendo un problema, me escriben."</p>
-        </div>
-
-        <h2>MINUTO 20+: CIERRE ADMINISTRATIVO</h2>
+        <h2>Cierre administrativo</h2>
 
         <div class="checklist">
-            <p><strong>Preguntar:</strong></p>
+            <p><strong>Preguntar antes de irte:</strong></p>
             <ul>
-                <li>☐ Nombre completo del contacto principal</li>
-                <li>☐ Email y teléfono</li>
-                <li>☐ ¿Quién es el que decide? ¿Dueño, gerente?</li>
-                <li>☐ ¿Cuándo puedo empezar? (Fase 1) / ¿Cuándo puedo ir a observar? (Audit)</li>
-                <li>☐ ¿Datos del sistema actual? (nombre, credenciales si me autorizan)</li>
+                <li><input type="checkbox"> Nombre completo del contacto principal</li>
+                <li><input type="checkbox"> Email y teléfono</li>
+                <li><input type="checkbox"> ¿Quién es el que decide?</li>
+                <li><input type="checkbox"> Nombre y celular de cada persona a visitar</li>
+                <li><input type="checkbox"> Nombre del software de facturación y quién tiene la clave</li>
             </ul>
         </div>
 
         <div class="checklist">
             <p><strong>Dejar:</strong></p>
             <ul>
-                <li>☐ Contrato firmado (tú + ellos)</li>
-                <li>☐ Documentación impresa (Presentación + Valores)</li>
-                <li>☐ Tu email y teléfono para preguntas</li>
+                <li><input type="checkbox"> Acuerdo de confidencialidad ya firmado por ti</li>
+                <li><input type="checkbox"> Cotización de la Fase 1 (si el semáforo dio 🟢)</li>
+                <li><input type="checkbox"> Tu email y teléfono</li>
             </ul>
         </div>
 
-        <h2>SEGUIMIENTO POST-REUNIÓN</h2>
+        <h2>Seguimiento posterior</h2>
 
-        <h3>Si aceptaron (24h después)</h3>
+        <h3>El mismo día — WhatsApp</h3>
         <div class="guion">
-            <p>"Hola [Nombre],</p>
-            <p>Gracias por la reunión de hoy. Adjunto confirmamos: Fase 1 (Diagnóstico) $450.000 CLP (), duración 2–4 semanas, inicio [Fecha].</p>
-            <p>Para estructurar el financiamiento, deberás contactar a [info si la tienes].</p>
-            <p>Cualquier duda, me escribes. Saludos, Patricio"</p>
+            <p>"Hola [Nombre], gracias por el tiempo de hoy.</p>
+            <p>Te confirmo las visitas: [día] con [persona] y [día] con [persona].</p>
+            <p>Para esa semana necesito que tengan a mano:<br>
+            · Un mes de registros del proceso, tal cual estén<br>
+            · Cuántas unidades/pedidos en los últimos 3 meses<br>
+            · Una copia de la planilla Excel que usan a diario<br>
+            · Lista de reclamos o devoluciones de los últimos 3 meses</p>
+            <p>El [fecha] te llevo el informe. Saludos, Patricio"</p>
         </div>
 
-        <h3>Si dijeron "Necesito pensarlo" (3 días después)</h3>
+        <h3>Si quedó en "lo pienso" — 3 días después</h3>
         <div class="guion">
-            <p>"Hola [Nombre],</p>
-            <p>¿Cómo va? ¿Tuviste chance de mirar la documentación? Si tenés preguntas o querés que nos reunamos con el dueño, avísame.</p>
+            <p>"Hola [Nombre], ¿cómo va?</p>
+            <p>¿Alcanzaste a mirar la propuesta? Si tienes preguntas o quieres que lo veamos con alguien más del equipo, avísame y coordinamos.</p>
             <p>Saludos, Patricio"</p>
         </div>
 
-        <h3>Si dijeron "No" (6 meses después)</h3>
-        <div class="guion">
-            <p>"Hola [Nombre],</p>
-            <p>Pasó un tiempo. ¿Cómo anda la logística? Si en algún momento ven que la IA puede ayudar, me buscan.</p>
-            <p>Saludos, Patricio"</p>
+        <div class="nota">
+            Un solo recordatorio. Si no responde, se deja pasar y se retoma en unos meses. Insistir quema el contacto.
         </div>
+
+        <h3>Lo que haces internamente ese mismo día</h3>
+        <table>
+            <thead>
+                <tr><th>Qué</th><th>A quién</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Hoja de captura digitalizada</td><td>PM</td></tr>
+                <tr><td>Bloque B (operación) para empezar el BPMN</td><td>ARQUITECTO</td></tr>
+                <tr><td>Marcador de financiamiento (particular / público)</td><td>FINANCE</td></tr>
+                <tr><td>Semáforo y motivo</td><td>PM</td></tr>
+            </tbody>
+        </table>
 
         <div class="footer">
-            <p>Flujo de Reunión | CONSULTORAVIRTUAL | 2026-07-30</p>
+            <p>Objeciones y Seguimiento | CONSULTORAVIRTUAL</p>
+            <p>Basado en GUIA-PRIMERA-ENTREVISTA-CLIENTE.md v1.0 y MODELO-FASES-Y-PRECIOS.md</p>
         </div>
     </div>
 
     <div class="nav-buttons">
         <a href="valores.html">← Anterior</a>
-        <a href="index.html">Inicio</a>
+        <a href="../index.html">Inicio</a>
         <a href="cotizacion.html">Siguiente →</a>
     </div>
 </body>
 </html>
-
-
-

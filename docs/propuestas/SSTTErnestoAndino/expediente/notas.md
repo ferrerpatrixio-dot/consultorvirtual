@@ -1,4 +1,4 @@
-# 📝 Notas de Reunión — SSTT Ernesto Andino
+﻿# 📝 Notas de Reunión — SSTT Ernesto Andino
 
 **Fecha reunión:** [A llenar]  
 **Participantes:** [A llenar]  
@@ -30,7 +30,7 @@
 
 ### Pregunta 3: ¿Cómo sabe el cliente cuándo sale su teléfono?
 - [ ] Llama y pregunta
-- [ ] Tú le avisas (cuando te acordás)
+- [ ] Tú le avisas (cuando te acuerdas)
 - [ ] Mensaje automático cuando está listo
 - [ ] Portal donde ve el estado en tiempo real
 
@@ -109,7 +109,8 @@
 - Contacto técnico: [A llenar]
 - Email contacto: [A llenar]
 - Permiso para acceder a: [ ] Recepción [ ] Reparación [ ] Sistema [ ] Datos históricos
-- Financiamiento Sercotec: [ ] Lo tramita cliente [ ] Lo tramitamos nosotros
+- Headcount confirmado: ____ personas → Tramo [ ] A ($450.000) [ ] B ($600.000)
+- Financiamiento declarado: [ ] Particular [ ] Público adjudicado [ ] Público en postulación
 
 **Si dice NO o "Pensemos":**
 - Motivo: [A llenar]
@@ -150,3 +151,4 @@
 
 **Fecha actualización:** [A llenar]  
 **Actualizado por:** [A llenar]
+

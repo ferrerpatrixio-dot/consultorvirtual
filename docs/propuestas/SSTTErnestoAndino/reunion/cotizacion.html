@@ -74,7 +74,7 @@
 <body>
     <div class="nav-buttons">
         <a href="flujo.html">← Anterior</a>
-        <a href="index.html">Inicio</a>
+        <a href="../index.html">Inicio</a>
         <a href="confidencialidad.html">Siguiente →</a>
     </div>
 
@@ -114,35 +114,60 @@
             document.getElementById('fecha').valueAsDate = new Date();
         </script>
 
-        <h2>FASE 1: DIAGNÓSTICO DE MADUREZ</h2>
+        <div class="form-group">
+            <label>Proceso acotado que se aborda:</label>
+            <input type="text" id="proceso" placeholder="Un solo proceso, el que más duele">
+        </div>
+
+        <div class="form-group">
+            <label>Dinero perdido estimado (validado por el cliente):</label>
+            <input type="text" id="perdida" placeholder="$______ al mes">
+        </div>
+
+        <h2>FASE 0: TERMÓMETRO + REUNIÓN INICIAL</h2>
 
         <table>
-            <thead>
-                <tr>
-                    <th>Concepto</th>
-                    <th>Descripción</th>
-                    <th>Costo</th>
-                </tr>
-            </thead>
             <tbody>
                 <tr>
-                    <td><strong>Diagnóstico Completo</strong></td>
-                    <td>Levantamiento de procesos, test MMA-OD, análisis de casos de uso, plan a 6 meses</td>
-                    <td>$450.000</td>
-                </tr>
-                <tr>
-                    <td><strong>Financiamiento Sercotec</strong></td>
-                    <td>70% financiado por Sercotec</td>
-                    <td>-$315.000</td>
-                </tr>
-                <tr class="total-row">
-                    <td colspan="2"><strong>Cliente paga (Fase 1):</strong></td>
-                    <td><strong>$135.000</strong></td>
+                    <td><strong>Test de madurez online</strong> (8 preguntas) + primera entrevista (1 hora)</td>
+                    <td style="width: 140px;"><strong>SIN COSTO</strong></td>
                 </tr>
             </tbody>
         </table>
 
-        <p><strong>Duración:</strong> 2–4 semanas | <strong>Inicio:</strong> [Fecha a confirmar]</p>
+        <h2>FASE 1: CONSULTORÍA INICIAL</h2>
+
+        <p>El precio se define por headcount. Es el único dato que lo determina.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Tramo</th>
+                    <th>Personas</th>
+                    <th>Qué incluye</th>
+                    <th>Precio</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="radio" name="tramo" value="A"> <strong>A</strong></td>
+                    <td>Hasta 10</td>
+                    <td rowspan="2">Mapa BPMN del proceso actual · riesgos y puntos de quiebre · arreglos inmediatos · dinero perdido medido (ya no estimado) · plan de implementación</td>
+                    <td><strong>$450.000</strong></td>
+                </tr>
+                <tr>
+                    <td><input type="radio" name="tramo" value="B"> <strong>B</strong></td>
+                    <td>Más de 10</td>
+                    <td><strong>$600.000</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p><strong>Duración:</strong> 1–2 semanas | <strong>Entrega del informe:</strong> máximo 10 días desde la firma</p>
+
+        <div class="conditions">
+            <p style="margin: 0;"><strong>Financiamiento de la Fase 1: particular.</strong> Las bases del Fondo Crece solo permiten rendir compras posteriores a la firma del contrato con el Agente Operador, por lo que un diagnóstico realizado para postular no es un gasto reembolsable. El informe de la Fase 1 es, en cambio, el documento que se presenta en la postulación.</p>
+        </div>
 
         <h2>FASE 2: IMPLEMENTACIÓN</h2>
 
@@ -191,10 +216,11 @@
         <div class="summary-box">
             <p><strong>Propuesta:</strong></p>
             <ul>
-                <li>✅ Fase 1 (Diagnóstico): <strong>$135.000</strong> (Sercotec cubre 70%)</li>
-                <li>✅ Fase 2 (Implementación): <strong>Banda a seleccionar</strong></li>
-                <li>✅ Mantención: <strong>Estimado $2–5K/mes</strong></li>
-                <li>✅ Modelo: Sin compromiso a largo plazo, revisable cada mes</li>
+                <li>✅ Fase 0 (termómetro + esta reunión): <strong>sin costo</strong></li>
+                <li>✅ Fase 1 (consultoría inicial): <strong>$450.000 o $600.000</strong> según headcount — financiamiento particular</li>
+                <li>✅ Fase 2 (implementación): <strong>banda a seleccionar</strong> — es la fase que sí puede postularse a Sercotec</li>
+                <li>✅ Mantención: <strong>estimado $2–5K/mes</strong></li>
+                <li>✅ Modelo: sin compromiso a largo plazo, revisable cada mes</li>
             </ul>
         </div>
 
@@ -246,9 +272,10 @@
 
     <div class="nav-buttons">
         <a href="flujo.html">← Anterior</a>
-        <a href="index.html">Inicio</a>
+        <a href="../index.html">Inicio</a>
         <a href="confidencialidad.html">Siguiente →</a>
     </div>
 </body>
 </html>
+
 
