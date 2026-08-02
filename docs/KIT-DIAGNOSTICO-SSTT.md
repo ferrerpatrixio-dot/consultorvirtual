@@ -31,7 +31,7 @@
 ### Pregunta 3: ¿Cómo sabe el cliente cuándo sale su teléfono?
 
 - [ ] Llama y pregunta
-- [ ] Tú le avisas (cuando te acordás)
+- [ ] Tú le avisas (cuando te acuerdas)
 - [ ] Mensaje automático cuando está listo
 - [ ] Portal donde ve el estado en tiempo real
 
@@ -136,15 +136,21 @@
 
 ## PARTE 4: OFERTA TIPO PARA ESTA REUNIÓN
 
-### Fase 1: Diagnóstico
+### Fase 0: Termómetro + esta reunión
 
-**Costo:** $450.000 CLP  
-** financia:** 70% (paga $135.000)  
-**Duración:** 2–4 semanas  
+**Costo:** sin costo  
+**Duración:** 5 minutos el test + 1 hora la reunión  
+
+### Fase 1: Consultoría inicial
+
+**Costo:** $450.000 CLP hasta 10 personas · $600.000 CLP sobre 10 personas  
+**Financiamiento:** particular  
+**Duración:** 1–2 semanas (informe en máximo 10 días)  
 
 **Incluye:**
 - Levantamiento de proceso (estado actual)
 - Identificación de 3 casos de uso posibles (Productividad + Digitalizar + Automatizar)
+- Arreglos inmediatos: lo que se corrige sin invertir nada
 - Plan de implementación con presupuestos tipo
 - Documentación del proceso
 
@@ -185,7 +191,7 @@
 
 ### Si dicen "es muy caro"
 
-> "El diagnóstico cuesta $450K, pero  te financia . Tú pagas . Es una inversión de 2-4 semanas para tener un plan donde no hay hoy. Y si después decidís no implementar, quedaste con un documento que vale más que lo que pagaste."
+> "Comparémoslo con lo que ya estás perdiendo: me dijiste que son del orden de $____ al mes, todos los meses. La Fase 1 cuesta una fracción de eso, una sola vez. Y si al final resulta que no vale la pena arreglarlo, te lo digo y paramos ahí."
 
 ### Si dicen "implementamos nosotros después"
 
@@ -193,15 +199,14 @@
 
 ### Si dicen "no tenemos presupuesto"
 
-> "Entendido. Te dejo dos opciones:
-> 1.  te financia el diagnóstico — 70% de los $450K se lo pedís a ellos.
-> 2. Empezamos con una auditoría más chica: 1 semana, $150K, solo fotografía el estado actual + propuesta.
+> "Entendido. Lo importante es el orden: la Fase 1 la pagas tú, y es justamente el papel que te van a pedir si después postulas a un fondo para financiar la implementación. Al revés no funciona — un diagnóstico hecho antes de firmar con el fondo no es rendible.
 >
-> ¿Cuál te va?"
+> Y si quieres partir por algo más liviano, está la puesta en marcha de IA para tu equipo: se instala en días y se paga por persona."
 
 ---
 
 *Documento de referencia: `docs/CATALOGO-SERVICIOS.md` · `docs/ESCALERA-IA-POR-MADUREZ.md`*
+
 
 
 

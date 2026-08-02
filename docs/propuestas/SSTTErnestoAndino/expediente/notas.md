@@ -99,8 +99,9 @@
 ## Decisión Comercial
 
 **Cliente elegió:**
-- [ ] Opción A: Fase 1 (Diagnóstico)
-- [ ] Opción B: Audit rápida ($150K)
+- [ ] Fase 1 — Tramo A ($450.000, hasta 10 personas)
+- [ ] Fase 1 — Tramo B ($600.000, más de 10 personas)
+- [ ] Puesta en marcha de IA para el equipo (se vende suelto, sin Fase 1)
 - [ ] Pendiente decisión (vuelvo a llamar)
 - [ ] Cliente dice No
 

@@ -5,28 +5,40 @@ Estos son **precios sin detalle**: se refinan en Fase 1, se confirman en Fase 2.
 
 ---
 
-## FASE 1: DIAGNÓSTICO
+## FASE 0: TERMÓMETRO + REUNIÓN INICIAL
 
-### Valor fijo
+Sin costo. Test online de 8 preguntas (5 min) + primera entrevista (1 hora).
 
-| Concepto | CLP | USD equiv | Quién lo financia |
+---
+
+## FASE 1: CONSULTORÍA INICIAL
+
+### Valor por tramo
+
+El headcount es el **único** dato que define el tramo. Nada más se negocia.
+
+| Tramo | Personas | CLP | Financiamiento |
 |---|---|---|---|
-| **Diagnóstico completo** | $450.000 | ~$450 |  70% + Cliente 30% |
-| **Diagnóstico acotado** (solo fotografía estado) | $150.000 | ~$150 | Cliente 100% |
+| **A** | Hasta 10 | $450.000 | Particular |
+| **B** | Más de 10 | $600.000 | Particular |
 
-### Qué incluye el completo
+> ⚠️ **La Fase 1 es siempre particular.** Las bases Crece solo permiten rendir
+> compras posteriores a la firma con el Agente Operador, así que un diagnóstico
+> hecho para postular nunca es reembolsable. Es la Fase 2 la que se postula.
 
-- Entrevistas (dueño, operarios, clientes)
-- Levantamiento de procesos en sitio (1–2 días)
-- Test MMA-OD
-- Análisis de 3–5 casos de uso
-- Documento + presentación + plan a 6 meses
-- Valores estimados para cada caso (Fase 2)
+### Qué incluye
+
+- Entrevistas (dueño, operarios)
+- Visitas de observación en terreno con el personal operativo
+- Mapa BPMN del proceso tal como funciona hoy
+- Riesgos y puntos de quiebre
+- Arreglos inmediatos: lo que se corrige sin invertir nada
+- Dinero perdido medido, ya no estimado
+- Plan de implementación con valores estimados para la Fase 2
 
 ### Duración
 
-- **Inicio a decisión:** 1 semana
-- **Inicio a cierre (si dicen sí):** 2–4 semanas
+- **1–2 semanas.** El informe se entrega en máximo 10 días desde la firma.
 
 ---
 
@@ -125,23 +137,23 @@ Aplica a todos excepto Productividad (que es una herramienta).
 
 ### Escenario 3: "Es mucho dinero"
 
-> "Te dejo dos caminos:
+> "Comparémoslo con lo que ya estás perdiendo: me dijiste que son del orden de
+> $____ al mes, todos los meses. La Fase 1 cuesta una fracción de eso, una sola vez.
 >
-> 1. **Fase 1 primero** ($450K,  =  de tu bolsillo):  
->    → Precisamos bien qué es lo que duele, quién es el responsable, cuál es el cuello.  
->    → De ahí sale un presupuesto exacto (puede ser $30K, puede ser $100K).
->
-> 2. **Audit rápida** ($150K):  
->    → Fotografía el estado, propongo 3 opciones, tú decides.
->
-> ¿Cuál preferís?"
+> Y si quieres partir por algo más liviano, está la puesta en marcha de IA para tu
+> equipo: se instala en días, se paga por persona, y no toca tu proceso. No te
+> resuelve el problema de fondo —te lo digo de frente— pero ves si esto funciona
+> conmigo antes de meter plata en serio."
+
+**No bajes el precio.** Está fijado por tramo de headcount y no se negocia en la
+reunión. Si presiona, la respuesta es el escalón más liviano, no un descuento.
 
 ---
 
 ## REGLAS DE ORO
 
 🚫 **NUNCA proponer:**
-- Precio sin Fase 1 (a menos que sea audit rápida)
+- Precio de Fase 2 sin haber hecho la Fase 1
 - Automatizar sin control (sin persona con nombre revisando)
 - Precio en dólares (siempre CLP, o mostrar ambos)
 
@@ -181,5 +193,6 @@ Aplica a todos excepto Productividad (que es una herramienta).
 *Versión: 2026-07-30*  
 *Válido para: CONSULTORAVIRTUAL Fase 1 y 2*  
 *Próxima revisión: Cuando varíe UF o cambien casos tipo*
+
 
 

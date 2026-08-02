@@ -163,17 +163,6 @@
                 </div>
                 <div class="detalle-tecnico">Financiamiento particular · 1–2 semanas · informe en máximo 10 días</div>
             </label>
-            <label class="opcion-radio" id="f1-acotado">
-                <input type="radio" name="fase1" value="acotado" onchange="actualizar()">
-                <span class="titulo">Diagnóstico acotado</span>
-                <span class="precio">$150.000</span>
-                <div class="explicacion">
-                    Versión más rápida y económica: solo fotografiamos cómo está tu proceso hoy y te dejamos
-                    una propuesta con opciones, sin el detalle completo del diagnóstico. Ideal si quieres una
-                    primera mirada antes de comprometerte con más.
-                </div>
-                <div class="detalle-tecnico">100% a cargo del cliente · 1 semana</div>
-            </label>
             <label class="opcion-radio" id="f1-ninguno">
                 <input type="radio" name="fase1" value="ninguno" onchange="actualizar()">
                 <span class="titulo">Sin Fase 1 (ya se hizo)</span>
@@ -425,7 +414,7 @@
     function actualizar() {
         document.getElementById('headerProyecto').textContent = document.getElementById('inputProyecto').value || 'Proyecto';
 
-        ['tramoA', 'tramoB', 'acotado', 'ninguno'].forEach(function(v) {
+        ['tramoA', 'tramoB', 'ninguno'].forEach(function(v) {
             var checked = document.querySelector('input[name="fase1"]:checked');
             document.getElementById('f1-' + v).classList.toggle('checked', checked && checked.value === v);
         });
@@ -443,9 +432,6 @@
         } else if (fase1 === 'tramoB') {
             filas.push(['Fase 1 · Consultoría inicial (Tramo B, más de 10 personas)', 'Financiamiento particular', '1-2 semanas', 600000]);
             total += 600000;
-        } else if (fase1 === 'acotado') {
-            filas.push(['Fase 1 · Diagnóstico acotado', '100% cliente', '1 semana', 150000]);
-            total += 150000;
         }
 
         // PRODUCTIVIDAD

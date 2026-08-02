@@ -65,17 +65,18 @@
 >
 > **Lo urgente es:** [El dolor que marcaron]
 >
-> **Para resolver eso, tienen dos caminos:**
+> **Para resolver eso, el camino es:**
 >
-> **Opción A - Diagnóstico (Fase 1):**  
-> → 2–4 semanas, $450.000 CLP ( financia , ustedes )
+> **Consultoría inicial (Fase 1):**  
+> → 1–2 semanas, informe en máximo 10 días
+> → $450.000 CLP hasta 10 personas · $600.000 CLP sobre 10 personas
 > → Levanto el proceso completo, propongo 3–5 soluciones exactas, presupuestan las que quieran
 > → Quedas con un documento que vale más que lo que pagaste.
 >
-> **Opción B - Audit rápida:**  
-> → 1 semana, $150.000 CLP (ustedes pagan todo)
-> → Fotografía el estado, propongo 3 opciones básicas
-> → Menos detalle, pero más rápido.
+> **Y si quieres partir por algo más liviano**, está la puesta en marcha de IA
+> para tu equipo: se instala en días, se paga por persona y no toca tu proceso.
+> No resuelve el problema de fondo, pero ves si esto funciona conmigo antes de
+> comprometer más.
 >
 > ¿Cuál te parece?"
 
@@ -83,31 +84,18 @@
 
 ## MINUTO 16–20: RESPUESTA DEL CLIENTE
 
-### Si dice "Opción A" (Diagnóstico completo)
+### Si acepta la Fase 1
 
 > "Excelente. Entonces:
 >
-> 1. Te dejo el contrato hoy (o mañana, como prefieras).
-> 2. Me dan acceso a: zona de recepción, sistema actual, nombres de técnicos principales.
-> 3. En 1 semana empiezo el levantamiento.
-> 4. En 2–4 semanas tienen el reporte + propuestas.
+> 1. Te dejo el contrato y el acuerdo de confidencialidad hoy.
+> 2. Necesito media hora con cada uno de tu gente esta semana — a ti no te molesto más.
+> 3. Me dan acceso a: zona de recepción, sistema actual, nombres de los técnicos.
+> 4. El [fecha, máximo 10 días] tienen el informe + propuestas.
 >
-> Mientras tanto, ¿necesitas que tramite lo de , o lo haces tú?"
+> ¿Te sirve el martes y el jueves para las visitas?"
 
-**Material:** Referencia a "Modelo de Financiamiento " (si tienen uno)
-
----
-
-### Si dice "Opción B" (Audit rápida)
-
-> "Dale. Entonces:
->
-> 1. Te dejo contrato hoy (1 página).
-> 2. Voy 1 o 2 días a observar: recepción, reparación, entrega.
-> 3. En 1 semana tienen reporte + 3 propuestas de Fase 2 con valores.
-> 4. De ahí deciden si avanzan o no.
->
-> ¿Cuándo podría venir a observar?"
+**Material:** contrato Fase 1 del tramo que corresponda + NDA ya firmado por ti.
 
 ---
 
@@ -215,7 +203,7 @@
 >
 > ¿Cómo va? ¿Tuviste chance de mirar la documentación?
 >
-> Si tenés preguntas o querés que nos reunamos con el dueño, avísame.
+> Si tenés preguntas o quieres que nos reunamos con el dueño, avísame.
 >
 > Saludos,  
 > Patricio"
@@ -269,5 +257,6 @@
 
 *Versión: 2026-07-30*  
 *Casos de uso: SSTT, Pymes con desorden operativo*
+
 
 
