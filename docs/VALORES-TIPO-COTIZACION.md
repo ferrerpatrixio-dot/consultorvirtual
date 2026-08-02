@@ -102,15 +102,55 @@ Diagnóstico de datos + modelo predictivo (por modelo: "iPhone X en ~2 días con
 
 ## MANTENCIÓN MENSUAL
 
-Aplica a todos excepto Productividad (que es una herramienta).
+> ⚠️ **Las cifras anteriores ($2.000–$10.000/mes) estaban mal en un orden de
+> magnitud** y se retiraron: $3.000 CLP no compra ni dos minutos de trabajo a la
+> tarifa vigente. Cualquier valor nuevo se calcula desde la tarifa, no se inventa.
 
-| Familia | Costo mensual | Qué incluye |
+### La regla
+
+**Mantención = horas de la bolsa × tarifa.** La tarifa es **3 UF/hora**, así que
+el costo se mueve con la UF y no hay que reescribir este documento cada año.
+
+| Bolsa | Costo mensual (UF) | Referencia en CLP con UF a $40.845 |
 |---|---|---|
-| **Digitalizar** | $2.000–$3.000 | Soporte, actualizaciones, bug fixes |
-| **Automatizar** | $3.000–$5.000 | Soporte, ajustes de lógica, re-validación de reglas |
-| **Anticipar** | $5.000–$10.000 | Re-entreno mensual, validación de predicción, ajustes |
+| 0,5 h | 1,5 UF | ~$61.000 |
+| 1 h | 3 UF | ~$122.500 |
+| 2 h | 6 UF | ~$245.000 |
+| 4 h | 12 UF | ~$490.000 |
 
-**Nota:** Sin lock-in. Monthly, cancelable en cualquier momento.
+Aplica también a **Productividad** (bolsa del entorno). Corrige la versión
+anterior de este documento, que decía que Productividad no llevaba mantención:
+`CATALOGO-SERVICIOS.md` sí la contempla, como bolsa plana **por empresa**, no
+por persona.
+
+### ⚠️ Tensión sin resolver — decisión pendiente de Patricio
+
+A 3 UF/hora, **cualquier bolsa mensual queda desproporcionada** frente al precio
+de los proyectos:
+
+| Banda | Precio | Horas que paga | Bolsa de 1 h/mes equivale a |
+|---|---|---|---|
+| 1 | $1.200.000 | ~9,8 h | **10,2% del proyecto al mes · 123% al año** |
+| 2 | $2.500.000 | ~20,4 h | 4,9% al mes · 59% al año |
+| 3 | $4.500.000 | ~36,7 h | 2,7% al mes · 33% al año |
+
+El estándar de la industria es **15–20% anual** del valor del proyecto. Para
+llegar ahí en Banda 1 habría que cobrar ~$20.000/mes, que a 3 UF/hora compra
+**10 minutos**. No alcanza para sostener un compromiso de soporte.
+
+**Las tres salidas posibles:**
+
+1. **Soporte reactivo, sin mensualidad.** No se cobra bolsa; se cobra por hora
+   cuando el cliente llama, a la tarifa vigente. Elimina la desproporción y no
+   compromete horas que no se van a usar.
+2. **Bolsa solo desde Banda 2.** En Banda 1 el proyecto es muy chico para
+   sostener una mantención mensual.
+3. **Subir el precio de los proyectos** para que la mantención sea proporcional.
+
+Hasta que se decida, el cotizador calcula la bolsa desde la tarifa y muestra en
+rojo el porcentaje cuando supera el 5% mensual.
+
+**Sin lock-in en cualquier caso:** mensual, cancelable en cualquier momento.
 
 ---
 
