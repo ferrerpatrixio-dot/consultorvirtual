@@ -206,19 +206,28 @@ reunión. Si presiona, la respuesta es el escalón más liviano, no un descuento
 
 ## DESCUENTOS / AJUSTES
 
-### Por compra de múltiples productos
+> 🚫 **Los descuentos NO se acumulan.** Si aplican varios, se usa **solo el
+> mayor**. No hay descuento sobre descuento. El cotizador lo hace automático y
+> avisa cuando hay más de uno marcado.
 
-| Compra | Descuento |
+| Motivo | Descuento |
 |---|---|
-| Digitalizar + Automatizar bundled | 5% en total |
-| 3+ casos en Fase 2 | 10% en total |
-| Contrato anual + prepago | 10% en total |
+| **Cliente nuevo — oferta de lanzamiento** | **50%** |
+| 3+ casos en Fase 2 | 10% |
+| Contrato anual + prepago | 10% |
+| Digitalizar + Automatizar combinados | 5% |
+
+**Por qué el orden importa:** con la oferta de lanzamiento marcada, ningún otro
+descuento cambia nada — el 50% ya absorbe a todos. Marcar los cuatro da 50%, no
+75%.
 
 ### Por antigüedad de cliente
 
-- Primer proyecto: sin descuento
+- **Primer proyecto:** aplica la oferta de lanzamiento si corresponde (50%)
 - Segundo proyecto: 5% (si el primero salió bien)
 - Tercero+: 10%
+
+Estos tampoco se suman a los de la tabla de arriba: se toma el mayor de todos.
 
 ---
 

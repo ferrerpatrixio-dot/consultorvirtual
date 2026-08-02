@@ -315,6 +315,8 @@
         <!-- DESCUENTOS -->
         <div class="section">
             <h2>Descuentos</h2>
+            <p class="subtitulo"><strong>No se acumulan.</strong> Si marcas más de uno se aplica solo el mayor — no hay descuento sobre descuento.</p>
+            <div id="avisoDescuento" style="display: none; background: #fff9e6; border-left: 4px solid #ffc107; padding: 12px 15px; margin-bottom: 12px; border-radius: 4px; font-size: 0.92em;"></div>
             <div class="checkbox-line">
                 <input type="checkbox" id="descNuevoCliente" onchange="actualizar()">
                 <label for="descNuevoCliente"><strong>Cliente nuevo — oferta de lanzamiento (50%)</strong></label>
@@ -527,17 +529,31 @@
             mantenciones.push(nombreFamilia + ': ' + fmt(mantP) + '/mes · bolsa de ' + mantPHoras + 'h');
         }
 
-        // DESCUENTOS
-        var descuentoPct = 0;
-        if (document.getElementById('descNuevoCliente').checked) descuentoPct += 50;
-        if (document.getElementById('descBundle').checked) descuentoPct += 5;
-        if (document.getElementById('descTresCasos').checked) descuentoPct += 10;
-        if (document.getElementById('descAnual').checked) descuentoPct += 10;
+        // DESCUENTOS — no se acumulan: se aplica solo el mayor
+        var candidatos = [];
+        if (document.getElementById('descNuevoCliente').checked) candidatos.push({ pct: 50, nombre: 'Cliente nuevo — oferta de lanzamiento' });
+        if (document.getElementById('descBundle').checked) candidatos.push({ pct: 5, nombre: 'Digitalizar + Automatizar combinados' });
+        if (document.getElementById('descTresCasos').checked) candidatos.push({ pct: 10, nombre: '3+ casos en Fase 2' });
+        if (document.getElementById('descAnual').checked) candidatos.push({ pct: 10, nombre: 'Contrato anual + prepago' });
+
+        candidatos.sort(function(a, b) { return b.pct - a.pct; });
+
+        var descuentoPct = candidatos.length ? candidatos[0].pct : 0;
+        var descuentoNombre = candidatos.length ? candidatos[0].nombre : '';
+
+        var avisoDesc = document.getElementById('avisoDescuento');
+        if (candidatos.length > 1) {
+            avisoDesc.textContent = 'Hay ' + candidatos.length + ' descuentos marcados. Los descuentos no se acumulan: se aplica solo el mayor (' +
+                descuentoNombre + ', ' + descuentoPct + '%).';
+            avisoDesc.style.display = '';
+        } else {
+            avisoDesc.style.display = 'none';
+        }
 
         var totalConDescuento = total;
         if (descuentoPct > 0 && total > 0) {
             var montoDescuento = total * (descuentoPct / 100);
-            filas.push(['Descuento (' + descuentoPct + '%)', '', '', -montoDescuento]);
+            filas.push(['Descuento · ' + descuentoNombre + ' (' + descuentoPct + '%)', '', '', -montoDescuento]);
             totalConDescuento = total - montoDescuento;
         }
 
