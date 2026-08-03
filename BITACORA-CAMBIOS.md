@@ -8,6 +8,22 @@
 
 ## 📅 CAMBIOS RECIENTES
 
+### 2026-08-02 (continuación) — Migración dominio misitioweb: iaenproceso.cl → aiprocess.cl (Patricio + DELIVERY)
+
+**COMPLETADO:**
+- ✅ Vercel project `app-procesos.vercel.app` → dominio principal `aiprocess.cl`
+- ✅ DNS registrador actualizado (apunta a Vercel)
+- ✅ Sitio accesible en `https://www.aiprocess.cl`
+- ✅ Sitio accesible en `https://aiprocess.cl`
+
+**Estado:** Migración completada, producción activa en nuevo dominio.
+
+**Documentación actualizada:** BITACORA-CAMBIOS.md
+
+**Próximo paso:** Validar que no hay referencias rotas a iaenproceso.cl en documentación.
+
+---
+
 ### 2026-08-02 (continuación) — Cotizador reconstruido con catálogo real (PMcoordinador)
 
 **Corrección crítica:** El cotizador inicial (`cotizador-sstt*.html`) usaba un modelo
