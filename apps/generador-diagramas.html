@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de Diagramas de Proceso — AIProcess.cl</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+    }
+    .container {
+        max-width: 1180px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+    }
+    header h1 { font-size: 1.8em; margin-bottom: 8px; }
+    header p { opacity: 0.9; font-size: 1.05em; }
+    .content { padding: 30px; }
+    .section {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border-left: 4px solid #667eea;
+    }
+    .section h2 { color: #333; margin-bottom: 6px; font-size: 1.2em; }
+    .section > .subtitulo { color: #666; font-size: 0.9em; margin-bottom: 15px; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-weight: 600; margin-bottom: 6px; color: #333; font-size: 0.95em; }
+    .form-group input, .form-group select, .form-group textarea {
+        width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 1em; font-family: inherit;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+    .chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .chip {
+        display: flex; align-items: center; gap: 6px;
+        background: white; border: 2px solid #667eea; border-radius: 20px;
+        padding: 6px 8px 6px 14px; font-size: 0.9em; font-weight: 600; color: #333;
+    }
+    .chip button {
+        width: 20px; height: 20px; border-radius: 50%; padding: 0;
+        background: #eee; color: #666; font-size: 0.85em; line-height: 1;
+    }
+    .chip button:hover { background: #dc3545; color: white; }
+    .add-actor-row { display: flex; gap: 8px; }
+    .add-actor-row input { flex: 1; }
+    .add-actor-row button { flex-shrink: 0; padding: 10px 16px; }
+
+    .tabla-pasos { width: 100%; border-collapse: collapse; margin: 10px 0; background: white; border-radius: 6px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .tabla-pasos th { background: #667eea; color: white; padding: 8px; text-align: left; font-size: 0.82em; }
+    .tabla-pasos td { padding: 6px 8px; border-bottom: 1px solid #eee; font-size: 0.88em; vertical-align: top; }
+    .tabla-pasos tr:last-child td { border-bottom: none; }
+    .tabla-pasos select, .tabla-pasos input { width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.88em; }
+    .tabla-pasos .col-num { width: 30px; text-align: center; color: #999; font-weight: bold; }
+    .tabla-pasos .col-del { width: 36px; text-align: center; }
+    .fila-decision { background: #fff9e6; }
+    .fila-fin { background: #f0fff4; }
+    .fila-fin-error { background: #fff5f5; }
+    .btn-del-paso { width: 26px; height: 26px; border-radius: 50%; padding: 0; background: #f8d7da; color: #dc3545; font-size: 0.9em; }
+    .btn-del-paso:hover { background: #dc3545; color: white; }
+
+    .destino-doble { display: flex; gap: 4px; }
+    .destino-doble > div { flex: 1; }
+    .destino-doble label { font-size: 0.72em; color: #666; display: block; margin-bottom: 2px; }
+
+    button {
+        padding: 10px 18px; font-size: 0.95em; font-weight: 600; border: none; border-radius: 6px;
+        background: #667eea; color: white; cursor: pointer; transition: all 0.15s;
+    }
+    button:hover { background: #5568d3; }
+    button.secundario { background: white; color: #667eea; border: 2px solid #667eea; }
+    button.secundario:hover { background: #f0f2f5; }
+    button.agregar { background: #28a745; }
+    button.agregar:hover { background: #218838; }
+
+    .preview-box {
+        background: white; border: 2px solid #e9ecef; border-radius: 8px;
+        padding: 20px; overflow-x: auto; min-height: 200px;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .preview-box svg { max-width: 100%; }
+    .preview-vacio { color: #999; font-style: italic; text-align: center; padding: 40px; }
+    .error-render { color: #dc3545; background: #fff5f5; border: 1px solid #dc3545; border-radius: 6px; padding: 14px; font-size: 0.9em; }
+
+    .botones-fila { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+
+    .codigo-box { display: none; margin-top: 15px; }
+    .codigo-box.show { display: block; }
+    .codigo-box textarea {
+        width: 100%; min-height: 220px; font-family: 'Consolas', monospace; font-size: 0.85em;
+        padding: 12px; border: 1px solid #ddd; border-radius: 6px; background: #2d2d2d; color: #f0f0f0;
+    }
+
+    .leyenda { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 0.82em; color: #555; }
+    .leyenda span { display: inline-flex; align-items: center; gap: 5px; }
+    .leyenda i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+    .nota { font-size: 0.8em; color: #888; margin-top: 4px; font-style: italic; }
+
+    @media print {
+        body { background: white; padding: 0; }
+        .container { box-shadow: none; max-width: 100%; }
+        .no-print { display: none !important; }
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <header class="no-print">
+        <h1>🗺️ Generador de Diagramas de Proceso</h1>
+        <p>Completa actores y pasos → el diagrama se dibuja solo</p>
+    </header>
+
+    <div class="content">
+
+        <!-- CLIENTE / PROCESO -->
+        <div class="section no-print">
+            <h2>Cliente y proceso</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Cliente</label>
+                    <input type="text" id="inputCliente" value="SSTT Ernesto Andino" oninput="render()">
+                </div>
+                <div class="form-group">
+                    <label>Proceso levantado</label>
+                    <input type="text" id="inputProceso" value="Recepción y validación de equipos" oninput="render()">
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTORES -->
+        <div class="section no-print">
+            <h2>Actores (carriles)</h2>
+            <p class="subtitulo">Quién participa en el proceso. Sale del Bloque B del formulario de levantamiento: "¿quién lo toma?".</p>
+            <div class="chip-list" id="listaActores"></div>
+            <div class="add-actor-row">
+                <input type="text" id="nuevoActor" placeholder="Ej: Bodeguero" onkeydown="if(event.key==='Enter'){agregarActor();event.preventDefault();}">
+                <button onclick="agregarActor()">+ Agregar actor</button>
+            </div>
+        </div>
+
+        <!-- PASOS -->
+        <div class="section no-print">
+            <h2>Pasos del proceso</h2>
+            <p class="subtitulo">Uno por fila, en orden. El destino "Siguiente" es automático (el de abajo); cámbialo solo si hay un salto o un loop. En una Decisión, elige a dónde va cada rama — incluyendo volver a un paso anterior.</p>
+            <table class="tabla-pasos">
+                <thead>
+                    <tr>
+                        <th class="col-num">#</th>
+                        <th style="width:15%;">Actor</th>
+                        <th style="width:13%;">Tipo</th>
+                        <th>Texto</th>
+                        <th style="width:20%;">Destino</th>
+                        <th class="col-del"></th>
+                    </tr>
+                </thead>
+                <tbody id="tablaPasosBody"></tbody>
+            </table>
+            <button class="agregar" onclick="agregarPaso()">+ Agregar paso</button>
+        </div>
+
+        <!-- ACCIONES -->
+        <div class="section no-print">
+            <h2>Acciones</h2>
+            <div class="botones-fila">
+                <button class="secundario" onclick="cargarEjemplo()">📋 Cargar caso de ejemplo</button>
+                <button class="secundario" onclick="limpiarTodo()">🗑️ Empezar de cero</button>
+                <button class="secundario" onclick="toggleCodigo()">🔤 Ver código Mermaid</button>
+                <button onclick="window.print()">🖨️ Imprimir / PDF</button>
+            </div>
+            <div class="codigo-box" id="codigoBox">
+                <textarea id="codigoMermaid" readonly onclick="this.select()"></textarea>
+                <p class="nota">Clic para seleccionar todo. Compatible con cualquier visor Mermaid (GitHub, Notion, docu.md).</p>
+            </div>
+        </div>
+
+        <!-- DIAGRAMA -->
+        <div class="section" style="border-left-color: #28a745;">
+            <h2 id="tituloDiagrama">Diagrama</h2>
+            <div class="preview-box" id="previewBox">
+                <div class="preview-vacio">Agrega actores y pasos para ver el diagrama.</div>
+            </div>
+            <div class="leyenda no-print">
+                <span><i style="background:#28a745;"></i> Inicio / Fin OK</span>
+                <span><i style="background:#007bff;"></i> Tarea de persona</span>
+                <span><i style="background:#f8f9fa;border:1px solid #ccc;"></i> Tarea de sistema</span>
+                <span><i style="background:#ffc107;"></i> Decisión</span>
+                <span><i style="background:#dc3545;"></i> Fin con error / rechazo</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'loose', flowchart: { curve: 'basis' } });
+
+let actores = [];
+let pasos = [];
+let contadorId = 0;
+
+function nuevoId() {
+    contadorId++;
+    return 'n' + contadorId;
+}
+
+// ---------- ACTORES ----------
+
+function agregarActor() {
+    const input = document.getElementById('nuevoActor');
+    const nombre = input.value.trim();
+    if (!nombre) return;
+    if (actores.includes(nombre)) { input.value = ''; return; }
+    actores.push(nombre);
+    input.value = '';
+    renderActores();
+    renderPasos();
+    render();
+}
+
+function quitarActor(nombre) {
+    actores = actores.filter(a => a !== nombre);
+    pasos.forEach(p => { if (p.actor === nombre) p.actor = actores[0] || ''; });
+    renderActores();
+    renderPasos();
+    render();
+}
+
+function renderActores() {
+    const cont = document.getElementById('listaActores');
+    cont.innerHTML = actores.map(a =>
+        `<div class="chip">👤 ${escapeHtml(a)} <button onclick="quitarActor('${escapeAttr(a)}')" title="Quitar">✕</button></div>`
+    ).join('') || '<span class="nota">Sin actores todavía.</span>';
+}
+
+// ---------- PASOS ----------
+
+const TIPOS = {
+    inicio:     { label: '▶ Inicio',            icono: '▶' },
+    tarea:      { label: '🧍 Tarea (persona)',   icono: '' },
+    sistema:    { label: '⚙️ Tarea (sistema)',   icono: '⚙️' },
+    decision:   { label: '❓ Decisión',           icono: '' },
+    fin_ok:     { label: '✅ Fin OK',             icono: '✓' },
+    fin_error:  { label: '❌ Fin con error',      icono: '✗' },
+};
+
+function agregarPaso(tipo) {
+    pasos.push({
+        id: nuevoId(),
+        actor: actores[0] || '',
+        tipo: tipo || (pasos.length === 0 ? 'inicio' : 'tarea'),
+        texto: '',
+        siguiente: '',      // override manual; vacío = "el de abajo"
+        siguienteSi: '',
+        siguienteNo: '',
+    });
+    renderPasos();
+    render();
+}
+
+function quitarPaso(id) {
+    pasos = pasos.filter(p => p.id !== id);
+    // limpiar referencias rotas
+    pasos.forEach(p => {
+        if (p.siguiente === id) p.siguiente = '';
+        if (p.siguienteSi === id) p.siguienteSi = '';
+        if (p.siguienteNo === id) p.siguienteNo = '';
+    });
+    renderPasos();
+    render();
+}
+
+function actualizarPaso(id, campo, valor) {
+    const p = pasos.find(p => p.id === id);
+    if (p) p[campo] = valor;
+    if (campo === 'tipo') renderPasos(); // cambia qué columnas de destino se muestran
+    render();
+}
+
+function opcionesActor(seleccionado) {
+    return actores.map(a => `<option value="${escapeAttr(a)}" ${a === seleccionado ? 'selected' : ''}>${escapeHtml(a)}</option>`).join('');
+}
+
+function opcionesDestino(excluirId, seleccionado, permitirVacio, etiquetaVacio) {
+    let html = '';
+    if (permitirVacio) {
+        html += `<option value="">${etiquetaVacio}</option>`;
+    }
+    pasos.filter(p => p.id !== excluirId).forEach(p => {
+        const texto = p.texto ? p.texto.slice(0, 28) : '(sin texto)';
+        html += `<option value="${p.id}" ${p.id === seleccionado ? 'selected' : ''}>${escapeHtml(texto)}</option>`;
+    });
+    return html;
+}
+
+function renderPasos() {
+    const body = document.getElementById('tablaPasosBody');
+    if (pasos.length === 0) {
+        body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;padding:16px;">Sin pasos todavía. Agrega el primero (será el Inicio).</td></tr>';
+        return;
+    }
+
+    body.innerHTML = pasos.map((p, idx) => {
+        const esUltimo = idx === pasos.length - 1;
+        const filaClase = p.tipo === 'decision' ? 'fila-decision' : (p.tipo === 'fin_ok' ? 'fila-fin' : (p.tipo === 'fin_error' ? 'fila-fin-error' : ''));
+
+        let colDestino;
+        if (p.tipo === 'decision') {
+            colDestino = `
+                <div class="destino-doble">
+                    <div>
+                        <label>Sí →</label>
+                        <select onchange="actualizarPaso('${p.id}','siguienteSi',this.value)">
+                            ${opcionesDestino(p.id, p.siguienteSi, true, '— elegir —')}
+                        </select>
+                    </div>
+                    <div>
+                        <label>No →</label>
+                        <select onchange="actualizarPaso('${p.id}','siguienteNo',this.value)">
+                            ${opcionesDestino(p.id, p.siguienteNo, true, '— elegir —')}
+                        </select>
+                    </div>
+                </div>`;
+        } else if (p.tipo === 'fin_ok' || p.tipo === 'fin_error') {
+            colDestino = '<span class="nota">— fin de rama —</span>';
+        } else {
+            const etiquetaAuto = esUltimo ? '(sin siguiente)' : 'Siguiente en la lista ↓';
+            colDestino = `<select onchange="actualizarPaso('${p.id}','siguiente',this.value)">
+                <option value="">${etiquetaAuto}</option>
+                ${opcionesDestino(p.id, p.siguiente, false)}
+            </select>`;
+        }
+
+        return `<tr class="${filaClase}">
+            <td class="col-num">${idx + 1}</td>
+            <td><select onchange="actualizarPaso('${p.id}','actor',this.value)">${opcionesActor(p.actor)}</select></td>
+            <td><select onchange="actualizarPaso('${p.id}','tipo',this.value)">
+                ${Object.entries(TIPOS).map(([k, v]) => `<option value="${k}" ${k === p.tipo ? 'selected' : ''}>${v.label}</option>`).join('')}
+            </select></td>
+            <td><input type="text" value="${escapeAttr(p.texto)}" placeholder="Ej: Verifica cantidades" oninput="actualizarPaso('${p.id}','texto',this.value)"></td>
+            <td>${colDestino}</td>
+            <td class="col-del"><button class="btn-del-paso" onclick="quitarPaso('${p.id}')" title="Eliminar paso">✕</button></td>
+        </tr>`;
+    }).join('');
+}
+
+// ---------- GENERAR MERMAID ----------
+
+function slugify(actor) {
+    return 'lane_' + actor.toLowerCase()
+        .normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+}
+
+function formaNodo(p) {
+    const texto = (p.texto || '(sin texto)').replace(/"/g, "'");
+    const conIcono = TIPOS[p.tipo].icono ? `${TIPOS[p.tipo].icono} ${texto}` : texto;
+    if (p.tipo === 'inicio' || p.tipo === 'fin_ok' || p.tipo === 'fin_error') {
+        return `${p.id}(["${conIcono}"])`;
+    }
+    if (p.tipo === 'decision') {
+        return `${p.id}{"${conIcono}"}`;
+    }
+    return `${p.id}["${conIcono}"]`;
+}
+
+function generarMermaid() {
+    if (pasos.length === 0 || actores.length === 0) return null;
+
+    const lineas = ['flowchart TD'];
+
+    // Carriles por actor
+    actores.forEach(actor => {
+        const pasosDelActor = pasos.filter(p => p.actor === actor);
+        if (pasosDelActor.length === 0) return;
+        lineas.push(`  subgraph ${slugify(actor)}["👤 ${actor.replace(/"/g, "'")}"]`);
+        pasosDelActor.forEach(p => lineas.push(`    ${formaNodo(p)}`));
+        lineas.push('  end');
+    });
+
+    // Conexiones
+    pasos.forEach((p, idx) => {
+        if (p.tipo === 'decision') {
+            if (p.siguienteSi) lineas.push(`  ${p.id} -->|"Sí"| ${p.siguienteSi}`);
+            if (p.siguienteNo) lineas.push(`  ${p.id} -->|"No"| ${p.siguienteNo}`);
+        } else if (p.tipo === 'fin_ok' || p.tipo === 'fin_error') {
+            // sin salida
+        } else {
+            const destino = p.siguiente || (pasos[idx + 1] ? pasos[idx + 1].id : '');
+            if (destino) lineas.push(`  ${p.id} --> ${destino}`);
+        }
+    });
+
+    // Estilos (mismo estándar 60-30-10 ya aprobado en el kit)
+    lineas.push('  classDef inicio fill:#28a745,stroke:#333,stroke-width:3px,color:#fff');
+    lineas.push('  classDef tarea fill:#007bff,stroke:#333,stroke-width:2px,color:#fff');
+    lineas.push('  classDef sistema fill:#f8f9fa,stroke:#333,stroke-width:2px,color:#333');
+    lineas.push('  classDef decision fill:#ffc107,stroke:#333,stroke-width:2px,color:#333');
+    lineas.push('  classDef finOk fill:#28a745,stroke:#333,stroke-width:3px,color:#fff');
+    lineas.push('  classDef finError fill:#dc3545,stroke:#333,stroke-width:3px,color:#fff');
+
+    ['inicio', 'tarea', 'sistema', 'decision', 'fin_ok', 'fin_error'].forEach(tipo => {
+        const ids = pasos.filter(p => p.tipo === tipo).map(p => p.id);
+        if (!ids.length) return;
+        const claseCss = tipo === 'fin_ok' ? 'finOk' : (tipo === 'fin_error' ? 'finError' : tipo);
+        lineas.push(`  class ${ids.join(',')} ${claseCss}`);
+    });
+
+    return lineas.join('\n');
+}
+
+// ---------- RENDER ----------
+
+let renderSeq = 0;
+
+async function render() {
+    document.getElementById('tituloDiagrama').textContent =
+        (document.getElementById('inputCliente').value || 'Cliente') + ' — ' +
+        (document.getElementById('inputProceso').value || 'Proceso');
+
+    const codigo = generarMermaid();
+    const box = document.getElementById('previewBox');
+    const codigoArea = document.getElementById('codigoMermaid');
+
+    if (!codigo) {
+        box.innerHTML = '<div class="preview-vacio">Agrega actores y pasos para ver el diagrama.</div>';
+        codigoArea.value = '';
+        return;
+    }
+
+    codigoArea.value = codigo;
+
+    const miId = ++renderSeq;
+    try {
+        const { svg } = await mermaid.render('mermaidSvg_' + miId, codigo);
+        if (miId === renderSeq) box.innerHTML = svg;
+    } catch (e) {
+        if (miId === renderSeq) {
+            box.innerHTML = `<div class="error-render">No se pudo dibujar el diagrama todavía.<br>Revisa que cada paso tenga texto y que las decisiones tengan Sí/No asignados.<br><span style="opacity:0.7;">${escapeHtml(e.message || '')}</span></div>`;
+        }
+    }
+}
+
+function toggleCodigo() {
+    document.getElementById('codigoBox').classList.toggle('show');
+}
+
+// ---------- EJEMPLO / RESET ----------
+
+function limpiarTodo() {
+    if (pasos.length && !confirm('¿Borrar todo lo que llevas cargado?')) return;
+    actores = [];
+    pasos = [];
+    contadorId = 0;
+    renderActores();
+    renderPasos();
+    render();
+}
+
+function cargarEjemplo() {
+    if (pasos.length && !confirm('Esto reemplaza lo que llevas cargado. ¿Continuar?')) return;
+
+    actores = ['Distribuidor', 'Guardián', 'Bodeguero', 'Supervisor'];
+    contadorId = 0;
+
+    const idFor = {};
+    const def = (key, actor, tipo, texto) => {
+        const id = nuevoId();
+        idFor[key] = id;
+        return { id, actor, tipo, texto, siguiente: '', siguienteSi: '', siguienteNo: '' };
+    };
+
+    // Nota: cada paso normal tiene UNA sola salida. El proceso real tiene un punto
+    // donde la entrega al distribuidor y el registro en SAP ocurren casi en paralelo;
+    // acá se ordenan en secuencia (SAP se confirma antes de entregar la copia) para
+    // que el ejemplo quede representable con el modelo de la herramienta.
+    pasos = [
+        def('inicio', 'Distribuidor', 'inicio', 'Llega con camión'),
+        def('presenta', 'Distribuidor', 'tarea', 'Presenta documentación'),
+        def('registra', 'Guardián', 'tarea', 'Registra entrada'),
+        def('gwDoc', 'Guardián', 'decision', '¿Documentación válida?'),
+        def('rechazo', 'Guardián', 'fin_error', 'Entrega rechazada'),
+        def('traslada', 'Bodeguero', 'tarea', 'Traslada cajas a bodega'),
+        def('abre', 'Bodeguero', 'tarea', 'Abre cajas y verifica'),
+        def('gwCant', 'Bodeguero', 'decision', '¿Cantidades correctas?'),
+        def('inspecciona', 'Bodeguero', 'tarea', 'Inspecciona daños físicos'),
+        def('gwDanos', 'Bodeguero', 'decision', '¿Daños críticos?'),
+        def('firma', 'Bodeguero', 'tarea', 'Firma guía de entrega'),
+        def('pistola', 'Bodeguero', 'sistema', 'Pistolea cada caja en SAP'),
+        def('gwSap', 'Bodeguero', 'decision', '¿Físico = SAP?'),
+        def('confirmaSap', 'Bodeguero', 'tarea', 'Confirma ingreso en SAP'),
+        def('entrega', 'Distribuidor', 'tarea', 'Recibe copia de la guía'),
+        def('finOkDist', 'Distribuidor', 'fin_ok', 'Se retira'),
+        def('registraDisc', 'Supervisor', 'tarea', 'Registra discrepancia'),
+        def('revisa', 'Supervisor', 'decision', '¿Se puede resolver?'),
+        def('escalada', 'Supervisor', 'fin_error', 'Escalado a Gerencia'),
+    ];
+
+    const set = (key, campo, valor) => { pasos.find(p => p.id === idFor[key])[campo] = valor; };
+
+    set('gwDoc', 'siguienteSi', idFor.traslada);
+    set('gwDoc', 'siguienteNo', idFor.rechazo);
+
+    set('gwCant', 'siguienteSi', idFor.inspecciona);
+    set('gwCant', 'siguienteNo', idFor.registraDisc);
+
+    set('gwDanos', 'siguienteSi', idFor.registraDisc);
+    set('gwDanos', 'siguienteNo', idFor.firma);
+
+    set('firma', 'siguiente', idFor.pistola);
+    set('gwSap', 'siguienteSi', idFor.confirmaSap);
+    set('gwSap', 'siguienteNo', idFor.pistola); // loop: reintenta el pistolaje
+
+    set('confirmaSap', 'siguiente', idFor.entrega);
+    set('entrega', 'siguiente', idFor.finOkDist);
+
+    set('registraDisc', 'siguiente', idFor.revisa);
+    set('revisa', 'siguienteSi', idFor.abre); // loop: vuelve a verificar
+    set('revisa', 'siguienteNo', idFor.escalada);
+
+    document.getElementById('inputCliente').value = 'SSTT Ernesto Andino';
+    document.getElementById('inputProceso').value = 'Recepción y validación de equipos';
+
+    renderActores();
+    renderPasos();
+    render();
+}
+
+// ---------- UTIL ----------
+
+function escapeHtml(str) {
+    return String(str || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(str) {
+    return String(str || '').replace(/'/g, "\\'");
+}
+
+// ---------- INIT ----------
+
+agregarPaso; // referenciado desde el botón
+renderActores();
+renderPasos();
+render();
+</script>
+</body>
+</html>
