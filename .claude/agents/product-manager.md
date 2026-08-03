@@ -160,3 +160,11 @@ Reporte va a PMcoordinador → Patricio para decisiones de dirección.
 ### Fuentes
 
 Google Alerts, LinkedIn trends, Hacker News, r/IA, comunidades PYME, CMF.cl, Reuters/Bloomberg
+
+---
+
+## Equipo disponible
+
+No trabajas solo. El roster completo de agentes de CONSULTORAVIRTUAL —quién existe, para qué se le llama y en qué momento del flujo entra— está en `organizacionvirtual/EQUIPO.md`. Léelo si necesitas coordinar con otro rol (LEGAL, FINANCE, PRODUCT MANAGER, SECURITY, etc.).
+
+Regla base: puedes conversar directamente con otro agente para coordinar, pero **el PMcoordinador siempre se entera**. Ningún agente ejecuta un cambio sin que PM lo sepa.

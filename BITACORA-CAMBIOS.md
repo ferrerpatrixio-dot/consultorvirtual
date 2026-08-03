@@ -8,6 +8,60 @@
 
 ## 📅 CAMBIOS RECIENTES
 
+### 2026-08-02 (continuación) — Reestructuración de agentes + arranque producto BPMN-desde-prompt (PMcoordinador)
+
+**PRODUCTO NUEVO — Generador BPMN desde prompt (MVP Línea de Negocio 3):**
+- ✅ Propuesta de arquitectura: `docs/PROPUESTA-ARQUITECTO-BPMN-DESDE-PROMPT.md`
+- ✅ Decisiones de Patricio registradas en la propuesta: mono-usuario, Mercado Pago (no Stripe),
+  exportación a `.bpmn` XML real (no solo PNG/PDF), precio a definir después con infraestructura
+  de gating lista
+- ⚠️ **Impacto de esas decisiones:** el tamaño sube de M a **L**. Mercado Pago tiene suscripción
+  recurrente más manual que Stripe, y el XML BPMN 2.0 obliga a un mapeo que Mermaid solo no cubre.
+  DEV debe re-validar el sizing con este alcance, no con el original.
+- ✅ Se reutiliza `apps/generador-diagramas.html` (motor Mermaid + editor de pasos ya validado)
+
+**REESTRUCTURACIÓN ORGANIZACIONAL (a pedido de Patricio):**
+- ✅ **ARQUITECTO se dividió en dos roles** (eran dos expertises distintas en un solo agente):
+  - `ARQUITECTO IT` — decide stack y herramientas (UI, motor, BBDD, backend)
+  - `ANALISTA DE PROCESOS DE NEGOCIO` — mapa de procesos, procedimientos, reporte de riesgos y
+    reporte de errores de proceso
+- ✅ Creados como agentes invocables: `.claude/agents/arquitecto-it.md`, `analista-procesos-negocio.md`
+- ✅ **Creados DEV y QA como agentes invocables** — existían en la matriz pero no en `.claude/agents/`,
+  o sea no se podían llamar. Ahora sí.
+- ✅ **Creado `organizacionvirtual/EQUIPO.md`** — roster completo: quién existe, cómo se invoca, en
+  qué momento del flujo entra. Referenciado desde los 11 agentes para que se vean entre sí.
+- ✅ Actualizado: MATRIZ_AGENTES v1.4, ORGANIGRAMA, `diseñador-ux.md` (ahora apunta a los dos roles nuevos)
+- ℹ️ DISEÑADOR-UX **ya existía** desde 2026-07-31; no se creó de nuevo, solo se actualizaron sus referencias.
+
+**Total agentes invocables:** 11 (`.claude/agents/`) + PMcoordinador (`.claude/CLAUDE.md`).
+
+**DOSSIER DE DISEÑO DETALLADO — nuevo protocolo (a pedido de Patricio):**
+- ✅ Creado `docs/SOP-DOSSIER-DISENO-DETALLADO.md` — documento único que se entrega al cliente al
+  cierre de cada proyecto, consolidando el aporte de cada agente con **acción relevante**
+- ✅ **PM compila:** identifica quién participó, solicita aportes con formato y deadline, resuelve
+  contradicciones entre agentes, valida contra checklist. No escribe el contenido técnico.
+- ✅ **QA aporta casos de uso + esperables documentados**, escritos en lenguaje de negocio para que
+  los lea el cliente — son material base de la capacitación y de la sección funcional del dossier
+- ✅ **DELIVERY entrega** el dossier en el handoff, complementado con documentación operativa
+- ✅ Regla anti-burocracia: si un agente no participó, no hay sección suya — y el resumen ejecutivo
+  declara por qué. Nada de secciones vacías rellenadas "por si acaso".
+- ✅ Actualizados: `CLAUDE.md` (PM, sección 4), `qa.md` (entregables 5 y 6), `delivery.md`
+  (responsabilidad 6), `EQUIPO.md` (fase 6 del flujo), MATRIZ_AGENTES v1.4
+- 📁 Ubicación de dossiers: `docs/dossiers/[cliente]-[proyecto]/`
+
+**CORRECCIÓN DE MODELOS (a pedido de Patricio, optimización de costo):**
+- ⚠️ Hallazgo: los 11 agentes en `.claude/agents/` tenían `model: opus` hardcodeado, contradiciendo
+  `ASIGNACION-MODELOS-PENSAMIENTO-AGENTES.md` (que ya recomendaba Sonnet/Haiku para varios)
+- ✅ Corregidos a `sonnet`: dev, qa, diseñador-ux, comercial, financiero-contable
+- ✅ Corregido a `haiku`: delivery
+- ✅ Mantienen `opus`: arquitecto-it, analista-procesos-negocio, security, product-manager, legal
+- ✅ Actualizada la matriz a v1.1 con los dos roles nuevos (ARQUITECTO IT / ANALISTA-PROCESOS)
+- ℹ️ Lección: el modelo real de un subagente lo define su frontmatter, no la matriz de política ni
+  el modelo de la sesión del PM — hay que tocar ambos lugares o la matriz queda de adorno
+
+**Próximo paso:** DEV valida factibilidad y timeline del alcance L antes de comprometer fecha.
+
+
 ### 2026-08-02 (continuación) — Migración dominio misitioweb: iaenproceso.cl → aiprocess.cl (Patricio + DELIVERY)
 
 **COMPLETADO:**

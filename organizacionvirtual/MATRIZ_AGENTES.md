@@ -1,8 +1,17 @@
 # 🤖 MATRIZ DE AGENTES - CONSULTORAVIRTUAL
 
-**Versión:** 1.3  
-**Fecha:** 2026-07-31  
+**Versión:** 1.4  
+**Fecha:** 2026-08-02  
 **Propósito:** Definir roles, responsabilidades y autoridad de cada agente en CONSULTORAVIRTUAL (empresa única integrada)
+
+> **Cambios v1.4 (2026-08-02):** ARQUITECTO se dividió en dos roles: **ARQUITECTO IT**
+> (decide stack y herramientas) y **ANALISTA DE PROCESOS DE NEGOCIO** (mapa de procesos,
+> procedimientos, riesgos y errores de proceso). Motivo: son expertises distintas — una decide
+> con qué se construye, la otra qué hay que construir. Se creó además `EQUIPO.md` (roster
+> completo, para que los agentes se vean entre sí) y se agregaron DEV y QA como agentes
+> invocables en `.claude/agents/`. Se formalizó además el **Dossier de Diseño Detallado**
+> (`docs/SOP-DOSSIER-DISENO-DETALLADO.md`): PM lo compila pidiendo aporte a cada agente con acción
+> relevante, QA aporta casos de uso y esperables, DELIVERY lo entrega al cliente.
 
 > **Cambios v1.3:** Aclarado que PM es el HUB (tu rol, Patricio). Agentes conversan entre sí
 > pero siempre bajo supervisión del PM. Agregado DISEÑADOR-UX. Protocolo explícito de
@@ -18,31 +27,60 @@
 
 ## 📊 MATRIZ DE RESPONSABILIDADES
 
-### **ARQUITECTO** 👨‍🏛️
-**Rol:** Diseñador de soluciones técnicas y de procesos (internos + clientes)
+### **ARQUITECTO IT** 👨‍🏛️
+**Rol:** Diseñador de arquitectura técnica (internos + clientes)
 
 | Aspecto | Descripción |
 |---------|------------|
-| **Responsable De** | Diseño as-is/to-be, propuestas técnicas, viabilidad (para ambos: productos internos y proyectos clientes) |
-| **Tareas Core** | Analizar estado actual, diseñar mejoras, validar factibilidad |
-| **Decisión Clave** | "¿Cuál es la solución óptima?" |
-| **Scope** | Componente a nivel empresa (puede ser para AIProcess, sitio web, O proyecto cliente) |
+| **Responsable De** | Decidir stack tecnológico y herramientas que soporten las funcionalidades esperadas de UI, motor, BBDD y backend |
+| **Tareas Core** | Evaluar requerimientos funcionales, elegir stack, validar viabilidad técnica e infraestructura |
+| **Decisión Clave** | "¿Qué stack y arquitectura soporta esto sin sobre-ingeniería?" |
+| **Scope** | Arquitectura técnica (para AIProcess, sitio web, O proyecto cliente) |
 | **Reporta A** | PM (Coordinador) |
 | **Escala** | Proyectos de consultoría (nivel 1-3) + desarrollo interno |
 | **Prioridad** | Definida por PMcoordinador (puede cambiar si cliente paga + es urgente) |
 
 **Deliverables:**
-- Documento as-is/to-be (BPMN flows)
-- Propuesta técnica (diagrama de solución)
+- Propuesta técnica (stack por capa con justificación)
+- Diagrama de componentes / arquitectura
 - Matriz de factibilidad (tiempo, costo, complejidad)
-- Recomendación de herramientas
+- T-shirt sizing (S/M/L), validado en timeline por DEV
 
 **Criterio de Éxito:**
 - Propuesta validada (por cliente si es cliente, por Patricio si es interno)
 - Plan aprobado por DEV (es ejecutable)
-- Cronograma realista (80%+ accuracy)
+- Stack justificado — sin herramienta nueva sin razón (principio "mínimo costo PYME")
 
-**Nota:** Este rol aplica igual a un proyecto AIProcess interno que a un proyecto de optimización de procesos para un cliente. La metodología es la misma; lo único que cambia es quién aprueba (cliente externo vs. Patricio internamente).
+**No hace:** modelar procesos de negocio (→ ANALISTA DE PROCESOS DE NEGOCIO) ni diseñar interfaz/journey (→ DISEÑADOR-UX).
+
+---
+
+### **ANALISTA DE PROCESOS DE NEGOCIO** 🗺️
+**Rol:** Especialista en análisis y modelamiento de procesos (internos + clientes)
+
+| Aspecto | Descripción |
+|---------|------------|
+| **Responsable De** | Transformar un prompt/levantamiento en mapa de procesos, procedimientos, reporte de riesgos y reporte de errores de proceso |
+| **Tareas Core** | Modelar as-is/to-be en BPMN, documentar procedimientos, detectar cuellos de botella y fallas lógicas |
+| **Decisión Clave** | "¿Cuál es el modelo correcto de este proceso, y dónde están sus riesgos y errores?" |
+| **Scope** | Proceso de negocio (interno o de cliente) |
+| **Reporta A** | PM (Coordinador) |
+| **Escala** | Proyectos de consultoría (nivel 1-3) + desarrollo interno |
+| **Prioridad** | Definida por PMcoordinador |
+
+**Deliverables:**
+- Mapa de procesos (BPMN: actores/carriles, pasos, decisiones, loops)
+- Procedimientos por actor, en lenguaje operativo
+- Reporte de riesgos (riesgo · probabilidad · impacto · dónde ocurre)
+- Reporte de errores de proceso (loops sin salida, ramas sin resolver, pasos sin dueño)
+- Preguntas pendientes (método socrático)
+
+**Criterio de Éxito:**
+- Mapa validado por el dueño del proceso (cliente o Patricio)
+- Riesgos cuantificados, no solo listados
+- **Cero invenciones:** toda ambigüedad queda como pregunta pendiente, nunca como supuesto silencioso
+
+**No hace:** decidir tecnología (→ ARQUITECTO IT) ni diseñar pantallas (→ DISEÑADOR-UX).
 
 ---
 
@@ -94,6 +132,8 @@ integraciones para clientes. PMcoordinador gestiona la cola (que hace primero).
 - Test cases (happy path + edge cases)
 - Reporte de bugs (con reproducción steps)
 - Sign-off de calidad
+- **Casos de uso** (lenguaje de negocio, para el cliente) → material base del dossier
+- **Esperables documentados** (incl. errores y casos borde) → material base del dossier
 
 **Criterio de Éxito:**
 - 100% de test cases ejecutados
@@ -144,7 +184,7 @@ No hay "compliance ligero" para desarrollo interno.
 | **Decisión Clave** | "¿Vamos en tiempo? ¿En presupuesto?" |
 | **Scope** | Proyecto completo |
 | **Reporta A** | Patricio Ferrer (decisor final) |
-| **Escala** | Orquesta a ARQUITECTO, DEV, QA, SECURITY |
+| **Escala** | Orquesta a ARQUITECTO IT, ANALISTA DE PROCESOS DE NEGOCIO, DISEÑADOR-UX, DEV, QA, SECURITY |
 
 **Deliverables:**
 - Plan de proyecto (timeline, hitos, dependencias)
@@ -349,7 +389,7 @@ ESCENARIO: DEV y DISEÑADOR-UX conversan sobre un cambio de interfaz
 ### Reglas de coordinación entre agentes:
 
 ✅ **Puedes:** Agentes conversan directamente para coordinar (DEV + DISEÑADOR-UX,
-ARQUITECTO + SECURITY, etc.)
+ARQUITECTO IT + SECURITY, etc.)
 
 ✅ **Debes:** Informar al PM de decisiones/cambios propuestos que requieran su validación
 
@@ -370,8 +410,8 @@ usuario, experiencia, o timeline debe pasar por ti
                                │
                 ┌──────────────┼──────────────┐
                 │              │              │
-          ARQUITECTO          DEV           SECURITY
-          (Diseño)      (Implementación)   (Cumplimiento)
+    ANALISTA-PROCESOS      ARQUITECTO IT        DEV          SECURITY
+     (Mapa + riesgos)    (Stack) ⟷ UX     (Implementación)  (Cumplimiento)
                 │              │              │
                 └──────────────┼──────────────┘
                                │
@@ -384,7 +424,7 @@ usuario, experiencia, o timeline debe pasar por ti
 
 **Ejemplo: Proyecto de 12 semanas**
 ```
-Semanas 1-2:   ARQUITECTO diseña (DEV valida)
+Semanas 1-2:   ANALISTA-PROCESOS mapea → ARQUITECTO IT + DISEÑADOR-UX diseñan (DEV valida)
 Semanas 3-8:   DEV implementa (QA valida en paralelo)
 Semanas 9:     QA testing completo, SECURITY audita
 Semanas 10-11: DELIVERY capacita, DEV ajusta
@@ -398,7 +438,9 @@ Post-launch:   PM monitorea, DEV en standby (bugs)
 
 ```
 NIVEL 1 (Agente decide solo)
-├─ ARQUITECTO: propuesta técnica
+├─ ARQUITECTO IT: propuesta técnica y stack
+├─ ANALISTA-PROCESOS-NEGOCIO: modelo del proceso
+├─ DISEÑADOR-UX: flujo de usuario e interfaz
 ├─ DEV: cómo codificar algo
 ├─ QA: test case específico
 ├─ SECURITY: recomendación de control
@@ -406,7 +448,7 @@ NIVEL 1 (Agente decide solo)
 └─ COMERCIAL: términos estándar de contrato
 
 NIVEL 2 (PM decide con agentes)
-├─ Cambio de scope (PM + ARQUITECTO)
+├─ Cambio de scope (PM + ARQUITECTO IT + ANALISTA-PROCESOS)
 ├─ Delay de timeline (PM + DEV)
 ├─ Bloqueador de compliance (PM + SECURITY)
 ├─ Riesgo en testing (PM + QA)
@@ -428,8 +470,14 @@ NIVEL 3 (Patricio Ferrer decide)
 
 ## 💡 PRINCIPIOS DE TRABAJO
 
-### **Para ARQUITECTO**
+### **Para ARQUITECTO IT**
 > "Si no puedes explicar la solución en 1 página, no está clara."
+
+### **Para ANALISTA DE PROCESOS DE NEGOCIO**
+> "Cero invenciones: toda ambigüedad es una pregunta, nunca un supuesto silencioso."
+
+### **Para DISEÑADOR-UX**
+> "Usabilidad primero, belleza después."
 
 ### **Para DEV**
 > "Código sin documentación es deuda técnica. Documenta mientras codificas."
@@ -455,7 +503,9 @@ NIVEL 3 (Patricio Ferrer decide)
 
 | Agente | Métrica Core | Target |
 |--------|-------------|--------|
-| ARQUITECTO | Propuestas aprobadas (≥80%) | 8/10 |
+| ARQUITECTO IT | Propuestas aprobadas (≥80%) | 8/10 |
+| ANALISTA-PROCESOS-NEGOCIO | Mapas validados por el dueño del proceso | 100% |
+| DISEÑADOR-UX | Usuarios completan la tarea sin ayuda | 95%+ |
 | DEV | Deploy sin bugs críticos | 95%+ |
 | QA | Bugs encontrados antes de live | 100% |
 | SECURITY | Auditorías pasadas | 100% |

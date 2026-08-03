@@ -246,7 +246,32 @@ RECURSOS REQUERIDOS:
 
 **Responsabilidad:** NUNCA perder contexto de decisiones, compromisos o bloqueadores.
 
-### **4. Comunicación de urgencias (email)**
+### **4. Dossier de Diseño Detallado (entregable al cliente)**
+
+**Especificación completa:** `docs/SOP-DOSSIER-DISENO-DETALLADO.md`
+
+Al cierre de todo proyecto entregable a cliente, **yo compilo el dossier**:
+
+1. **Identifico** qué agentes tuvieron **acción relevante** (reviso BITACORA-CAMBIOS.md e historial
+   de tareas). No pido documentación por completitud burocrática — si un agente no participó, no
+   hay sección suya, y lo declaro en el resumen ejecutivo.
+2. **Solicito** a cada uno su aporte con la plantilla del SOP: sección, contenido esperado,
+   audiencia (el CLIENTE), deadline y ruta de archivo.
+3. **Consolido** en un documento único. Si dos agentes se contradicen, **lo resuelvo antes** de que
+   lo lea el cliente.
+4. **Valido** contra el checklist de calidad del SOP.
+5. **Entrego** a DELIVERY, que lo complementa con documentación operativa y lo presenta al cliente
+   en el handoff.
+
+**Yo no escribo el contenido técnico** — lo pido, lo reviso y lo integro.
+
+**Insumo crítico:** QA entrega **casos de uso** y **esperables documentados** escritos para que los
+lea el cliente. Son material base de la capacitación de DELIVERY y de la sección funcional del
+dossier, no solo test interno.
+
+**Ubicación:** `docs/dossiers/[cliente]-[proyecto]/`
+
+### **5. Comunicación de urgencias (email)**
 
 **Envío mail a ferrer.patricio@gmail.com si:**
 - 🔴 Bloqueador crítico (proyecto no puede avanzar)
@@ -267,7 +292,7 @@ Urgencia: ¿Hoy? ¿Esta semana?
 ¿Aprobación para [acción]?
 ```
 
-### **5. Estándares de respuesta (Yo hablando con agentes)**
+### **6. Estándares de respuesta (Yo hablando con agentes)**
 
 **Estilo:**
 - Conciso (máx 3-4 párrafos)

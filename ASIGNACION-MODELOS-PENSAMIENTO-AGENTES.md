@@ -2,7 +2,17 @@
 
 **Objetivo:** Optimizar poder computacional por complejidad de tareas  
 **Criterio:** Reasoning complexity + Decision importance + Cost  
-**Versión:** 1.0  
+**Versión:** 1.1  
+
+> **Cambios v1.1 (2026-08-02):** Corregida inconsistencia — los 11 agentes en `.claude/agents/`
+> tenían `model: opus` hardcodeado en el frontmatter, sin importar lo que dice esta matriz.
+> Alineados los 6 que corresponden a Sonnet/Haiku (dev, qa, diseñador-ux, comercial,
+> financiero-contable, delivery). **El modelo real de un subagente lo define su frontmatter, no
+> esta tabla ni el modelo de la sesión del PM** — si se agrega o cambia un agente, hay que tocar
+> ambos lugares o esta matriz queda de adorno. ARQUITECTO se dividió en **ARQUITECTO IT**
+> (mantiene Opus — trade-offs de stack) y **ANALISTA DE PROCESOS DE NEGOCIO** (Opus — modelar
+> procesos con método socrático es donde más caro sale un error: el cliente valida un diagrama
+> con un supuesto inventado sin notarlo).
 
 ---
 
@@ -10,17 +20,22 @@
 
 | Agente | Modelo Recomendado | Razonamiento | Tareas Tipo |
 |--------|-------------------|--------------|------------|
-| **ARQUITECTO** | 🟣 Opus | Alto (trade-offs, complejidad) | Diseño soluciones, análisis alternativas |
+| **ARQUITECTO IT** | 🟣 Opus | Alto (trade-offs de stack, complejidad) | Elegir stack, arquitectura, viabilidad técnica |
+| **ANALISTA DE PROCESOS DE NEGOCIO** | 🟣 Opus | Alto (método socrático, detección de riesgos) | Mapear procesos, reportar riesgos y errores |
 | **DEV** | 🟢 Sonnet | Medio | Implementación, debugging, integración |
-| **QA** | 🟡 Sonnet | Medio | Testing, validación, edge cases |
+| **QA** | 🟢 Sonnet | Medio | Testing, validación, edge cases, casos de uso |
 | **SECURITY** | 🟣 Opus | Alto (compliance, riesgos) | Auditoría, análisis amenazas, regulaciones |
-| **UI/UX** | 🟢 Sonnet | Medio | Diseño interface, evaluación UX |
+| **DISEÑADOR-UX** | 🟢 Sonnet | Medio | Diseño interface, evaluación UX |
 | **DELIVERY** | 🟡 Haiku | Bajo | Capacitación, documentación, checklist |
 | **PROJECT MANAGER (YO)** | 🟣 Opus | Alto (coordinación, decisiones) | Mediación, escalaciones, estrategia |
 | **PRODUCT MANAGER** | 🟣 Opus | Alto (mercado, estrategia) | Análisis mercado, pricing, oportunidades |
 | **COMERCIAL** | 🟢 Sonnet | Medio | Cotizaciones, propuestas, negocios |
 | **LEGAL** | 🟣 Opus | Alto (compliance, interpretación) | Contratos, NDA, análisis legal |
 | **FINANCE/CFO** | 🟢 Sonnet | Medio | Cálculos, reportes, presupuestos |
+
+**Nota sobre "PROJECT MANAGER (YO)":** no es un subagente con frontmatter — es la sesión principal
+(`.claude/CLAUDE.md`). Su modelo lo elige Patricio con `/model` según la complejidad del momento
+(coordinación y escalación se benefician de Opus; tareas mecánicas de seguimiento no lo requieren).
 
 ---
 

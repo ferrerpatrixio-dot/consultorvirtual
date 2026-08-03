@@ -1,7 +1,11 @@
 # 🏢 ORGANIGRAMA - CONSULTORAVIRTUAL
 
-**Fecha:** 2026-07-27  
-**Estructura:** Consultora Virtual con 7 Agentes + 1 Decisor Humano
+**Fecha:** 2026-08-02  
+**Estructura:** Consultora Virtual con 12 Agentes + 1 Decisor Humano
+
+> **Actualización 2026-08-02:** ARQUITECTO se dividió en **ARQUITECTO IT** (stack y herramientas)
+> y **ANALISTA DE PROCESOS DE NEGOCIO** (mapa de procesos, riesgos, errores). Roster completo
+> e invocación de cada agente: [EQUIPO.md](EQUIPO.md).
 
 ---
 
@@ -22,10 +26,17 @@
                      │
         ┌────────────┼────────────┐
         │            │            │
-   ┌────▼──┐   ┌────▼──┐   ┌────▼──┐
-   │ARQUIT.│   │  DEV  │   │  QA   │
-   │Diseño │   │Implem │   │Testing│
-   └───────┘   └───────┘   └───────┘
+   ┌────▼──────┐   ┌────▼──┐   ┌────▼──┐
+   │ARQUITECTO │   │  DEV  │   │  QA   │
+   │    IT     │   │Implem │   │Testing│
+   │  (stack)  │   └───────┘   └───────┘
+   └───────────┘
+
+   ┌──────────────────┐   ┌────────────────┐
+   │ANALISTA PROCESOS │   │  DISEÑADOR-UX  │
+   │  DE NEGOCIO      │   │ Usabilidad y   │
+   │ Mapa · riesgos   │   │ journey        │
+   └──────────────────┘   └────────────────┘
    
    ┌────────────────┐
    │   SECURITY     │
@@ -69,10 +80,22 @@
 
 ### **Nivel 3: Equipos de Trabajo (Proyecto)**
 
-**ARQUITECTO** (Diseño)
+**ARQUITECTO IT** (Stack y arquitectura técnica)
 - Reporta a: PM
-- Trabaja con: DEV (valida viabilidad), QA (para testing plan)
-- Autoridad en: Diseño técnico, propuestas
+- Trabaja con: ANALISTA-PROCESOS (recibe requerimientos funcionales), DISEÑADOR-UX (valida que el stack soporta la interfaz), DEV (valida viabilidad), QA (testing plan)
+- Autoridad en: Elección de stack, arquitectura técnica
+- **No hace:** modelar procesos ni diseñar pantallas
+
+**ANALISTA DE PROCESOS DE NEGOCIO** (Modelamiento de procesos)
+- Reporta a: PM
+- Trabaja con: ARQUITECTO IT (le entrega el mapa como requerimiento), DISEÑADOR-UX (pasos que el usuario ejecuta en pantalla), SECURITY (riesgos sobre datos personales), QA (errores de proceso → test cases)
+- Autoridad en: Modelo del proceso, reporte de riesgos y errores
+- **No hace:** decidir tecnología ni diseñar pantallas
+
+**DISEÑADOR-UX** (Usabilidad y journey)
+- Reporta a: PM
+- Trabaja con: ANALISTA-PROCESOS, ARQUITECTO IT, DEV
+- Autoridad en: Flujos de usuario, interfaz, criterios de usabilidad
 
 **DEV** (Implementación)
 - Reporta a: PM
@@ -98,9 +121,17 @@
 
 ## 🔀 MATRIZ RACI (Quién Hace Qué)
 
-| Tarea | ARQUITECTO | DEV | QA | SECURITY | PM | LEGAL | DELIVERY |
+| Tarea | ARQ. IT | ANALISTA PROC. | UX | DEV | QA | SECURITY | PM | LEGAL | DELIVERY |
+|------|---|---|---|---|---|---|---|---|---|
+| Mapear proceso de negocio | C | **R/A** | C | - | C | C | I | - | - |
+| Reporte de riesgos de proceso | C | **R/A** | - | - | C | A | I | C | - |
+| Elegir stack tecnológico | **R/A** | C | C | A | - | A | I | - | C |
+| Diseñar interfaz / journey | C | C | **R/A** | A | C | C | I | - | - |
+
+*(Tabla original, roles restantes:)*
+
+| Tarea | ARQUITECTO IT | DEV | QA | SECURITY | PM | LEGAL | DELIVERY |
 |------|---|---|---|---|---|---|---|
-| Diseñar solución | **R** | A | C | A | I | I | C |
 | Propuesta técnica | **R/A** | C | - | - | I | - | - |
 | Implementar | C | **R/A** | C | A | I | - | - |
 | Testing | C | A | **R/A** | A | I | - | C |
@@ -123,7 +154,7 @@
 ### **FASE 1: Discovery (Semana 1)**
 ```
 Cliente llega →  PM agendar intake
-                 ARQUITECTO hace call discovery
+                 ANALISTA-PROCESOS hace call discovery (mapa as-is)
                  LEGAL revisa contrato
                  → PM presenta propuesta
 ```
@@ -131,7 +162,8 @@ Cliente llega →  PM agendar intake
 ### **FASE 2: Diseño (Semanas 2-3)**
 ```
 PM inicia proyecto
-ARQUITECTO diseña solución
+ANALISTA-PROCESOS entrega mapa + riesgos
+ARQUITECTO IT define stack · DISEÑADOR-UX define journey
 ├─ Valida con DEV (¿es ejecutable?)
 ├─ Valida con SECURITY (¿cumple normas?)
 └─ Valida con QA (¿qué testear?)

@@ -168,3 +168,11 @@ Aprobado por: [Tu nombre] — [Fecha]
   comparte con el cliente. Es para proteger a la consultora.
 - **Timeline:** Para clientes normales (< $10K), no es necesario este análisis completo. Para
   >$10K, no dilates: 24-48 horas máximo para entregar validación.
+
+---
+
+## Equipo disponible
+
+No trabajas solo. El roster completo de agentes de CONSULTORAVIRTUAL —quién existe, para qué se le llama y en qué momento del flujo entra— está en `organizacionvirtual/EQUIPO.md`. Léelo si necesitas coordinar con otro rol (LEGAL, FINANCE, PRODUCT MANAGER, SECURITY, etc.).
+
+Regla base: puedes conversar directamente con otro agente para coordinar, pero **el PMcoordinador siempre se entera**. Ningún agente ejecuta un cambio sin que PM lo sepa.

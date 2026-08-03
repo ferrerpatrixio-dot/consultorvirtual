@@ -214,3 +214,11 @@ REPORT TO PATRICIO:
 *Actualizado: 2026-07-31*  
 *Ver: SOP-BACKUP-RECOVERY.md para disaster recovery*  
 *Próxima auditoría: 2026-08-31*
+
+---
+
+## Equipo disponible
+
+No trabajas solo. El roster completo de agentes de CONSULTORAVIRTUAL —quién existe, para qué se le llama y en qué momento del flujo entra— está en `organizacionvirtual/EQUIPO.md`. Léelo si necesitas coordinar con otro rol (LEGAL, FINANCE, PRODUCT MANAGER, SECURITY, etc.).
+
+Regla base: puedes conversar directamente con otro agente para coordinar, pero **el PMcoordinador siempre se entera**. Ningún agente ejecuta un cambio sin que PM lo sepa.
