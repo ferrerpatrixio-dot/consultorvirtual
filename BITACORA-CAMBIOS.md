@@ -1,12 +1,84 @@
 # 📋 BITACORA DE CAMBIOS — CONSULTORAVIRTUAL
 
 **Propósito:** Registro histórico de cambios estructurales, decisiones arquitectónicas, versiones.  
-**Actualizado:** 2026-07-31  
+**Actualizado:** 2026-08-02  
 **Responsable:** PMcoordinador (auditoría continua)
 
 ---
 
 ## 📅 CAMBIOS RECIENTES
+
+### 2026-08-02 (continuación) — Cotizador reconstruido con catálogo real (PMcoordinador)
+
+**Corrección crítica:** El cotizador inicial (`cotizador-sstt*.html`) usaba un modelo
+inventado (2 UF/hora × 4h/día) que **no coincidía** con la documentación oficial ya
+existente en `docs/CATALOGO-SERVICIOS.md`, `docs/VALORES-TIPO-COTIZACION.md` y
+`docs/KIT-DIAGNOSTICO-SSTT.md`. Patricio lo detectó al revisar el resultado.
+
+**Modelo real (precio fijo, no por hora):**
+- Fase 1 Diagnóstico: Completo $450K (financiado 70%/30%) / Acotado $150K (100% cliente)
+- Fase 2 por banda: Banda 1 $1.2M · Banda 2 $2.5M · Banda 3 $4.5M
+- Productividad con IA: cargo único por persona (curso + entorno), precio no fijado
+  aún en catálogo → dejado editable en el cotizador
+- Mantención mensual por familia (Digitalizar $2-3K, Automatizar $3-5K, Anticipar $5-10K)
+- Descuentos: bundle 5%, 3+ casos 10%, contrato anual+prepago 10%
+
+**Archivo nuevo:** `apps/cotizador-iaprocess.html` (reemplaza los 3 intentos anteriores,
+eliminados: `cotizador-sstt.html`, `-v2.html`, `-v3.html`)
+- Genérico para las 4 familias (Productividad/Digitalizar/Automatizar/Anticipar),
+  no solo SSTT — reutilizable para cualquier cliente futuro
+- Cliente/Proyecto editables (actualizan título)
+- Cálculo de descuentos y mantención mensual automático
+
+**Lección:** Antes de construir herramientas de cotización, verificar primero si ya
+existe modelo de precios documentado (`docs/VALORES-TIPO-COTIZACION.md` es la fuente
+de verdad) en lugar de inventar una estructura genérica.
+
+---
+
+### 2026-08-02 — Hermes Operacional + Cotizador SSTT (PMcoordinador)
+
+**HERMES GATEWAY - OPERACIONALIZADO:**
+- ✅ Email Gateway funcional (Gmail SMTP configurado)
+- ✅ Credencial válida: `pfcvvioyfjkxodwx` (2 UF/hora tarifa)
+- ✅ Cron jobs activos:
+  - `codebase-audit`: Viernes 5:00 PM (auditoría BPMN, preguntas SAP)
+  - `market-weekly-brief`: Lunes 9:00 AM (reporte mercado semanal)
+- ✅ Test email enviado a ferrer.patrixio@gmail.com ✓ Recibido
+- ✅ Skills integradas: market-weekly-brief.yaml + codebase-audit.yaml
+
+**CLIENTE SSTT ERNESTO ANDINO - COTIZADOR LISTO:**
+- ✅ Creados templates contrato (3 documentos):
+  - `CONTRATO-SERVICIOS-TEMPLATE.md` (precio, pago, deliverables)
+  - `TERMINOS-CONDICIONES-TEMPLATE.md` (responsabilidades, confidencialidad, Ley 19.628)
+  - `NDA-TEMPLATE.md` (información confidencial, duración 3 años)
+- ✅ Aplicación interactiva HTML+JS: `cotizador-sstt.html`
+  - Selector de fases (Diagnóstico 40 UF, Levantamiento 40 UF, Diseño 40 UF)
+  - Cálculo automático (2 UF/hora → CLP)
+  - Visor de documentos + checkboxes aceptación
+  - Export PDF (manual via Print)
+  - Completamente offline, sin dependencias
+
+**Características Cotizador:**
+- 3 pestañas: Cotización | Documentos | Resumen Final
+- Fases dinámicas con preview
+- Desglose de precios (UF + CLP)
+- Condiciones pago seleccionables (50-50, 100%, 30-70, 0-100)
+- Vigencia oferta configurable (7-90 días)
+- Resumen ejecutivo para cliente
+
+**Hallazgos SSTT:**
+- Proceso real: distribuidor llega → guardián revisa → bodeguero reacondiciona → devuelve
+- Problema: Pierden trazabilidad → no saben qué cobrar
+- Solución: BPMN AS-IS/TO-BE + sistema trazabilidad
+
+**Estado para reunión lunes 3 Ago:**
+✅ Cotizador funcional (piloto)
+✅ Documentos listos (templates editables)
+✅ Hermes automático (reportes semanales)
+✅ BACKLOG-IDEAS-FUTURAS.md creado (comparador BPMN como SAP Signavio)
+
+---
 
 ### 2026-07-31 — Auditoría inicial de codebase (PMcoordinador)
 

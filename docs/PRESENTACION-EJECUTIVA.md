@@ -65,6 +65,7 @@ Respondes 5 preguntas → identificamos dónde estás → propongo qué es viabl
 
 ---
 
-* te financia el diagnóstico. No hay riesgo: si decidís no implementar, quedaste con el plan.*
+* te financia el diagnóstico. No hay riesgo: si decides no implementar, quedaste con el plan.*
+
 
 
