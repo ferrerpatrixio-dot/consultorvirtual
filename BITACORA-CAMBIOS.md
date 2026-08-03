@@ -59,7 +59,35 @@
 - ℹ️ Lección: el modelo real de un subagente lo define su frontmatter, no la matriz de política ni
   el modelo de la sesión del PM — hay que tocar ambos lugares o la matriz queda de adorno
 
-**Próximo paso:** DEV valida factibilidad y timeline del alcance L antes de comprometer fecha.
+**VALIDACIÓN DEV — sizing confirmado en L (2026-08-02):**
+- ✅ `docs/VALIDACION-DEV-BPMN-DESDE-PROMPT.md` — DEV confirma el alcance L: ~29 días-persona
+  (~6 semanas dedicado), verificando el prototipo real antes de estimar
+- 🔑 Hallazgo Mercado Pago: no tiene equivalente al Customer Portal de Stripe — cancelar/cambiar
+  medio de pago exigía construir una página propia (mayor contribuyente al alza de la Fase 4)
+- 🔑 Hallazgo BPMN XML: `bpmn-moddle` + `bpmn-auto-layout` (oficiales de bpmn.io) cubren el mapeo
+  semántico y el layout automático — evita construir un layout engine propio
+- ✅ **Decisiones de Patricio sobre las preguntas de DEV:**
+  - Autogestión de suscripción: **gestión manual** por Patricio vía dashboard MP mientras es
+    mono-usuario (no se construye autogestión propia en v1) — reduce la Fase 4
+  - Exportación `.bpmn` XML: **confirmada firme para v1** pese al costo ya cuantificado
+  - Semántica de error BPMN (`fin_error`): resuelto por PM sin escalar — endEvent simple en v1
+  - Dedicación DEV: **tiempo completo hasta MVP**, prioridad sobre otras líneas salvo urgencia cliente
+- ✅ DEV recalculó Fase 4 sin autogestión propia (8→5 días-persona). Total con XML incluido: 26 días-persona.
+
+**SEGUNDA REVISIÓN — exportación XML movida a fase 2 (2026-08-02, mismo día):**
+- ⚠️ Patricio reconsideró la pregunta #2 al ver el costo ya cuantificado (+6 días-persona, más
+  riesgo de librería de adopción menor) y **decidió mover la exportación `.bpmn` XML a fase 2
+  post-MVP**. v1 lanza solo con PNG/PDF (como el prototipo original).
+- ✅ Actualizados con el número final: `docs/VALIDACION-DEV-BPMN-DESDE-PROMPT.md` (Fase 5 marcada
+  "movida a fase 2 — no entra en v1", riesgo 3 marcado no aplicable a v1, pregunta 2 con historial
+  de la revisión), `docs/PROPUESTA-ARQUITECTO-BPMN-DESDE-PROMPT.md` (pregunta 5 tachada y corregida)
+- 📌 **TOTAL FINAL v1: 20 días-persona ≈ 4 semanas calendario (dedicación tiempo completo).
+  Compromiso recomendado con Patricio: 4.5–5 semanas** (buffer por el spike de Mercado Pago,
+  única pieza sin precedente que queda en el alcance de v1)
+- 📌 Fase 2 post-MVP ya dimensionada y lista para retomar sin re-investigar: exportación XML,
+  +6 días-persona (~1.2 semanas), research ya hecho (`bpmn-moddle` + `bpmn-auto-layout`)
+
+**Próximo paso:** DEV inicia con el spike de Mercado Pago (1 día) antes de comprometer fecha en firme.
 
 
 ### 2026-08-02 (continuación) — Migración dominio misitioweb: iaenproceso.cl → aiprocess.cl (Patricio + DELIVERY)
