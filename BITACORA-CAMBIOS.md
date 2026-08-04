@@ -310,8 +310,51 @@ sigue siendo correcto, la limitación es solo estética/de layout automático), 
 tiempo extra no incluido en el sizing de 27 días. Limitación documentada en comentarios de
 `exportar-bpmn.ts` para quien la retome.
 
-**Fase 3 cerrada. Sin commitear todavía.** Próximo paso: definir con Patricio si sigue el
-editor post-generación (Fase 4 del plan) o se prioriza otra cosa (ej. spike de Mercado Pago).
+**Fase 3 cerrada y subida** (`4391a8e`, push manual de Patricio tras colgarse el automático —
+mismo gotcha de Git Credential Manager, ver entradas anteriores).
+
+---
+
+### 2026-08-04 (cont. 5) — Confirmado: Mercado Pago sirve para México; secuencia GTM se mantiene Chile→México
+
+**Contexto:** Patricio preguntó si conviene usar Mercado Pago "porque quiero enfocar la
+promoción" en México, dando a entender que el foco de lanzamiento podría moverse ahí. Antes
+de tocar nada, PM revisó lo que PRODUCT MANAGER ya había investigado (sección 7 de
+`docs/VIABILIDAD-PRODUCT-MANAGER-BPMN-DESDE-PROMPT.md`, escrita antes en el mismo día) en vez
+de re-investigar, y verificó con WebSearch propio que Mercado Pago México tiene API de
+"Planes de suscripción" (`mercadopago.com.mx/developers`) — confirma lo que el análisis
+interno ya decía.
+
+**Hallazgos ya documentados (no nuevos, solo repasados):**
+- México: cobertura fuerte (tarjetas, SPEI, OXXO), pero **OXXO es efectivo diferido — no sirve
+  para cobro recurrente automático**, igual que el resto de la región, depende de tarjeta
+  tokenizada.
+- Chile: cobertura funciona, pero **Webpay (Transbank) no está integrado al checkout de
+  Mercado Pago** — riesgo de percepción de confianza (no técnico), mitigable con copy, no con
+  desarrollo. No reabre la decisión de proveedor.
+- **Bloqueador legal sin resolver, pendiente de ARQUITECTO IT:** una cuenta de Mercado Pago
+  está atada a un país (`site_id` distinto por país — MLC/MLM/MLA/etc.). No está confirmado si
+  CONSULTORAVIRTUAL (entidad chilena) puede abrir cuenta vendedora en México sin RFC/entidad
+  legal local. Si exige constituirse allá, expandir a México deja de ser un cambio de
+  configuración y pasa a ser decisión de LEGAL/inversión. **No bloquea el lanzamiento en
+  Chile**, solo la expansión futura.
+
+**Decisión de Patricio (confirmada explícitamente, resolviendo la tensión con su pregunta
+inicial):** se mantiene la secuencia recomendada por PRODUCT MANAGER — **Chile primero,
+México es expansión posterior**, no lanzamiento simultáneo. La pregunta sobre Mercado Pago
+era sobre el proveedor de pago (confirmado: sirve para ambos países cuando corresponda), no
+un cambio de en qué país se lanza primero.
+
+**Documentación corregida:** `docs/PROPUESTA-ARQUITECTO-BPMN-DESDE-PROMPT.md` sección 2
+("Decisión de stack") todavía decía Stripe Billing pese a que la decisión real desde
+2026-08-02 era Mercado Pago (solo la sección de preguntas resueltas lo tenía correcto) — PM
+lo corrigió para que quien lea la propuesta desde el inicio no vea una contradicción.
+
+**Próximo paso:** con la secuencia confirmada, sigue el plan ya trazado para Chile — Fase 4
+(editor, prácticamente ya cubierto por la tabla de edición reutilizada) o Fase 5 (spike de
+Mercado Pago de 1 día, recomendado por DEV antes de comprometer sizing en firme de la
+suscripción). El bloqueador legal de México queda anotado para cuando se evalúe esa
+expansión, no para ahora.
 
 ---
 
