@@ -204,6 +204,44 @@ orden de trabajo, solo confirma el número que PM puede comprometer con Patricio
 
 ---
 
+### 2026-08-04 (cont. 3) — Fase 2 implementada y probada end-to-end: motor prompt→JSON (DEV + ARQUITECTO IT)
+
+**Construido por DEV** en `generador-bpmn/`: `src/lib/extraccion-llm.ts` (llamada a Claude API
+con `output_config.format`/JSON schema estricto, prompt de sistema en español podado de
+`bpmn-architect`, saneo defensivo de referencias `siguiente*` rotas), `src/lib/mermaid-render.ts`
+(port literal de `generarMermaid()` del prototipo), flujo de UI en `diagramas/nuevo-ia/` +
+preview en `diagramas/[id]/DiagramaPreview.tsx`, banner de `pending_questions` (viaja por query
+string del redirect, no persiste — decisión de v1 marcada para revisión de ARQUITECTO IT si
+importa más adelante). `prisma generate`/`tsc`/`eslint`/`build` limpios, verificado también por
+PM de forma independiente.
+
+**Cuestionamiento de Patricio:** por qué se necesita una `ANTHROPIC_API_KEY` separada en vez de
+reusar su sesión pagada de Claude.ai/Claude Code, y por qué no OpenAI. Aclarado: la sesión de
+chat es un producto distinto de la API de desarrollador (`console.anthropic.com`), sin acceso
+programático para un backend multi-tenant. Sobre proveedor, se encargó a ARQUITECTO IT una
+comparación real (no solo reutilización de stack).
+
+**ARQUITECTO IT (comparación Anthropic vs OpenAI, sección nueva en
+`docs/PROPUESTA-ARQUITECTO-BPMN-DESDE-PROMPT.md`):** se mantiene Anthropic — la diferencia de
+costo real entre proveedores (~$40-60/mes a 10.000 diagramas/mes) no compensa operar un segundo
+proveedor de LLM. Hallazgo real: el código usaba **Claude Sonnet 5** (el más caro/capaz) para
+una extracción simple — se bajó a **Claude Haiku 4.5** (~3x más barato, mismo soporte de
+structured outputs), cambio de una línea ya aplicado y verificado con `tsc`. Precios citados con
+fuente (WebFetch a pricing oficial), no de memoria.
+
+**Verificación end-to-end (PM, con key real provista por Patricio):** probado
+`extraerProcesoDesdePrompt()` contra la API real con un ejemplo ("aprobación de vacaciones",
+3 actores, decisión con dos ramas) — devolvió el JSON correcto: actores bien asignados, `id`/
+`siguiente*` consistentes, `fin_ok`/`fin_error` bien cerrados, sin `pending_questions` (el
+ejemplo no tenía ambigüedad). Key cargada en `generador-bpmn/.env.local` únicamente (no se tocó
+`sistemaaiprocess`). Script de prueba temporal eliminado después de verificar.
+
+**Fase 2 cerrada.** Sin commitear todavía. **Próximo paso:** Fase 3 (exportación `.bpmn` XML,
+adelantada a v1 según decisión del 2026-08-04) o Fase 3 del plan original (editor
+post-generación) — a definir con Patricio antes de encargar a DEV.
+
+---
+
 ### 2026-08-02 (continuación) — Migración dominio misitioweb: iaenproceso.cl → aiprocess.cl (Patricio + DELIVERY)
 
 **COMPLETADO:**

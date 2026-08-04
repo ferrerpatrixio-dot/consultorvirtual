@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, X } from "lucide-react";
+import { z } from "zod";
+import { ArrowLeft, X, HelpCircle } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 import { parseActores, parsePasos, TIPOS_PASO, TIPO_LABEL } from "@/lib/diagramas";
+import { generarMermaid } from "@/lib/mermaid-render";
 import {
   actualizarMetaAction,
   eliminarDiagramaAction,
@@ -14,6 +16,21 @@ import {
   quitarPasoAction,
 } from "@/app/(app)/actions";
 import { EliminarDiagramaButton } from "./EliminarDiagramaButton";
+import { DiagramaPreview } from "./DiagramaPreview";
+
+/** "preguntas" llega en la URL solo justo después de generar un diagrama
+ * con IA (ver generarDesdePromptAction) — no se persiste en la BD, es un
+ * aviso de una sola vez. Si el parseo falla (link viejo, manipulado, etc.),
+ * simplemente no se muestra nada — no es un error del usuario. */
+function parsePreguntasPendientes(valor: string | undefined): string[] {
+  if (!valor) return [];
+  try {
+    const r = z.array(z.string()).safeParse(JSON.parse(valor));
+    return r.success ? r.data : [];
+  } catch {
+    return [];
+  }
+}
 
 const LABEL = "block text-sm font-medium text-ink";
 const INPUT =
@@ -24,10 +41,10 @@ export default async function DiagramaPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ editId?: string }>;
+  searchParams: Promise<{ editId?: string; preguntas?: string }>;
 }) {
   const { id } = await params;
-  const { editId } = await searchParams;
+  const { editId, preguntas } = await searchParams;
   const user = await requireUser();
 
   const diagrama = await prisma.diagram.findFirst({
@@ -38,6 +55,8 @@ export default async function DiagramaPage({
   const actores = parseActores(diagrama.actores);
   const pasos = parsePasos(diagrama.pasos);
   const pasoEnEdicion = editId ? pasos.find((p) => p.id === editId) : undefined;
+  const preguntasPendientes = parsePreguntasPendientes(preguntas);
+  const codigoMermaid = generarMermaid(actores, pasos);
 
   // Opciones de destino: cualquier otro paso del diagrama (no el que se
   // está editando, para no dejarlo apuntándose a sí mismo).
@@ -58,6 +77,36 @@ export default async function DiagramaPage({
           <EliminarDiagramaButton />
         </form>
       </div>
+
+      {/* Aviso de la IA: esto no quedó claro, complétalo tú (solo aparece
+          justo después de generar con IA, ver parsePreguntasPendientes) */}
+      {preguntasPendientes.length > 0 && (
+        <section className="mt-6 rounded-xl border border-amber-300 bg-amber-50 p-5">
+          <h2 className="flex items-center gap-1.5 text-sm font-bold uppercase tracking-wide text-amber-800">
+            <HelpCircle className="h-4 w-4" />
+            Esto no quedó claro — complétalo tú
+          </h2>
+          <p className="mt-1 text-xs text-amber-800">
+            La IA dejó estos puntos sin resolver en vez de inventarlos. Ajusta
+            los pasos correspondientes en la tabla de abajo.
+          </p>
+          <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-amber-900">
+            {preguntasPendientes.map((pregunta, i) => (
+              <li key={i}>{pregunta}</li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* Diagrama */}
+      <section className="mt-6 rounded-xl border border-line bg-surface p-5">
+        <h2 className="text-sm font-bold uppercase tracking-wide text-primary-ink">
+          Diagrama
+        </h2>
+        <div className="mt-3">
+          <DiagramaPreview codigo={codigoMermaid} />
+        </div>
+      </section>
 
       {/* Cliente / proceso */}
       <section className="mt-6 rounded-xl border border-line bg-surface p-5">

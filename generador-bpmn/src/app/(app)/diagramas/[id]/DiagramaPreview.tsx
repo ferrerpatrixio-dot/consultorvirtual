@@ -1,0 +1,69 @@
+"use client";
+
+import { useEffect, useId, useRef, useState } from "react";
+
+/** Renderiza código Mermaid a SVG en el navegador. Import dinámico dentro de
+ * useEffect porque mermaid toca el DOM (no puede cargarse en SSR). */
+export function DiagramaPreview({ codigo }: { codigo: string | null }) {
+  const contenedorRef = useRef<HTMLDivElement>(null);
+  const idBase = useId().replace(/[^a-zA-Z0-9]/g, "");
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelado = false;
+
+    if (!codigo) {
+      if (contenedorRef.current) contenedorRef.current.innerHTML = "";
+      return;
+    }
+
+    import("mermaid").then(async ({ default: mermaid }) => {
+      if (cancelado) return;
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: "default",
+        securityLevel: "loose",
+        flowchart: { curve: "basis" },
+      });
+      try {
+        const { svg } = await mermaid.render(`diagrama_${idBase}`, codigo);
+        if (!cancelado) {
+          setError(null);
+          if (contenedorRef.current) contenedorRef.current.innerHTML = svg;
+        }
+      } catch (e) {
+        if (!cancelado) {
+          setError(e instanceof Error ? e.message : "No se pudo dibujar el diagrama.");
+        }
+      }
+    });
+
+    return () => {
+      cancelado = true;
+    };
+  }, [codigo, idBase]);
+
+  if (!codigo) {
+    return (
+      <p className="rounded-lg border border-dashed border-line bg-bg p-6 text-center text-sm italic text-ink-2">
+        Agrega actores y pasos para ver el diagrama.
+      </p>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-lg border border-danger bg-red-50 p-4 text-sm text-danger">
+        No se pudo dibujar el diagrama todavía. Revisa que cada paso tenga
+        texto y que las decisiones tengan Sí/No asignados.
+      </div>
+    );
+  }
+
+  return (
+    <div
+      ref={contenedorRef}
+      className="flex min-h-[120px] items-center justify-center overflow-x-auto rounded-lg border border-line bg-white p-4"
+    />
+  );
+}

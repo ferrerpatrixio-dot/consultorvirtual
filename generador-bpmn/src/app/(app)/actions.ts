@@ -12,6 +12,7 @@ import {
   parsePasos,
   type Paso,
 } from "@/lib/diagramas";
+import { extraerProcesoDesdePrompt } from "@/lib/extraccion-llm";
 import type { Prisma } from "@prisma/client";
 
 /** Diagrama del usuario autenticado, o null si no existe / no le pertenece. */
@@ -58,6 +59,70 @@ export async function crearDiagramaAction(
   });
 
   redirect(`/diagramas/${diagrama.id}`);
+}
+
+const promptSchema = z.object({
+  cliente: z.string().trim().min(2, "Cliente requerido"),
+  proceso: z.string().trim().min(2, "Proceso requerido"),
+  prompt: z
+    .string()
+    .trim()
+    .min(20, "Describe el proceso con un poco más de detalle (mínimo 20 caracteres)"),
+});
+
+/** Crea un diagrama a partir de una descripción libre: llama al motor
+ * prompt→JSON (Fase 2, ver docs/PROPUESTA-ARQUITECTO-BPMN-DESDE-PROMPT.md)
+ * y guarda el resultado ya con actores/pasos poblados. Si el LLM dejó
+ * "pending_questions" (dudas que no pudo inferir), se pasan por query string
+ * al redirect para que la página del diagrama las muestre — no se persisten
+ * en la BD porque son un aviso de una sola vez, no parte del modelo de
+ * datos del diagrama. */
+export async function generarDesdePromptAction(
+  _prevState: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const user = await requireUser();
+
+  const parsed = promptSchema.safeParse({
+    cliente: formData.get("cliente"),
+    proceso: formData.get("proceso"),
+    prompt: formData.get("prompt"),
+  });
+  if (!parsed.success) {
+    const errors: Record<string, string> = {};
+    for (const issue of parsed.error.issues) {
+      errors[String(issue.path[0] ?? "form")] = issue.message;
+    }
+    return { errors };
+  }
+
+  let resultado;
+  try {
+    resultado = await extraerProcesoDesdePrompt(parsed.data.prompt);
+  } catch (err) {
+    return {
+      errors: {
+        prompt: err instanceof Error ? err.message : "No se pudo generar el diagrama. Intenta de nuevo.",
+      },
+    };
+  }
+
+  const diagrama = await prisma.diagram.create({
+    data: {
+      userId: user.id,
+      cliente: parsed.data.cliente,
+      proceso: parsed.data.proceso,
+      actores: resultado.actores as Prisma.InputJsonValue,
+      pasos: resultado.pasos as unknown as Prisma.InputJsonValue,
+    },
+  });
+
+  const destino =
+    resultado.pendingQuestions.length > 0
+      ? `/diagramas/${diagrama.id}?preguntas=${encodeURIComponent(JSON.stringify(resultado.pendingQuestions))}`
+      : `/diagramas/${diagrama.id}`;
+
+  redirect(destino);
 }
 
 /** Actualiza cliente/proceso de un diagrama existente. */

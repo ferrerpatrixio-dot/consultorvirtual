@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus, FileText } from "lucide-react";
+import { Plus, FileText, Sparkles } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 
@@ -20,13 +20,22 @@ export default async function Dashboard() {
             actores y pasos.
           </p>
         </div>
-        <Link
-          href="/diagramas/nuevo"
-          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover"
-        >
-          <Plus className="h-4 w-4" />
-          Nuevo diagrama
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/diagramas/nuevo-ia"
+            className="inline-flex items-center gap-2 rounded-lg border border-primary px-4 py-2 text-sm font-semibold text-primary-ink transition hover:bg-bg"
+          >
+            <Sparkles className="h-4 w-4" />
+            Generar con IA
+          </Link>
+          <Link
+            href="/diagramas/nuevo"
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover"
+          >
+            <Plus className="h-4 w-4" />
+            Nuevo diagrama
+          </Link>
+        </div>
       </div>
 
       {diagramas.length === 0 ? (

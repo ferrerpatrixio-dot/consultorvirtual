@@ -174,3 +174,73 @@ Sobre esos 20 días-persona vigentes, vuelve a sumarse lo que se había sacado:
 - Herramientas: Stripe (sin costo fijo, % por transacción), Claude API (costo variable por uso, a definir con volumen esperado), infraestructura VPS ya pagada (sin costo incremental).
 - Horas: a estimar por DEV una vez fijadas las preguntas pendientes (sección 5), especialmente #1 (límite de uso por plan, afecta diseño) y #5 (alcance de exportación, afecta tamaño de la Fase 2).
 - Total: **dentro del umbral que no requiere escalación a Patricio por presupuesto** (<$5K en horas internas), sujeto a que las respuestas a las preguntas pendientes no amplíen el alcance (ej. exportación a `.bpmn` XML sí movería esto a L y ahí sí conviene una segunda validación de costo).
+
+---
+
+## Actualización 2026-08-04: Anthropic vs OpenAI para el motor de extracción prompt→JSON
+
+**Por qué se revisa:** Patricio cuestionó que la sección 2 haya elegido la API de Claude solo por reutilización de stack ("ya se usa `@anthropic-ai/sdk` en `sistemaaiprocess`"), sin comparar costo/desempeño real para este caso de uso puntual. Corresponde comparar en serio antes de comprometerse.
+
+**El caso de uso, leído del código real (`generador-bpmn/src/lib/extraccion-llm.ts`):** una sola llamada por diagrama (`client.messages.create`, sin loop de tool-use), `output_config.format` con JSON schema estricto (`additionalProperties: false`), prompt de sistema en español de ~600 palabras con reglas explícitas de negocio, extrayendo actores + pasos (con ids y referencias `siguiente*`) de una descripción libre del usuario. Es extracción estructurada de texto corto con reglas bien definidas — no hay razonamiento multi-paso, no hay tool-use, no hay agente. Esto importa para elegir modelo: es exactamente el perfil de tarea para el que existen los tiers "mini/haiku", no los tiers de razonamiento.
+
+### 1. Tokens estimados por llamada
+
+- **Entrada:** system prompt (~600 palabras en español) ≈ 800-1000 tokens + JSON schema de salida (cuenta como parte del procesamiento, se cachea 24h tras la primera compilación) + descripción del usuario (rango realista 200-1000 tokens para un proceso de negocio típico). Total de entrada: **~1200-2500 tokens** por llamada, tomo **~1500** como caso representativo.
+- **Salida:** JSON con actores + N pasos (cada paso ~40-60 tokens: id, actor, lane, tipo, texto, 3 campos de destino). Para un proceso de 8-15 pasos: **~500-1500 tokens**, tomo **~1000** como caso representativo.
+
+Esto confirma el rango que planteó PM (500-2000 en ambos sentidos) — no es una tarea de contexto largo.
+
+### 2. Precios reales, consultados hoy (2026-08-04)
+
+**Anthropic** (cacheado en la skill interna al 2026-06-24, vigente):
+
+| Modelo | Input /MTok | Output /MTok |
+|---|---|---|
+| Claude Sonnet 5 (modelo actual en el código) | $3.00 ($2.00 intro hasta 2026-08-31) | $15.00 ($10.00 intro) |
+| **Claude Haiku 4.5** | **$1.00** | **$5.00** |
+
+**OpenAI** (consultado vía WebFetch a `developers.openai.com/api/docs/pricing`, hoy):
+
+| Modelo | Input /MTok | Output /MTok |
+|---|---|---|
+| GPT-5 (flagship) | $1.25 | $10.00 |
+| GPT-4o-mini | $0.15 | $0.60 |
+| GPT-4.1-mini | $0.40 | $1.60 |
+| **GPT-5-mini** | **$0.25** | **$2.00** |
+| GPT-5-nano | $0.05 | $0.40 |
+
+No cito precios de memoria en ningún caso — el número de OpenAI viene de la página oficial de pricing consultada en esta sesión, no de recuerdo de entrenamiento (que estaría desactualizado).
+
+### 3. Costo real por llamada y a volumen (con los supuestos de la sección 1)
+
+| Modelo | Costo/llamada (1500 in / 1000 out) | 1.000 diagramas/mes | 10.000 diagramas/mes |
+|---|---|---|---|
+| Claude Sonnet 5 (actual, sin cambiar) | ~$0.0195 (~$0.013 en precio intro) | ~$19.50 (~$13 intro) | ~$195 (~$130 intro) |
+| **Claude Haiku 4.5** | **~$0.0065** | **~$6.50** | **~$65** |
+| GPT-5-mini | ~$0.0024 | ~$2.40 | ~$24 |
+| GPT-5-nano (no recomendado, ver abajo) | ~$0.0005 | ~$0.50 | ~$5 |
+
+**Lectura:** el salto grande de costo ya estaba disponible *dentro* de Anthropic — pasar de Sonnet 5 a Haiku 4.5 es una reducción de ~3x y no requiere tocar el proveedor. El salto adicional de Haiku 4.5 a GPT-5-mini es real (~2.7x más barato) pero, en dólares absolutos a este volumen, es una diferencia de **~$40-60/mes a 10.000 diagramas/mes**, y de unos pocos dólares al mes al volumen de lanzamiento (cientos de diagramas). GPT-5-nano es más barato todavía, pero lo descarto para esta tarea: el schema exige que el modelo mantenga consistencia referencial entre `id`, `siguiente`, `siguienteSi`/`siguienteNo` y la lista de actores — es la parte de la tarea con más superficie de error, y un tier "nano" es el que más arriesga esa consistencia. No hay evidencia empírica propia de esto (no corrí un benchmark), lo marco como criterio de precaución, no como dato medido.
+
+### 4. Modelo específico (no solo proveedor)
+
+- **Dentro de Anthropic: Haiku 4.5, no Sonnet 5.** El código usaba Sonnet 5 — el modelo más capaz de la familia — para una tarea de extracción simple con schema estricto. Esto confirma el hallazgo previo de PM. Haiku 4.5 está explícitamente soportado para `output_config.format` (structured outputs), así que no hay pérdida de capacidad técnica al bajar de tier.
+- **Dentro de OpenAI: GPT-5-mini, no GPT-4o-mini ni GPT-5-nano.** GPT-4o-mini es más caro que GPT-5-mini y de una familia anterior — no hay razón para preferirlo. GPT-5-nano es el más barato pero se descarta por el riesgo de consistencia referencial explicado arriba.
+
+### 5. Calidad de structured output: ¿hay diferencia real?
+
+No, para este caso de uso. Ambos proveedores resuelven JSON schema estricto de forma nativa y equivalente: Anthropic vía `output_config.format` (soportado en Haiku 4.5), OpenAI vía Structured Outputs con `strict: true` (soportado en toda la familia GPT-4o+/GPT-5, incluido GPT-5-mini). El "no vas a alucinar un campo faltante" es un problema resuelto en ambos lados — no es un diferenciador para decidir proveedor en esta tarea puntual. Sobre precisión de *contenido* (interpretar correctamente el texto en español y armar la lógica de branching), no tengo benchmark propio comparando ambos modelos en este dominio específico — lo señalo como supuesto no verificado, no como hecho.
+
+### 6. Costo de cambiar de proveedor si se decidiera
+
+Bajo. `extraccion-llm.ts` es la única superficie que toca el SDK de Anthropic en todo `generador-bpmn` — el resto de la app solo conoce la firma `extraerProcesoDesdePrompt(descripcion) → ResultadoExtraccion`, que es agnóstica de proveedor. Migrar a OpenAI sería: reescribir este archivo (cliente `openai`, `response_format`/`json_schema` con `strict: true` en vez de `output_config.format`, manejo de `refusal` distinto porque OpenAI no tiene un `stop_reason: "refusal"` equivalente), cambiar la variable de entorno y el `package.json`. No hay arquitectura que rehacer — es una capa aislada de un solo archivo, tal como preguntaba Patricio. Esto significa que la decisión de hoy **no es irreversible ni cara de revertir** si el volumen cambia el cálculo más adelante.
+
+### 7. Reutilización de stack: sigue siendo un argumento válido, pero no decisivo por sí solo
+
+`sistemaaiprocess` ya integra `@anthropic-ai/sdk` y ya existe el proceso de gestión de la llave (aunque hoy esté vacía en el VPS) — eso reduce fricción operativa real: una cuenta de facturación, una llave, un patrón de manejo de errores conocido por el equipo. Pero a la luz del cálculo de la sección 3, este argumento **no hace falta usarlo como decisivo**, porque el costo real tampoco favorece claramente a OpenAI a este volumen — la diferencia en dólares es menor que el costo operativo de mantener un segundo proveedor de LLM para un producto que recién arranca.
+
+### Recomendación final
+
+**Mantener Anthropic, no cambiar de proveedor. Cambiar el modelo de Claude Sonnet 5 a Claude Haiku 4.5** para esta tarea de extracción — ya aplicado en `extraccion-llm.ts` (`MODELO = "claude-haiku-4-5"`, línea única, verificado con `npx tsc --noEmit` sin errores).
+
+**Motivo principal:** la comparación real de costo (sección 3) muestra que el ahorro de cambiar de proveedor (Haiku 4.5 → GPT-5-mini, ~$40-60/mes a 10.000 diagramas/mes) es menor que el costo operativo de administrar un segundo proveedor de LLM en una empresa de este tamaño ("mínimo costo PYME"), mientras que el ahorro de bajar de tier *dentro* de Anthropic (Sonnet 5 → Haiku 4.5, ~3x) es igual de grande y no cuesta nada operativamente. La reutilización de stack (sección 7) es un argumento de apoyo, no la razón principal — el cálculo de costo ya sostiene la decisión por sí solo a este volumen. Si el producto escala uno o dos órdenes de magnitud en volumen y GPT-5-mini sigue siendo 2-3x más barato en ese momento, vale la pena reabrir la pregunta — y el costo de hacerlo entonces es bajo, porque el motor de extracción sigue siendo una capa de un solo archivo (sección 6).
