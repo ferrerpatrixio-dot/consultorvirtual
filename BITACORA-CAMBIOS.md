@@ -358,6 +358,42 @@ expansión, no para ahora.
 
 ---
 
+### 2026-08-04 (cont. 6) — Requisito Mercado Pago Chile: no exige empresa constituida
+
+**Pregunta de Patricio:** hoy solo emite boleta de honorarios (persona natural), sin empresa
+formada — ¿eso bloquea abrir cuenta vendedor de Mercado Pago?
+
+**Respuesta (PM, vía WebSearch, no pudo leerse la página oficial directo — 403/anti-bot):**
+No bloquea. Mercado Pago Chile ofrece cuenta vendedor como **"persona natural con giro"**
+(alternativa a "sociedad comercial"), con el RUT personal. El requisito de fondo es tener
+**"inicio de actividades" en el SII**, que emitir boleta de honorarios ya exige (segunda
+categoría) — Patricio ya lo cumple sin acción adicional. **Pendiente de verificación directa
+por Patricio** en `mercadopago.cl/hub/registration` antes de que DEV arranque el spike, porque
+la fuente no fue la página oficial de Mercado Pago (bloqueada), sino fuentes secundarias
+cruzadas con la normativa SII.
+
+**Próximo paso (decidido por Patricio):** Fase 4, editor post-generación.
+
+---
+
+### 2026-08-04 (cont. 7) — Fase 4 verificada: editor post-generación ya estaba completo
+
+DEV revisó el flujo completo (generar con IA → editar actores/pasos/ramas → re-render
+Mermaid → export XML) contra la propuesta original — **no encontró gaps reales, cero cambios
+de código.** La tabla de edición de Fase 1 (agregar/editar/eliminar actores y pasos, corregir
+`siguiente*` mal inferidos) ya servía como editor post-generación, con `revalidatePath`
+propagando cualquier edición al preview Mermaid y a la exportación XML. Única diferencia vs.
+el prototipo (edición fila-por-fila con `onChange` inmediato → patrón "Editar → Guardar" de
+server actions) es una adaptación de framework, no una pérdida funcional. `tsc`/`eslint`/
+`build` limpios, verificado por PM que no quedó nada sin commitear (no había cambios).
+
+**Fase 4 cerrada, sin commit necesario.** v1 completo salvo Fase 5 (suscripción Mercado Pago)
+y Fase 6 (QA/Security/Delivery). Próximo paso: spike de Mercado Pago (1 día, ya recomendado),
+pendiente de que Patricio confirme el registro de cuenta vendedor persona natural en
+`mercadopago.cl/hub/registration`.
+
+---
+
 ### 2026-08-02 (continuación) — Migración dominio misitioweb: iaenproceso.cl → aiprocess.cl (Patricio + DELIVERY)
 
 **COMPLETADO:**
