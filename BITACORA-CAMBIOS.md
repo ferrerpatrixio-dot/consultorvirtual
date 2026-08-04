@@ -113,6 +113,32 @@ proyecto/billing, cero colisión de tablas. Confirmación pendiente de DEV.
 
 **Próximo paso:** confirmar corrección de schema Postgres, luego arranca Fase 2 (motor prompt→JSON).
 
+**Corrección confirmada (2026-08-04):** DEV validó en seco (`prisma validate`, `prisma migrate diff
+--from-empty`) que el schema `generador_bpmn` queda completamente aislado de `public` — cero
+referencias cruzadas con `sistemaaiprocess`. `sistemaaiprocess/` sigue sin ningún cambio. **Fase 1
+cerrada.**
+
+---
+
+### 2026-08-04 — Viabilidad comercial (PRODUCT MANAGER)
+
+**Reporte completo:** `docs/VIABILIDAD-PRODUCT-MANAGER-BPMN-DESDE-PROMPT.md`
+
+- **Recomendación:** Aceptar con condiciones (no rechazo, no aceptación simple)
+- 🔴 **Hallazgo crítico:** ya existen 4-5 competidores directos haciendo "prompt → BPMN" (Just Flow
+  It, BPMNify, Patchley, BA Copilot), y **3 de ellos ya exportan a `.bpmn` XML real** — justo lo que
+  se movió a fase 2 el mismo día. No es un mercado vacío. PRODUCT MANAGER recomienda priorizar la
+  exportación XML como **primer ítem de fase 2**, no uno más de la lista — **pendiente de decisión
+  de Patricio, no se re-prioriza sin su visto bueno** (afecta timeline ya comunicado)
+- 💰 **Precio propuesto:** CLP $9.990/mes, plan único sin trial — **pendiente de confirmación de
+  Patricio** (decisión de precio/modelo de negocio, Nivel 3 según MATRIZ_AGENTES)
+- 👤 **Comprador real:** no es el analista individual genérico (una PYME chilena tiene gasto tech
+  tope ≤1 UF/mes decidido por el dueño, no por un empleado). Comprador viable: consultores
+  independientes, analistas con gasto vía tarjeta corporativa, o cartera propia de clientes de
+  CONSULTORAVIRTUAL — cambia el mensaje de GTM, no el diseño técnico (mono-usuario sigue correcto)
+- ⏳ Extendido para cubrir cobertura de pago por país LATAM y GTM de entrada a México (pedido de
+  Patricio el mismo día) — pendiente de respuesta
+
 ---
 
 ### 2026-08-04 (cont.) — Migración de schema confirmada; corrección de infraestructura; PRODUCT MANAGER valida pricing
@@ -236,9 +262,56 @@ fuente (WebFetch a pricing oficial), no de memoria.
 ejemplo no tenía ambigüedad). Key cargada en `generador-bpmn/.env.local` únicamente (no se tocó
 `sistemaaiprocess`). Script de prueba temporal eliminado después de verificar.
 
-**Fase 2 cerrada.** Sin commitear todavía. **Próximo paso:** Fase 3 (exportación `.bpmn` XML,
-adelantada a v1 según decisión del 2026-08-04) o Fase 3 del plan original (editor
-post-generación) — a definir con Patricio antes de encargar a DEV.
+**Fase 2 cerrada y commiteada/subida** (`247bf0a`, push a
+`github.com/ferrerpatrixio-dot/consultorvirtual` — repo nuevo, sin remoto hasta hoy, ver
+más abajo).
+
+---
+
+### 2026-08-04 (cont. 4) — Repo CONSULTORAVIRTUAL conectado a GitHub; Fase 3 implementada (exportación XML)
+
+**Remoto nuevo:** el repo raíz `CONSULTORAVIRTUAL` (donde vive `generador-bpmn/`, `docs/`,
+`organizacionvirtual/`) nunca había tenido remoto en GitHub — `sistemaaiprocess/` es un repo
+git anidado y separado, con su propio origin (`APP-PROCESOS`), y eso confundía la referencia.
+Patricio creó `github.com/ferrerpatrixio-dot/consultorvirtual` (vacío) y PM configuró el
+remoto + subió los 71 commits de historial existente. `git push` sigue siendo intermitente en
+esta máquina (a veces cuelga, a veces corre limpio en <30s) — no es un problema del repo, hay
+que reintentar si se cuelga.
+
+**PM decidió el orden de la Fase 3** (Patricio delegó explícitamente: "decide tú"): exportación
+XML antes que editor post-generación, porque (a) ya estaba secuenciado así por ARQUITECTO IT el
+mismo día, con el sizing de 27 días-persona validado sobre ese orden, y (b) el editor
+post-generación ya está prácticamente cubierto — la tabla de edición de Fase 1 se reutiliza en
+Fase 2 como red de seguridad tras la generación por IA.
+
+**Construido por DEV — Fase 3, exportación `.bpmn` XML:**
+- `src/lib/exportar-bpmn.ts`: árbol BPMN 2.0 con `bpmn-moddle` (actores→`Lane` dentro de un
+  único `Process`, no pools separados — evita la limitación de `bpmn-auto-layout` con múltiples
+  `participant`), tipos de paso mapeados a `StartEvent`/`UserTask`/`ServiceTask`/
+  `ExclusiveGateway`/`EndEvent` simple (sin `errorEventDefinition`, respeta decisión previa),
+  layout calculado con `bpmn-auto-layout`.
+- `src/app/api/diagramas/[id]/exportar/route.ts`: descarga protegida por sesión + ownership.
+- Botón "Exportar XML (.bpmn)" en `diagramas/[id]/page.tsx`.
+- `bpmn-moddle` + `bpmn-auto-layout` agregadas como dependencias reales (no dev).
+- `tsc`/`eslint`/`build` limpios — verificado por DEV y de nuevo por PM de forma independiente.
+
+**Hallazgo verificado por PM (no solo reportado por DEV, confirmado con un script propio):**
+`bpmn-auto-layout` v1.3.0 (última estable) **no calcula caja visual para `bpmn:Lane`** — el XML
+generado tiene la semántica de carril correcta (`laneSet`/`flowNodeRef` bien asignados, PM lo
+confirmó inspeccionando el XML de un ejemplo real: 3 actores, 7 nodos, 6 conexiones, 0 shapes de
+Lane), pero al abrir el archivo en Camunda Modeler o bpmn.io **no se ven los recuadros
+divisorios de carril**, solo los nodos sueltos. Causa raíz: el algoritmo de layout posiciona por
+profundidad del grafo, ignorando el actor — DEV intentó reconstruir las cajas calculando
+bounding-box por lane después del layout y no funciona porque los rangos de posición se
+solapan entre actores.
+
+**Decisión de Patricio:** lanzar v1 así, sin carriles visuales en el XML exportado (el dato
+sigue siendo correcto, la limitación es solo estética/de layout automático), sin invertir
+tiempo extra no incluido en el sizing de 27 días. Limitación documentada en comentarios de
+`exportar-bpmn.ts` para quien la retome.
+
+**Fase 3 cerrada. Sin commitear todavía.** Próximo paso: definir con Patricio si sigue el
+editor post-generación (Fase 4 del plan) o se prioriza otra cosa (ej. spike de Mercado Pago).
 
 ---
 

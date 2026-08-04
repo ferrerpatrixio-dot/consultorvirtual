@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { ArrowLeft, X, HelpCircle } from "lucide-react";
+import { ArrowLeft, Download, X, HelpCircle } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 import { parseActores, parsePasos, TIPOS_PASO, TIPO_LABEL } from "@/lib/diagramas";
@@ -100,9 +100,20 @@ export default async function DiagramaPage({
 
       {/* Diagrama */}
       <section className="mt-6 rounded-xl border border-line bg-surface p-5">
-        <h2 className="text-sm font-bold uppercase tracking-wide text-primary-ink">
-          Diagrama
-        </h2>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-sm font-bold uppercase tracking-wide text-primary-ink">
+            Diagrama
+          </h2>
+          {actores.length > 0 && pasos.length > 0 && (
+            <a
+              href={`/api/diagramas/${diagrama.id}/exportar`}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-sm font-medium text-ink-2 transition hover:bg-bg"
+            >
+              <Download className="h-4 w-4" />
+              Exportar XML (.bpmn)
+            </a>
+          )}
+        </div>
         <div className="mt-3">
           <DiagramaPreview codigo={codigoMermaid} />
         </div>
