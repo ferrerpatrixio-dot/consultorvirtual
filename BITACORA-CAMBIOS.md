@@ -394,6 +394,42 @@ pendiente de que Patricio confirme el registro de cuenta vendedor persona natura
 
 ---
 
+### 2026-08-04 (cont. 8) — Spike Mercado Pago: sizing de Fase 5 sube de 5 a ~6.5-7 días-persona
+
+Patricio decidió la variante técnica: **"Suscripciones con plan asociado"** (`POST
+/preapproval_plan` una vez + `POST /preapproval` por cliente), pasando la documentación
+oficial completa. DEV corrió el spike de investigación (documento completo en
+`docs/SPIKE-MERCADO-PAGO-BPMN-DESDE-PROMPT.md`):
+
+**Confirmado por documentación oficial:**
+- Tokenización client-side: **MercadoPago.js V2 + `CardForm`** (`@mercadopago/sdk-js`) — no
+  hay checkout hosteado para este flujo, hay que construir un formulario de tarjeta propio.
+  Dato del token nunca toca nuestro servidor (acota alcance PCI), pero DEV sí mantiene esa UI.
+- Webhooks: **tres tópicos**, no uno — `subscription_preapproval` (alta/estado),
+  `subscription_authorized_payment` (cobros), `payments` (detalle, recomendado).
+- CLP: entero sin decimales (`9990`, no `9990.00`) — **inferido, no verificado con la API
+  real** (el ejemplo oficial que DEV pudo leer usaba ARS con decimales).
+
+**No pudo probar contra sandbox real — correctamente, no lo simuló.** Crear la app +
+cuentas de prueba en Mercado Pago Developers exige loguearse con la cuenta real de Patricio o
+crear una cuenta — acciones que DEV/PM tienen prohibido ejecutar aunque se autoricen. Patricio
+compartió después la guía de "Cuentas de prueba" (Vendedor+Comprador, mismo país, hasta 15,
+con tarjetas de prueba) — PM se la reenvió al agente en curso, pero no cambia el bloqueo de
+fondo: alguien tiene que crear la cuenta con su login real primero.
+
+**Sizing actualizado:** Fase 5 sube de 5 a **~6.5–7 días-persona** — el hallazgo nuevo es el
+formulario de tarjeta propio (2 días, no dimensionado antes porque no estaba confirmado que
+faltara checkout hosteado) más el segundo tópico de webhook (+0.5 día). **Total v1: ~21.5–22
+días-persona** (antes 20), sigue dentro del buffer de 4.5–5 semanas ya comprometido con
+Patricio — no hace falta renegociar el timeline.
+
+**Para destrabar la validación práctica (formato CLP con dato real, no inferido):** Patricio
+crea una aplicación en `mercadopago.cl/developers`, genera cuenta de prueba Vendedor Chile +
+Comprador Chile, y pasa el Public Key + Access Token de prueba (`TEST-...`) de la cuenta
+Vendedor.
+
+---
+
 ### 2026-08-02 (continuación) — Migración dominio misitioweb: iaenproceso.cl → aiprocess.cl (Patricio + DELIVERY)
 
 **COMPLETADO:**
