@@ -89,6 +89,120 @@
 
 **Próximo paso:** DEV inicia con el spike de Mercado Pago (1 día) antes de comprometer fecha en firme.
 
+---
+
+### 2026-08-04 — Fase 1 implementada: Auth + persistencia (DEV)
+
+**Construido en `generador-bpmn/`** (nueva carpeta, sibling de `sistemaaiprocess/`):
+- Scaffold Next.js clonando convenciones exactas de `sistemaaiprocess` (mismas versiones de dependencias, mismo patrón de `auth.ts`)
+- Prisma: modelos Auth.js estándar + `Diagram` (cliente, proceso, actores JSON, pasos JSON) — mono-usuario
+- CRUD de diagramas protegido por sesión: `/dashboard`, `/diagramas/nuevo`, `/diagramas/[id]`
+- Verificado antes de reportar: `npm install`, `prisma generate`, `tsc --noEmit`, `next build`, `eslint` — todo limpio
+- Sin tocar `sistemaaiprocess/` ni hacer commit (según lo pedido)
+
+**Decisión de infraestructura (Patricio, 2026-08-04):** OAuth de Google y proyecto Supabase
+**compartidos** con `sistemaaiprocess` (no se crean cuentas nuevas — menor costo y setup).
+
+**Corrección técnica aplicada (PM detectó antes de cerrar la fase):** `sistemaaiprocess` usa el
+schema `public` de Postgres por defecto con tablas `User`/`Account`/`Session`/`VerificationToken`.
+Compartir el mismo proyecto Supabase sin aislar `generador-bpmn` en su propio schema Postgres
+hubiera chocado con esas tablas (falla de migración en el mejor caso, corrupción de datos entre
+productos en el peor). Se pidió a DEV mover `generador-bpmn` a un schema Postgres separado
+(`generador_bpmn`) dentro del mismo proyecto Supabase, vía `multiSchema` de Prisma — mismo
+proyecto/billing, cero colisión de tablas. Confirmación pendiente de DEV.
+
+**Próximo paso:** confirmar corrección de schema Postgres, luego arranca Fase 2 (motor prompt→JSON).
+
+---
+
+### 2026-08-04 (cont.) — Migración de schema confirmada; corrección de infraestructura; PRODUCT MANAGER valida pricing
+
+**Corrección de dato:** la base compartida con `sistemaaiprocess` **no es Supabase** — es Postgres
+self-hosted en el VPS Hostinger de Patricio, vía EasyPanel (host interno
+`iaprocess_server1_bbdd_postgres`, host externo real `2.24.87.198:5432`, base
+`iaprocess_server1`). `SUPABASE_URL`/`SUPABASE_SERVICE_KEY` existen en el `.env.local` de
+`sistemaaiprocess` pero para otro propósito (no es la base de Auth/Prisma). Corregir
+cualquier referencia previa a "proyecto Supabase compartido" — es la misma base EasyPanel.
+
+**Migración `generador_bpmn` ejecutada y verificada dos veces** (DEV + PMcoordinador,
+consulta directa a `information_schema.tables`):
+- `public` (sistemaaiprocess): 9 tablas, sin cambios (Budget, Content, Decision, Metric,
+  Phase, PhaseTask, Project, Script, User).
+- `generador_bpmn`: 6 tablas nuevas (Account, Diagram, Session, User, VerificationToken,
+  `_prisma_migrations`), aisladas como se diseñó.
+- `prisma migrate dev` estándar falló (P3005, "schema not empty" — Prisma bloquea init en
+  bases con tablas preexistentes en cualquier schema). Workaround usado: `prisma migrate
+  diff --from-empty` → `prisma db execute` → `prisma migrate resolve --applied`, con el
+  schema por defecto fijado en la URL (`?schema=generador_bpmn`) para evitar que
+  `_prisma_migrations` quedara mal ubicado (error propio de DEV, detectado y corregido en
+  el mismo intento).
+- `generador-bpmn/.env.local` creado con `DATABASE_URL` real, `AUTH_GOOGLE_ID`/`SECRET`
+  (compartidos, mismo Google OAuth app que sistemaaiprocess) y `AUTH_SECRET` **propio**
+  (no reutiliza el de sistemaaiprocess — productos sin relación no deben compartir secreto
+  de firma de sesión).
+- `AUTH_GOOGLE_ID`/`AUTH_GOOGLE_SECRET` en `sistemaaiprocess/.env.local` son placeholders,
+  no credenciales reales — login con Google no probado en local todavía en ninguno de los
+  dos productos.
+- Hallazgo de seguridad (no bloqueante, para SECURITY): la URL de conexión usa
+  `sslmode=disable` sobre IP pública — tráfico Postgres sin cifrar por internet.
+
+**Decisión validada por Patricio (opción A):** aceptar recomendación de PRODUCT MANAGER
+(`docs/VIABILIDAD-PRODUCT-MANAGER-BPMN-DESDE-PROMPT.md`) — adelantar exportación XML como
+prioridad de Fase 2 (en vez de dejarla para después), precio de lanzamiento **CLP
+$9.990/mes**, plan único, sin trial en v1.
+
+**Próximo paso:** Fase 1 cerrada. Arranca Fase 2 con exportación XML incluida desde el
+inicio (no pospuesta) — encargar a ARQUITECTO IT/DEV el motor prompt→JSON→XML.
+
+---
+
+### 2026-08-04 (cont. 2) — DEV valida sizing final v1 con exportación XML (27 días-persona)
+
+**Contexto:** ARQUITECTO IT actualizó `docs/PROPUESTA-ARQUITECTO-BPMN-DESDE-PROMPT.md`
+("Actualización 2026-08-04") tras la decisión de Patricio de adelantar la exportación
+`.bpmn` XML a v1 (antes fase 2 post-MVP), tomada sobre recomendación de PRODUCT MANAGER
+por presión competitiva (3 de 4-5 competidores directos ya exportan XML) y con el precio
+de lanzamiento ya fijado (CLP $9.990/mes). ARQUITECTO IT propuso **27 días-persona (L)**:
+20 (v1 sin XML, ya validado por DEV el 2026-08-02) + 6 (exportación XML, cifra ya
+cuantificada por DEV en `docs/VALIDACION-DEV-BPMN-DESDE-PROMPT.md`) + 1 (ajuste de
+QA/Security para re-auditar la superficie XML, estimado por ARQUITECTO IT, marcado
+explícitamente como pendiente de confirmación de DEV).
+
+**Validación de DEV:**
+- Los 20 + 6 = 26 días-persona ya estaban cuantificados por mí mismo en rondas anteriores;
+  no hay nada que corregir ahí — la aritmética y el research (`bpmn-moddle` +
+  `bpmn-auto-layout`, spike de medio día de apertura en Camunda Modeler/bpmn.io) siguen
+  vigentes sin rehacer.
+- El **+1 día de QA/Security es razonable, no insuficiente ni innecesario**, con el alcance
+  acotado a: (a) revisión de seguridad de la serialización XML — confirmar que
+  `bpmn-moddle` escapa correctamente texto de usuario (actores/pasos vienen de extracción
+  LLM sobre prompt libre) y descartar la alternativa de "templating de string directo" que
+  el propio Hallazgo 2 mencionaba como posible, porque ahí sí habría riesgo real de
+  inyección XML si no se sanitiza a mano; (b) matriz de casos de prueba (decisiones, loops,
+  actores con tildes/ñ/comillas, diagrama vacío/mínimo); (c) verificación independiente de
+  apertura en herramientas externas, redundante pero deliberada respecto del spike de DEV.
+  El chequeo funcional de apertura ya lo cubre DEV en sus propios 6 días, así que el día de
+  QA/Security se concentra en seguridad + regresión, alcance realista para 1 día-persona.
+- No corrijo el número de ARQUITECTO IT: **27 días-persona (L) queda validado tal cual.**
+- Confirmo también que la Fase 3 (XML) sigue siendo una fase separada de la Fase 2 (motor
+  prompt→JSON), no fusionada — para no perder trazabilidad de estimación entre ambas.
+
+**Compromiso de timeline recomendado para Patricio:**
+27 días-persona ÷ 5 días laborables/semana = **5,4 semanas calendario**, a tiempo completo
+(dedicación ya confirmada el 2026-08-02, sin dilución entre líneas). Igual que en la
+validación anterior, agrego buffer porque persisten dos riesgos de baja precedencia interna
+sin resolver: el spike de Mercado Pago (Fase 5, ya señalado 2026-08-02) y, ahora también,
+que `bpmn-auto-layout` es una librería de adopción menor cuyo comportamiento en producción
+aún no se probó. **Recomendación de compromiso: 5,4–6 semanas calendario** (no redondear a
+la baja). Si ambos spikes (Mercado Pago + apertura XML) salen limpios, 5,4 semanas es
+alcanzable; si hay fricción en cualquiera de los dos, el buffer de hasta 6 semanas la
+absorbe sin tener que renegociar fecha con Patricio a mitad de proyecto.
+
+**Próximo paso:** con el sizing y timeline validados, arranca Fase 2 (motor prompt→JSON),
+que era el estado ya vigente antes de esta actualización — esta validación no cambia el
+orden de trabajo, solo confirma el número que PM puede comprometer con Patricio.
+
+---
 
 ### 2026-08-02 (continuación) — Migración dominio misitioweb: iaenproceso.cl → aiprocess.cl (Patricio + DELIVERY)
 

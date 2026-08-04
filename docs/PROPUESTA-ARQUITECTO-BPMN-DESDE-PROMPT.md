@@ -125,9 +125,49 @@ PM coordinó estas respuestas directamente con Patricio sobre las 5 preguntas pe
 | 2. Multi-tenant vs mono-usuario | **Mono-usuario primero.** Se reutiliza el patrón de aislamiento por `userId` de `sistemaaiprocess`, sin roles de equipo en v1. |
 | 3. Proveedor de pago | **Mercado Pago**, no Stripe. Prioriza encaje con medios de pago chilenos (Webpay, transferencia) sobre menor esfuerzo de integración. **Impacto:** el flujo de suscripción recurrente de Mercado Pago es más manual que Stripe Billing (no tiene un "Customer Portal" equivalente listo) — DEV debe re-evaluar el esfuerzo de la Fase 4 con este proveedor específico, no asumir el mismo sizing que se estimó para Stripe. |
 | 4. Libertad del prompt | Sin decidir aún — queda para DISEÑADOR-UX, no era una decisión de Patricio. |
-| 5. Alcance de exportación v1 | ~~También exportar a `.bpmn` XML real~~ → **Revisado 2026-08-02 tras validación de DEV: v1 lanza solo con PNG/PDF.** DEV cuantificó el costo real (+6 días-persona, ~1.2 semanas, más el riesgo de una librería de adopción menor) y Patricio decidió mover la exportación XML a **fase 2 post-MVP**. La investigación técnica ya está hecha (`bpmn-moddle` + `bpmn-auto-layout` cubren el mapeo sin construir un layout engine propio) y documentada en `docs/VALIDACION-DEV-BPMN-DESDE-PROMPT.md` — no hay que rehacerla cuando se retome. |
+| 5. Alcance de exportación v1 | ~~También exportar a `.bpmn` XML real~~ → **Revisado 2026-08-02 tras validación de DEV: v1 lanza solo con PNG/PDF.** DEV cuantificó el costo real (+6 días-persona, ~1.2 semanas, más el riesgo de una librería de adopción menor) y Patricio decidió mover la exportación XML a **fase 2 post-MVP**. La investigación técnica ya está hecha (`bpmn-moddle` + `bpmn-auto-layout` cubren el mapeo sin construir un layout engine propio) y documentada en `docs/VALIDACION-DEV-BPMN-DESDE-PROMPT.md` — no hay que rehacerla cuando se retome. → **Revisado nuevamente 2026-08-04: XML vuelve al alcance de v1**, ver sección "Actualización 2026-08-04" más abajo. |
 
-**Siguiente paso:** DEV debe validar factibilidad y timeline con este alcance actualizado (Mercado Pago + exportación XML), no con el sizing original de la sección 6.
+**Siguiente paso (histórico, 2026-08-02):** DEV debe validar factibilidad y timeline con este alcance actualizado (Mercado Pago + exportación XML), no con el sizing original de la sección 6. **Superado por la actualización 2026-08-04 abajo.**
+
+---
+
+## Actualización 2026-08-04: la exportación XML vuelve al alcance de v1
+
+**Quién decide:** Patricio, sobre recomendación de PRODUCT MANAGER (`docs/VIABILIDAD-PRODUCT-MANAGER-BPMN-DESDE-PROMPT.md`).
+
+**Qué cambia:** el 2026-08-02 la exportación a `.bpmn` XML se movió a fase 2 post-MVP para no subir el sizing de v1. PRODUCT MANAGER analizó competencia directa (sección 3 de su documento) y encontró que **3 de 4-5 competidores directos ya exportan XML desde el día 1** ("Just Flow It", "BPMNify", "Patchley", "BA Copilot"), y que el precio de lanzamiento ya fijado (**CLP $9.990/mes**) no deja margen de diferenciación en "más barato, sin XML" frente a un competidor que cobra similar y sí tiene XML. Patricio aceptó la recomendación: **la exportación XML deja de ser post-MVP y pasa a ser requisito antes de abrir venta pública** — sigue siendo una fase separada en el plan de trabajo (no se funde con el motor prompt→JSON), pero entra dentro del alcance de v1, no después.
+
+No cambia nada de lo ya construido: Fase 1 (Auth + persistencia) ya está migrada y no se toca. El research técnico de la Fase XML (`bpmn-moddle` + `bpmn-auto-layout`, ver Hallazgo 2 de `docs/VALIDACION-DEV-BPMN-DESDE-PROMPT.md`) sigue vigente sin rehacer.
+
+### Orden de fases actualizado
+
+| Fase | Contenido | Estado |
+|---|---|---|
+| 1. Auth + persistencia | Clonar patrón `sistemaaiprocess/src/auth.ts`, modelo Prisma, CRUD | ✅ Construida y migrada (schema `generador_bpmn` aislado) |
+| 2. Motor prompt→JSON (Claude API) + render Mermaid en React | Prompt de sistema podado de `bpmn-architect`, JSON schema, port de `generarMermaid()` | ▶️ Arranca ahora |
+| 3. Exportación `.bpmn` XML real | `bpmn-moddle` (árbol semántico) + `bpmn-auto-layout` (BPMNDI/layout automático), validación de apertura en Camunda Modeler / bpmn.io | 🆕 Vuelve al alcance de v1 (antes era fase 2 post-MVP) |
+| 4. Editor post-generación | Port de la tabla de edición del prototipo a React | Sin cambios |
+| 5. Suscripción de pago (Mercado Pago) | Checkout, webhook, estado de suscripción en BD, middleware de gating. Sin autogestión propia (cancelación manual vía dashboard, decisión 2026-08-02) | Sin cambios |
+| 6. QA + SECURITY (Ley 19.628) + Delivery | Incluye de nuevo la superficie de exportación XML (auditoría de apertura correcta en herramientas externas), que había salido del alcance el 2026-08-02 | 🔁 Vuelve a incluir superficie XML |
+
+### Nuevo T-shirt sizing total (cálculo explícito, no repetido de memoria)
+
+Punto de partida: el sizing **ya validado por DEV el 2026-08-02** para v1 sin XML fue **20 días-persona**, sobre el alcance ya simplificado de Mercado Pago (Fase 5/Suscripción sin página de autogestión propia, 5 días-persona en vez de los 8 de la primera pasada con "portal" tipo Stripe). Ese recorte de autogestión **sigue vigente** — no se revierte con esta decisión, son dos cosas independientes.
+
+Sobre esos 20 días-persona vigentes, vuelve a sumarse lo que se había sacado:
+
+| Componente | Días-persona | Nota |
+|---|---|---|
+| v1 sin XML (ya validado por DEV, 2026-08-02, con Mercado Pago sin autogestión) | 20 | Auth(3) + Motor prompt→JSON(6) + Editor(2) + Suscripción(5) + QA/Security/Delivery(3) — sin superficie XML |
+| + Exportación XML (Fase 3 nueva) | +6 | Cifra ya cuantificada por DEV en `VALIDACION-DEV-BPMN-DESDE-PROMPT.md` Hallazgo 2 (`bpmn-moddle` + `bpmn-auto-layout`, incluye el spike de validación de apertura) |
+| + Ajuste de QA/Security/Delivery por volver a auditar superficie XML | +1 | Estimación propia (S → S+, el mismo delta que el documento de DEV ya había señalado al sacar XML el 2026-08-02, ahora en sentido inverso) — **DEV debe confirmar este número, no lo doy por cerrado** |
+| **Total v1 con XML adentro** | **27 días-persona** | |
+
+**27 días-persona ÷ 5 días laborables/semana = 5,4 semanas calendario**, a la misma dedicación de tiempo completo que ya confirmó DEV para el resto del proyecto.
+
+**T-shirt size: L** (no M). Esto reabre el salto de tamaño que la propuesta original ya había anticipado en la pregunta pendiente #5 ("si exportación XML es requisito, sube el proyecto de M a L") — ahora se confirma, con el número real: **27, no los ~26-29 días-persona de la primera pasada de DEV**, porque la reducción de Mercado Pago (sin autogestión, -3 días) sigue vigente y compensa parte de lo que XML vuelve a sumar.
+
+**Esto es un sizing de ARQUITECTO, no un compromiso de fecha.** Como en toda esta propuesta, el número que Patricio puede comprometer con el cliente/mercado necesita la validación de DEV — en particular el ajuste de +1 día en QA/Security que aquí es una estimación mía, no una cifra que DEV haya cuantificado todavía. **Siguiente paso: DEV valida este sizing de 27 días-persona / ~5,4-6 semanas (con buffer) antes de que se comprometa fecha con Patricio**, igual que validó el de 20 días-persona el 2026-08-02.
 
 ## Costo Estimado
 
