@@ -225,8 +225,18 @@ resultado, UI predefinida. Ver [Renderizado por defecto](https://www.mercadopago
 - El **país de operación se fija al crear la cuenta y no se puede editar después**. Vendedor y
   Comprador deben ser del mismo país para probar un flujo local.
 - Hay [tarjetas de crédito de prueba](https://www.mercadopago.cl/developers/es/docs/additional-content/your-integrations/test-cards)
-  documentadas (recomendadas las "nacionales" para esta etapa) para simular pagos sin datos
-  reales, y se le puede asignar saldo ficticio a la cuenta de prueba.
+  documentadas para simular pagos sin datos reales, y se le puede asignar saldo ficticio a la
+  cuenta de prueba. **Tabla oficial vigente para Chile (2026-08-04):**
+
+  | Tarjeta | Número | CVV | Vencimiento |
+  |---|---|---|---|
+  | Mastercard | 5416 7526 0258 2580 | 123 | 11/30 |
+  | Visa | 4168 8188 4444 7115 | 123 | 11/30 |
+  | American Express | 3757 781744 61804 | 1234 | 11/30 |
+
+  Titular `APRO` simula "pago aprobado" (ver tabla de escenarios de nombre en la doc oficial
+  para otros resultados: rechazo, fondos insuficientes, etc.). **Usar solo estas tarjetas —
+  Mercado Pago advierte explícitamente que tarjetas reales o inventadas generan errores.**
 - Login con cuenta de prueba puede pedir un código de verificación de 6 dígitos (visible en el
   panel de desarrollador). Con ese login **no** se tiene acceso a Credenciales de prueba ni a
   Calidad de integración (secciones que no aplican a una cuenta de prueba).
