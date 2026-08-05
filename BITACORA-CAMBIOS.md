@@ -562,6 +562,39 @@ Pendiente antes de cobrar a usuarios reales: firma de webhook (alto, no bloquean
 
 ---
 
+### 2026-08-05 — QA valida generador-bpmn con ejecución real: 0 bugs, producción condicional
+
+**77 verificaciones reales, 24 escenarios, 0 fallos** — no lectura de código, ejecución de
+verdad: 4 llamadas reales a Claude API, 2 al sandbox de Mercado Pago, operaciones reales contra
+Postgres (incluida una prueba explícita de que un usuario no puede leer el diagrama de otro),
+HTTP real con `curl` contra el servidor de dev confirmando que el fix del paywall (Server
+Actions) efectivamente redirige sin sesión, y re-parseo del XML exportado con `bpmn-moddle`
+para confirmar BPMN 2.0 válido, no solo "se ve bien". Datos de prueba limpiados al terminar.
+
+**Bloqueo conocido, no reportado como bug nuevo:** login real por Google no se pudo ejecutar en
+este entorno (`AUTH_GOOGLE_ID`/`AUTH_GOOGLE_SECRET` siguen siendo placeholders) — se verificó en
+cambio que el fallo es controlado (NextAuth no tumba el servidor).
+
+**Dos observaciones menores, no bloqueantes:** mensaje de error genérico de Mercado Pago ante
+un 500 sin detalle, y falta página de error personalizada de NextAuth.
+
+**Sign-off: código listo. Producción condicional** — cuatro bloqueos, todos de configuración,
+ninguno de código:
+1. Credenciales reales de Google OAuth (sin esto, nadie puede loguearse — 100% del acceso).
+2. Credenciales de producción de Mercado Pago (hoy son `TEST-...`).
+3. Dominio real de producción para `MERCADOPAGO_BACK_URL`.
+4. Firma de webhook (ya señalado por SECURITY como alto, no bloqueante hoy).
+
+**Entregables al cliente escritos:** `docs/QA-GENERADOR-BPMN-FASE6.md` (plan, test cases,
+bugs, sign-off) y `docs/dossiers/generador-bpmn/CASOS-DE-USO-Y-ESPERABLES.md` (8 casos de uso
+en lenguaje de negocio) — material base del Dossier de Diseño Detallado.
+
+**Fase 6 cerrada en su parte de SECURITY + QA.** Falta DELIVERY para el handoff, y resolver los
+4 bloqueos de configuración (le corresponden a Patricio, no son trabajo de agente) antes de
+lanzar con cobro real.
+
+---
+
 ### 2026-08-02 (continuación) — Migración dominio misitioweb: iaenproceso.cl → aiprocess.cl (Patricio + DELIVERY)
 
 **COMPLETADO:**
