@@ -1,8 +1,14 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { requireCreationAccess } from "@/lib/session";
 import { NuevoDiagramaForm } from "./NuevoDiagramaForm";
 
-export default function NuevoDiagramaPage() {
+// requireCreationAccess redirige a /suscripcion (con mensaje + precio) si el
+// usuario ya agotó su cupo de trial o el trial venció — antes de mostrar el
+// formulario, no solo al enviarlo. Ver src/lib/session.ts.
+export default async function NuevoDiagramaPage() {
+  await requireCreationAccess();
+
   return (
     <main className="mx-auto max-w-lg px-6 py-10">
       <Link

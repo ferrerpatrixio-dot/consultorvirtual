@@ -595,6 +595,42 @@ lanzar con cobro real.
 
 ---
 
+### 2026-08-05 (cont.) — Producto nombrado "Mapea", desplegado en producción, y Free Trial de 3 días
+
+**Naming:** PRODUCT MANAGER propuso y Patricio confirmó **"Mapea"** — `docs/NAMING-GENERADOR-BPMN.md`.
+**Corrección de infraestructura:** `sistemaaiprocess` corre en **Vercel** (verificado con DNS
+real), no self-hosted como decía la propuesta original — solo Postgres vive en el VPS/EasyPanel.
+
+**Desplegado en producción: `mapea.aiprocess.cl`.** Patricio hizo el trabajo de cuenta (crear
+proyecto Vercel, variables de entorno, dominio, credenciales OAuth) con guía de PM. Tres bugs de
+configuración reales encontrados y resueltos en el camino (no de código):
+1. `AUTH_URL` apuntaba a la URL temporal de Vercel en vez de `mapea.aiprocess.cl`.
+2. `AUTH_SECRET` no llegaba a producción (se perdió al editar un campo "Sensitive" de Vercel,
+   que no vuelve a mostrar el valor una vez guardado — hay que sobreescribir, no confiar en que
+   ya estaba bien).
+3. `AUTH_GOOGLE_SECRET` inválido (`invalid_client`) — se resolvió generando un secreto OAuth
+   nuevo en Google Cloud Console (el original no se podía volver a ver).
+
+DNS: `mapea.aiprocess.cl` es CNAME en Cloudflare (mismo proveedor que `aiprocess.cl`), con
+proxy en "DNS only" (obligatorio para que Vercel emita el certificado). Advertencia de "sitio
+peligroso" de Chrome al probar el login: falso positivo confirmado contra el Informe de
+Transparencia oficial de Google Safe Browsing (dominio nuevo + URL con patrón `/signin/google`)
+— login verificado funcionando de punta a punta por PM y por Patricio.
+
+**Free Trial de 3 días implementado** (decisión de PRODUCT MANAGER, sección 8 de
+`VIABILIDAD-PRODUCT-MANAGER-BPMN-DESDE-PROMPT.md`, a pedido de Patricio): usuario nuevo puede
+crear **1 diagrama en total** (vía IA) durante los 3 días desde su registro, después queda
+bloqueado con mensaje de conversión y precio visible. Bloqueo a nivel de servidor (Server
+Actions), no solo de UI. Columna nueva `User.trialDiagramsCreated` (contador persistente, no
+`Diagram.count()` en vivo — evita el loophole de borrar y regenerar el diagrama gratis sin
+límite). Migración aplicada y verificada aislada (`public` intacto, sin tablas nuevas en
+`generador_bpmn`). `tsc`/`eslint`/`build` limpios, verificado por PM de forma independiente.
+
+**Nota:** el push de este commit dispara deploy automático a producción en Vercel (repo
+conectado). Verificar `mapea.aiprocess.cl` después de que el deploy termine.
+
+---
+
 ### 2026-08-02 (continuación) — Migración dominio misitioweb: iaenproceso.cl → aiprocess.cl (Patricio + DELIVERY)
 
 **COMPLETADO:**

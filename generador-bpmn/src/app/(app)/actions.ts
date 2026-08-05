@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { requireActiveSubscription } from "@/lib/session";
+import { requireAppAccess, requireCreationAccess } from "@/lib/session";
 import {
   TIPOS_PASO,
   parseActores,
@@ -13,6 +13,7 @@ import {
   type Paso,
 } from "@/lib/diagramas";
 import { extraerProcesoDesdePrompt } from "@/lib/extraccion-llm";
+import { registrarDiagramaDeTrial } from "@/lib/trial";
 import type { Prisma } from "@prisma/client";
 
 /** Diagrama del usuario autenticado, o null si no existe / no le pertenece. */
@@ -34,7 +35,7 @@ export async function crearDiagramaAction(
   _prevState: FormState,
   formData: FormData,
 ): Promise<FormState> {
-  const user = await requireActiveSubscription();
+  const user = await requireCreationAccess();
 
   const parsed = metaSchema.safeParse({
     cliente: formData.get("cliente"),
@@ -57,6 +58,7 @@ export async function crearDiagramaAction(
       pasos: [],
     },
   });
+  await registrarDiagramaDeTrial(user.id);
 
   redirect(`/diagramas/${diagrama.id}`);
 }
@@ -81,7 +83,7 @@ export async function generarDesdePromptAction(
   _prevState: FormState,
   formData: FormData,
 ): Promise<FormState> {
-  const user = await requireActiveSubscription();
+  const user = await requireCreationAccess();
 
   const parsed = promptSchema.safeParse({
     cliente: formData.get("cliente"),
@@ -116,6 +118,7 @@ export async function generarDesdePromptAction(
       pasos: resultado.pasos as unknown as Prisma.InputJsonValue,
     },
   });
+  await registrarDiagramaDeTrial(user.id);
 
   const destino =
     resultado.pendingQuestions.length > 0
@@ -127,7 +130,7 @@ export async function generarDesdePromptAction(
 
 /** Actualiza cliente/proceso de un diagrama existente. */
 export async function actualizarMetaAction(formData: FormData) {
-  const user = await requireActiveSubscription();
+  const user = await requireAppAccess();
   const id = String(formData.get("diagramId") ?? "");
   const diagrama = await diagramaDelUsuario(id, user.id);
   if (!diagrama) redirect("/dashboard");
@@ -148,7 +151,7 @@ export async function actualizarMetaAction(formData: FormData) {
 
 /** Elimina el diagrama completo. */
 export async function eliminarDiagramaAction(formData: FormData) {
-  const user = await requireActiveSubscription();
+  const user = await requireAppAccess();
   const id = String(formData.get("diagramId") ?? "");
   const diagrama = await diagramaDelUsuario(id, user.id);
   if (!diagrama) redirect("/dashboard");
@@ -163,7 +166,7 @@ export async function eliminarDiagramaAction(formData: FormData) {
 // ─────────────────────────────────────────────────────────────
 
 export async function agregarActorAction(formData: FormData) {
-  const user = await requireActiveSubscription();
+  const user = await requireAppAccess();
   const id = String(formData.get("diagramId") ?? "");
   const nombre = String(formData.get("nombre") ?? "").trim();
   const diagrama = await diagramaDelUsuario(id, user.id);
@@ -182,7 +185,7 @@ export async function agregarActorAction(formData: FormData) {
 /** Quita un actor. Los pasos que lo tenían asignado quedan sin actor
  * (cadena vacía) — igual que en el prototipo original. */
 export async function quitarActorAction(formData: FormData) {
-  const user = await requireActiveSubscription();
+  const user = await requireAppAccess();
   const id = String(formData.get("diagramId") ?? "");
   const nombre = String(formData.get("nombre") ?? "");
   const diagrama = await diagramaDelUsuario(id, user.id);
@@ -244,7 +247,7 @@ function leerPasoForm(formData: FormData) {
 }
 
 export async function agregarPasoAction(formData: FormData) {
-  const user = await requireActiveSubscription();
+  const user = await requireAppAccess();
   const id = String(formData.get("diagramId") ?? "");
   const diagrama = await diagramaDelUsuario(id, user.id);
   if (!diagrama) return;
@@ -269,7 +272,7 @@ export async function agregarPasoAction(formData: FormData) {
 }
 
 export async function actualizarPasoAction(formData: FormData) {
-  const user = await requireActiveSubscription();
+  const user = await requireAppAccess();
   const id = String(formData.get("diagramId") ?? "");
   const pasoId = String(formData.get("pasoId") ?? "");
   const diagrama = await diagramaDelUsuario(id, user.id);
@@ -303,7 +306,7 @@ export async function actualizarPasoAction(formData: FormData) {
 /** Quita un paso y limpia las referencias de otros pasos que apuntaban a él
  * (mismo criterio que el prototipo: evita destinos rotos). */
 export async function quitarPasoAction(formData: FormData) {
-  const user = await requireActiveSubscription();
+  const user = await requireAppAccess();
   const id = String(formData.get("diagramId") ?? "");
   const pasoId = String(formData.get("pasoId") ?? "");
   const diagrama = await diagramaDelUsuario(id, user.id);

@@ -7,8 +7,13 @@ import { SuscripcionForm } from "./SuscripcionForm";
 // login (requireUser) pero NO pasa por requireActiveSubscription — si lo
 // hiciera, un usuario sin suscripción activa nunca podría llegar aquí para
 // pagar. Ver src/lib/session.ts y src/app/(app)/layout.tsx.
-export default async function SuscripcionPage() {
+export default async function SuscripcionPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ motivo?: string }>;
+}) {
   const user = await requireUser();
+  const { motivo } = await searchParams;
   const registro = await prisma.user.findUnique({
     where: { id: user.id },
     select: { subscriptionStatus: true },
@@ -18,9 +23,27 @@ export default async function SuscripcionPage() {
   const planId = process.env.MERCADOPAGO_PREAPPROVAL_PLAN_ID;
   const configurado = Boolean(publicKey && planId);
 
+  // Mensaje de bloqueo de trial, según por qué llegó acá (ver
+  // requireCreationAccess / requireAppAccess en src/lib/session.ts) — el
+  // momento de mayor intención de compra es justo cuando el usuario intenta
+  // crear un segundo diagrama, así que el mensaje va con el precio visible,
+  // no como un error genérico (ver
+  // docs/VIABILIDAD-PRODUCT-MANAGER-BPMN-DESDE-PROMPT.md sección 8.3).
+  const mensajeTrial =
+    motivo === "cupo-usado"
+      ? "Ya usaste tu diagrama de prueba gratuita. Activa tu plan para crear diagramas ilimitados por CLP $9.990/mes."
+      : motivo === "trial-vencido"
+        ? "Tu prueba gratuita de 3 días terminó. Activa tu plan por CLP $9.990/mes para seguir usando el generador de diagramas."
+        : null;
+
   return (
     <main className="mx-auto max-w-md px-6 py-10">
       <h1 className="text-2xl font-bold text-ink">Activa tu suscripción</h1>
+      {mensajeTrial && (
+        <p className="mt-3 rounded-lg border border-primary bg-bg p-3 text-sm font-medium text-ink">
+          {mensajeTrial}
+        </p>
+      )}
       <p className="mt-1 text-sm text-ink-2">
         Plan único: CLP $9.990/mes. Necesitas una suscripción activa para
         usar el generador de diagramas.

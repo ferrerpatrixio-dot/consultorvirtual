@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { requireActiveSubscription } from "@/lib/session";
+import { requireAppAccess } from "@/lib/session";
 import { parseActores, parsePasos } from "@/lib/diagramas";
 import { exportarBpmn } from "@/lib/exportar-bpmn";
 
@@ -13,7 +13,7 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const user = await requireActiveSubscription();
+  const user = await requireAppAccess();
   const { id } = await params;
 
   const diagrama = await prisma.diagram.findFirst({ where: { id, userId: user.id } });

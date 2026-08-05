@@ -46,6 +46,16 @@ model User {
   subscriptionStatus       String?
   mercadopagoPreapprovalId String? @unique
 
+  // Free Trial de 3 días (ver docs/VIABILIDAD-PRODUCT-MANAGER-BPMN-DESDE-PROMPT.md
+  // sección 8): el vencimiento del trial se calcula al vuelo como
+  // createdAt + 3 días (no hace falta columna propia). Este contador sí es
+  // una columna propia porque el cupo es "1 diagrama en total, para
+  // siempre" — contar en vivo los Diagram existentes se rompe si el usuario
+  // borra su diagrama (eliminarDiagramaAction ya existía) y vuelve a crear
+  // uno, lo que dispararía otra llamada real a la API de Claude
+  // (generarDesdePromptAction). Solo sube, nunca baja. Ver src/lib/trial.ts.
+  trialDiagramsCreated Int @default(0)
+
   accounts Account[]
   sessions Session[]
   diagrams Diagram[]
