@@ -530,6 +530,38 @@ cerrar los dos gaps de producción antes, a decidir con Patricio.
 
 ---
 
+### 2026-08-04 (cont. 12) — SECURITY audita Fase 5: paywall evadible vía Server Actions (crítico, corregido)
+
+**Arranca Fase 6.** SECURITY auditó todo el código de pagos (`docs/AUDITORIA-SECURITY-FASE5-MERCADOPAGO.md`, reporte completo). Hallazgo propio, no reportado antes por DEV:
+
+**🔴 Crítico, bloqueaba producción con cobro real:** las 9 funciones de
+`src/app/(app)/actions.ts` (crear/editar/borrar diagramas, generación por IA) llamaban a
+`requireUser()` en vez de `requireActiveSubscription()`. El gating de Fase 5 solo protegía el
+*render* de las páginas vía `layout.tsx` — pero en Next.js los Server Actions son endpoints
+HTTP públicos independientes que no pasan por ese layout. Cualquier usuario logueado sin pagar
+(o con suscripción cancelada) podía usar el producto completo gratis, **incluida la generación
+por IA, que consume Claude API con costo real por llamada**. Confirmado contra la guía oficial
+de seguridad de Next.js. **PM corrigió las 9 llamadas** (`requireUser` →
+`requireActiveSubscription`), reverificó `tsc`/`eslint`/`build` — limpio.
+
+**Los dos gaps de DEV, reevaluados por SECURITY:**
+- **Firma de webhook (🟠 alto, no bloqueante):** confirmado que sigue sin implementarse, pero
+  el impacto real es acotado — el código nunca confía en el payload del webhook, siempre
+  re-consulta el estado real a Mercado Pago antes de escribir en la base. No permite forjar una
+  suscripción falsa hoy. Igual debe cerrarse antes de escalar tráfico (defensa en profundidad).
+- **`GET /authorized_payments/{id}`:** confirmado como endpoint oficial documentado — la
+  incertidumbre de DEV queda resuelta, no era un gap real.
+
+**Verificado sin hallazgos:** PCI (CardForm nunca expone datos de tarjeta al backend, confirmado
+línea por línea), Ley 19.628 (sin PII sensible persistida ni logueada de más), aislamiento entre
+usuarios (el gap del paywall no permitía ver diagramas ajenos, solo operar sin pagar), y
+secretos (sin credenciales hardcodeadas, `.env.local` correctamente ignorado).
+
+**Fase 6 (SECURITY) parcialmente cerrada** — falta QA (casos de uso/esperables) y DELIVERY.
+Pendiente antes de cobrar a usuarios reales: firma de webhook (alto, no bloqueante hoy).
+
+---
+
 ### 2026-08-02 (continuación) — Migración dominio misitioweb: iaenproceso.cl → aiprocess.cl (Patricio + DELIVERY)
 
 **COMPLETADO:**
