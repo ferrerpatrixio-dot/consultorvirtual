@@ -478,6 +478,58 @@ detalle completo. **Próximo paso:** arrancar implementación real de la Fase 5.
 
 ---
 
+### 2026-08-04 (cont. 11) — Fase 5 implementada: suscripción Mercado Pago real (DEV)
+
+**Prisma:** `User` suma `subscriptionStatus` (espeja el `status` de Mercado Pago:
+pending/authorized/paused/cancelled) y `mercadopagoPreapprovalId`. Migrada contra la base real
+con `prisma migrate deploy` (no `migrate dev` — el shell no interactivo lo rechaza; DEV escribió
+el SQL a mano igual a lo que Prisma habría generado). **Verificado por PM de forma
+independiente** (tercera vez, mismo método): `public` sigue con sus 9 tablas exactas,
+`generador_bpmn` sin tablas nuevas, solo las dos columnas agregadas a `User`. Aislamiento
+intacto.
+
+**Bootstrap del plan:** `scripts/bootstrap-mercadopago-plan.mjs`, corrido de verdad contra las
+credenciales de prueba — `preapproval_plan_id` real creado y guardado en `.env.local`.
+**Hallazgo nuevo, no estaba en el spike:** `back_url` debe ser **https** — `http://localhost`
+es rechazado (`400`). Se agregó `MERCADOPAGO_BACK_URL` como variable propia con un placeholder,
+a reemplazar cuando haya dominio real.
+
+**Flujo de alta:** página `/suscripcion` (fuera del grupo de rutas protegidas, a propósito —
+un usuario sin suscripción tiene que poder llegar ahí) con CardForm → server action →
+`POST /preapproval` → actualiza `User`.
+
+**Webhook:** `/api/webhooks/mercadopago` maneja los tres tópicos, resolviendo todo contra
+`mercadopagoPreapprovalId` (no `external_reference`, que no llega en el payload del webhook).
+**Dos gaps marcados explícitamente por DEV, no escondidos:** el endpoint
+`GET /authorized_payments/{id}` para el tópico de cobros no está confirmado en ninguna
+documentación que se le haya dado — queda comentado en el código como pendiente de validar
+contra un payload real. Y **no hay verificación de firma del webhook todavía**
+(`MERCADOPAGO_WEBHOOK_SECRET` sin configurar) — gap de seguridad real, aceptable mientras los
+webhooks no estén activados de verdad en el panel de Mercado Pago, pero **bloqueante antes de
+producción**.
+
+**Gating:** `requireActiveSubscription()` en `src/lib/session.ts`, aplicado en
+`(app)/layout.tsx` (`/dashboard` + `/diagramas/*`).
+
+**Gap encontrado por DEV y corregido por PM antes de commitear:** el endpoint de exportación
+XML (`/api/diagramas/[id]/exportar`, Fase 3) solo estaba protegido por `requireUser` — quedaba
+fuera del scope que se le dio a DEV (`/dashboard` + `/diagramas/*` como página, no como ruta de
+API), así que un suscriptor vencido podía seguir exportando diagramas ya creados. PM lo cambió a
+`requireActiveSubscription` (una línea) y reverificó `tsc`/`eslint`/`build` — limpio, con las 9
+rutas esperadas incluyendo `/suscripcion` y `/api/webhooks/mercadopago`.
+
+**No se usaron credenciales de producción** (`APP_USR-...`, que Patricio compartió por error en
+el chat el mismo día — ver nota de seguridad en el mensaje de esa ronda) en ningún momento de
+esta implementación, solo las de prueba (`TEST-...`).
+
+**Fase 5 cerrada en código, con dos gaps explícitos pendientes antes de producción:**
+verificación de firma de webhook, y confirmar el endpoint de cobros contra un payload real
+(requiere activar webhooks de verdad en el panel, con dominio público — no se puede probar en
+`localhost`). Sin commitear todavía. **Próximo paso:** Fase 6 (QA + Security + Delivery) o
+cerrar los dos gaps de producción antes, a decidir con Patricio.
+
+---
+
 ### 2026-08-02 (continuación) — Migración dominio misitioweb: iaenproceso.cl → aiprocess.cl (Patricio + DELIVERY)
 
 **COMPLETADO:**

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { LogOut } from "lucide-react";
-import { requireUser } from "@/lib/session";
+import { requireActiveSubscription } from "@/lib/session";
 import { logout } from "@/app/auth-actions";
 
 export default async function AppLayout({
@@ -8,7 +8,9 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await requireUser();
+  // requireActiveSubscription cubre login + suscripción: protege todo lo que
+  // cuelga de este grupo de rutas (/dashboard, /diagramas/*) — Fase 5.
+  const user = await requireActiveSubscription();
 
   return (
     <div className="flex min-h-full flex-col">

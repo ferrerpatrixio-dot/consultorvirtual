@@ -36,6 +36,16 @@ model User {
   image         String?
   createdAt     DateTime  @default(now())
 
+  // Fase 5 — suscripción Mercado Pago ("Suscripciones con plan asociado",
+  // ver docs/SPIKE-MERCADO-PAGO-BPMN-DESDE-PROMPT.md). El plan
+  // (preapproval_plan_id) es único para toda la app y vive en
+  // MERCADOPAGO_PREAPPROVAL_PLAN_ID (env), no en este modelo — no hay tiers.
+  // subscriptionStatus refleja 1:1 el campo "status" que devuelve la API de
+  // Mercado Pago para un preapproval: "pending" | "authorized" | "paused" |
+  // "cancelled". null = todavía no intentó suscribirse.
+  subscriptionStatus       String?
+  mercadopagoPreapprovalId String? @unique
+
   accounts Account[]
   sessions Session[]
   diagrams Diagram[]
