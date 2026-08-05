@@ -84,3 +84,39 @@ La validación práctica pendiente (sección 2) podría todavía mover este núm
 4. Con eso, cierro la mitad práctica de este spike: `preapproval_plan` + `preapproval` reales contra sandbox, confirmando en particular el formato CLP (sección 1.3).
 
 No se tocó `sistemaaiprocess/`. No se instalaron dependencias nuevas en `generador-bpmn/package.json` (no hizo falta para la parte de investigación; `@mercadopago/sdk-js` y `mercadopago` (npm, backend) quedan pendientes de instalar recién cuando arranque la implementación real de la Fase 5). No se hizo `git add`/`git commit`.
+
+---
+
+## 5. Evaluación 2026-08-04: ¿Checkout Bricks en vez de CardForm para bajar el sizing?
+
+**Autor:** ARQUITECTO IT
+**Motivo:** Patricio pasó documentación oficial de Mercado Pago sobre las 4 variantes de integración de Checkout API (Checkout Bricks "Fácil", CardForm "Medio", Core Methods Web/Mobile "Alto") y preguntó si conviene usar Checkout Bricks en vez de CardForm para bajar los +2 días de UI que este spike agregó al sizing.
+
+### 5.1 La pregunta técnica central: ¿el token del Card Payment Brick sirve para `POST /preapproval`?
+
+**No hay confirmación documental end-to-end.** Busqué específicamente un tutorial o ejemplo oficial que combine "Card Payment Brick" con `POST /preapproval` (suscripciones) y no lo encontré. Lo que sí confirmé, con fuentes:
+
+- La página oficial de generación de card token para Suscripciones (la misma que usé en la sección 1.1 para confirmar CardForm) menciona el Card Payment Brick como alternativa, aunque en términos genéricos: *"Además de las opciones disponibles en esta documentación, también es posible integrar pagos con tarjeta utilizando el Brick de Card Payment"* — sin decir explícitamente que ese token sirva para crear una `preapproval`. Fuente: [Generación del card token — Suscripciones](https://www.mercadopago.com.co/developers/es/docs/subscriptions/additional-content/cardtoken).
+- El `onSubmit` del Card Payment Brick devuelve un `formData.token` descrito con las mismas características que el `card_token_id` de CardForm: uso único, expira en 7 días. Fuente: [Card Payment Brick — Payment submission](https://www.mercadopago.com.ar/developers/en/docs/checkout-bricks/card-payment-brick/payment-submission).
+- El recurso "card token" (`POST /v1/card_tokens`, subyacente a ambos componentes) es un recurso genérico de Mercado Pago, no atado a un tipo de pago — se documenta tanto para pagos (`/v1/payments`) como para suscripciones (`card_token_id` en `/preapproval`).
+
+**Conclusión honesta:** técnicamente es plausible que el token del Brick funcione para `/preapproval` — mismo tipo de recurso, y la documentación de suscripciones sí referencia al Brick como alternativa de captura de tarjeta. Pero **no hay un ejemplo oficial ni una línea explícita de Mercado Pago que confirme esa combinación puntual** ("Card Payment Brick" + "suscripción con plan asociado"). Es inferencia razonable, no un hecho documentado. Toda la documentación de suscripciones que sí trae ejemplos de código usa CardForm, no Bricks.
+
+### 5.2 El dato de testing que ya pesa en la decisión
+
+Como ya señaló Patricio: Checkout Bricks **no soporta "cuentas de prueba"** — tiene su propio flujo separado de "Hacer compra de prueba". Si se adoptara Bricks, la Fase 5 quedaría con **dos flujos de sandbox distintos conviviendo**: "compra de prueba" para la captura de tarjeta, y "cuentas de prueba" para todo lo demás (webhooks, backend, conciliación de pagos). Esto no es un detalle menor: la sección 2 de este mismo spike ya señaló la fricción de sandbox como el riesgo no resuelto de la Fase 5 (buffer de 0.5–1 día ya reservado por eso). Fragmentar el flujo de pruebas lo empeora, no lo simplifica.
+
+### 5.3 Recomendación: mantener CardForm, no cambiar a Checkout Bricks
+
+**No conviene cambiar.** Motivo principal: la combinación Card Payment Brick + `POST /preapproval` no está confirmada por documentación oficial de Mercado Pago — es una inferencia técnica razonable (mismo recurso "card token" genérico), no un flujo documentado con ejemplo end-to-end. Construir sobre una combinación no verificada, en la única pieza de la Fase 5 que ya se identificó como no probable en sandbox sin credenciales reales (sección 2), es agregar un riesgo nuevo en vez de sacar uno.
+
+A eso se suma que, aunque funcionara, el ahorro de esfuerzo no está claro: Bricks trae una UI predefinida (evita parte del trabajo de estilizar formulario y manejar estados de error a mano que hoy pesan en los 2 días de CardForm), pero exige aprender e integrar un componente nuevo, validar que efectivamente genera un token válido para `/preapproval` (ya que no hay ejemplo oficial que lo confirme), y cargar con un segundo flujo de sandbox ("compra de prueba") distinto al resto de la Fase 5. Ese costo adicional de validación e integración compite directamente con el ahorro de UI que se buscaba, y el rótulo "Fácil" que trae la documentación de Patricio es sobre Checkout API genérico (pagos únicos vía `/v1/payments`), no sobre esta variante específica de suscripciones — no corresponde aplicarlo sin más a un caso de uso que la documentación no confirma.
+
+**El sizing de la sección 3 no cambia.** Se mantiene CardForm tal como ya lo scopeó DEV, y el total sigue en **~6.5–7 días-persona** para la Fase 5. Si en algún momento Mercado Pago publica un ejemplo oficial confirmando Card Payment Brick + `/preapproval`, vale la pena reabrir esta pregunta — hoy no hay base documental firme para comprometer el cambio.
+
+**Fuentes consultadas en esta evaluación (2026-08-04):**
+- [Card Payment Brick — Introduction](https://www.mercadopago.com.br/developers/en/docs/checkout-bricks/card-payment-brick/introduction)
+- [Card Payment Brick — Payment submission](https://www.mercadopago.com.ar/developers/en/docs/checkout-bricks/card-payment-brick/payment-submission)
+- [Generación del card token — Suscripciones](https://www.mercadopago.com.co/developers/es/docs/subscriptions/additional-content/cardtoken)
+- [Subscriptions with associated plan](https://www.mercadopago.com.ar/developers/en/docs/subscriptions/integration-configuration/subscription-associated-plan)
+- [Subscriptions with authorized payment](https://www.mercadopago.com.co/developers/en/docs/subscriptions/integration-configuration/subscription-no-associated-plan/authorized-payments)

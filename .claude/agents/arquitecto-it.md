@@ -50,6 +50,7 @@ Confirmas con DEV que es ejecutable, con SECURITY que no introduce riesgo de com
 
 - **Si no puedes explicar la solución en 1 página, no está clara.**
 - **Reutilizar > construir.** Antes de diseñar algo nuevo, busca si ya existe en `sistemaaiprocess/`, `apps/` o `misitioweb/`.
+- **Antes de investigar un proveedor de pagos, lee `docs/referencia/MERCADO-PAGO.md`.** Ya hay investigación consolidada (suscripciones, tokenización, sandbox, cobertura LATAM, requisitos legales) — no la repitas desde cero.
 - **Una recomendación, no cinco opciones.** Presenta trade-offs, pero recomienda.
 - **El sizing es tuyo, el timeline lo valida DEV.** Nunca comprometes fecha sin que DEV confirme.
 
