@@ -430,6 +430,54 @@ Vendedor.
 
 ---
 
+### 2026-08-04 (cont. 9) — Guía de referencia Mercado Pago creada; evaluación Bricks vs CardForm
+
+Patricio pidió consolidar toda la documentación de Mercado Pago pegada durante la sesión en un
+doc reusable para futuros proyectos. Creado `docs/referencia/MERCADO-PAGO.md` (guía técnica
+general: dos formas de cobro, tokenización, sandbox, webhooks, moneda, cobertura LATAM,
+requisitos legales) + pointer agregado en `.claude/agents/arquitecto-it.md` + memoria personal
+de PM (`referencia-mercado-pago.md`) para que quede disponible entre proyectos, no solo en este
+repo.
+
+**ARQUITECTO IT evaluó si Checkout Bricks bajaba el sizing** (Patricio preguntó tras pasar la
+tabla de tipos de integración): **no hay confirmación oficial** de que el token del Card
+Payment Brick sirva para `/preapproval` — ningún ejemplo oficial de suscripciones usa Bricks,
+todos usan CardForm. Se mantiene CardForm, sizing sin cambios (~6.5–7 días-persona). Detalle en
+`docs/SPIKE-MERCADO-PAGO-BPMN-DESDE-PROMPT.md` sección 5.
+
+**Confirmado oficialmente (documentación de Core Methods móvil, tabla de parámetros):** CLP va
+sin decimales — ya no es inferencia, es una línea explícita de Mercado Pago.
+
+---
+
+### 2026-08-04 (cont. 10) — Validación real contra sandbox: CLP confirmado con dato real, `/preapproval` bloqueado por particularidad de testing
+
+Patricio consiguió credenciales de prueba (`TEST-...` Public Key + Access Token, cuenta
+Vendedor Chile) y PM las cargó en `generador-bpmn/.env.local` (fuera de git). DEV cerró la
+mitad práctica del spike vía `curl`, sin dejar scripts en el repo:
+
+- **`POST /preapproval_plan`: éxito (`201`).** `transaction_amount: 9990` para `CLP` aceptado
+  sin error — **confirma con dato real**, no solo documentación, que CLP va entero. Hallazgo
+  menor: `back_url` es obligatorio (devuelve `400` sin él).
+- **`POST /v1/card_tokens`: éxito (`201`, x2).** Tarjeta de prueba oficial vigente (Mastercard
+  `5416 7526 0258 2580`, titular `APRO` = escenario aprobado). **Hallazgo real:**
+  `identification.type` debe ser `"RUT"` para Chile, no `"OTHE"` como sugería la tabla de
+  tarjetas — `"OTHE"` es rechazado con `400`.
+- **`POST /preapproval`: bloqueado (`404 "Card token service not found"`), causa no es un bug
+  nuestro.** Confirmado en el centro de ayuda oficial: las credenciales `TEST-...` de un solo
+  nivel no alcanzan para este endpoint específico — Mercado Pago exige loguearse *dentro* de la
+  cuenta de prueba Vendedor y crear ahí una segunda aplicación anidada, usando ese segundo par
+  de credenciales. Es login humano, mismo límite ya documentado (un agente no puede ejecutarlo).
+  **Esto es una particularidad exclusiva del entorno de pruebas — en producción no existe el
+  anidamiento**, no proyecta riesgo sobre la Fase 5 real.
+
+**Spike de Mercado Pago cerrado.** Lo único pendiente para ver un `/preapproval` exitoso en
+sandbox (no bloqueante para empezar a codear) es que Patricio haga el login anidado si quiere
+una demo antes de producción. `docs/SPIKE-MERCADO-PAGO-BPMN-DESDE-PROMPT.md` sección 6 tiene el
+detalle completo. **Próximo paso:** arrancar implementación real de la Fase 5.
+
+---
+
 ### 2026-08-02 (continuación) — Migración dominio misitioweb: iaenproceso.cl → aiprocess.cl (Patricio + DELIVERY)
 
 **COMPLETADO:**

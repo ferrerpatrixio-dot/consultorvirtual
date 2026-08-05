@@ -120,3 +120,68 @@ A eso se suma que, aunque funcionara, el ahorro de esfuerzo no está claro: Bric
 - [Generación del card token — Suscripciones](https://www.mercadopago.com.co/developers/es/docs/subscriptions/additional-content/cardtoken)
 - [Subscriptions with associated plan](https://www.mercadopago.com.ar/developers/en/docs/subscriptions/integration-configuration/subscription-associated-plan)
 - [Subscriptions with authorized payment](https://www.mercadopago.com.co/developers/en/docs/subscriptions/integration-configuration/subscription-no-associated-plan/authorized-payments)
+
+---
+
+## 6. Cierre de la mitad práctica: llamadas reales contra sandbox (2026-08-04)
+
+**Autor:** DEV
+**Motivo:** Patricio consiguió credenciales de prueba (cuenta Vendedor Chile, `TEST-...` Public Key y Access Token) y PM las cargó en `generador-bpmn/.env.local`. Esto destraba lo que la sección 2 dejó bloqueado. Ejecuté las tres llamadas reales contra la API de Mercado Pago (sandbox) vía `curl`, sin dejar ningún script en el repo.
+
+### 6.1 Paso 1 — `POST /preapproval_plan`: ÉXITO, confirma CLP entero con dato real
+
+```json
+// Request (resumen)
+{
+  "reason": "Generador BPMN - Plan Mensual (prueba)",
+  "auto_recurring": { "frequency": 1, "frequency_type": "months", "transaction_amount": 9990, "currency_id": "CLP" },
+  "back_url": "https://generador-bpmn.example.com/suscripcion/retorno"
+}
+```
+
+**Respuesta: `201`, `status: "active"`.** `preapproval_plan_id = f6767188d02c4276b6b68f0d62f5a152`.
+
+**Confirma con dato real, no solo documentación, la sección 1.3 / sección 6 de `docs/referencia/MERCADO-PAGO.md`: `transaction_amount: 9990` (entero, sin decimales) para `CLP` fue aceptado sin error.** No hizo falta ningún workaround. Único ajuste vs. lo documentado: `back_url` es obligatorio (la primera llamada sin ese campo devolvió `400 "Back url is required"` — detalle menor, ya reflejado en el ejemplo de `MERCADO-PAGO.md` sección 2 pero no explícito como "obligatorio").
+
+### 6.2 Paso 2 — `POST /v1/card_tokens`: ÉXITO, con tarjetas oficiales vigentes
+
+La URL de tarjetas de prueba que cita el spike original (`mercadopago.cl/developers/.../test-cards`) devuelve **403 vía fetch directo** (mismo bloqueo que ya reportó ARQUITECTO IT en la sección 7.2) — hubo que llegar por navegador + búsqueda para encontrar la ruta vigente (`.../checkout-api-payments/additional-content/your-integrations/test/cards`). Tabla oficial vigente (2026-08-04), tarjeta usada:
+
+| Tipo | Bandera | Número | CVV | Vencimiento |
+|---|---|---|---|---|
+| Crédito | Mastercard | 5416 7526 0258 2580 | 123 | 11/30 |
+
+Titular usado: nombre `APRO` (simula "pago aprobado" según la tabla de escenarios oficial), documento tipo/número `123456789`.
+
+**Sorpresa vs. lo documentado:** el tipo de documento `"OTHE"` (el que yo hubiera asumido a partir de la abreviación "(otro)" en la tabla de tarjetas) es **rechazado** por `/v1/card_tokens` para `site_id: MLC` (Chile) con `400 "Invalid cardholder.identification.type: OTHE in site_id: MLC"`. El tipo correcto para Chile es **`"RUT"`** (aunque el número usado sea el genérico de prueba `123456789`, no un RUT real). Con eso: `201`, token creado (`status: "active"`, `live_mode: false`). Repetido dos veces, ambas exitosas — no es un fluke.
+
+### 6.3 Paso 3 — `POST /preapproval`: BLOQUEADO, con causa raíz documentada por Mercado Pago (no es un bug nuestro)
+
+Con `preapproval_plan_id` del paso 1 + `card_token_id` del paso 2 + `payer_email` de prueba genérico (`test_user_spike@testuser.com` — **no existe cuenta de prueba Comprador confirmada por Patricio**, limitación anotada como pidió el encargo) + `status: "authorized"`:
+
+**Respuesta: `404 "Card token service not found"`.** Reproducido dos veces (plan y token distintos cada vez, mismo resultado) — no es una condición de carrera.
+
+**Causa raíz, confirmada en el centro de ayuda oficial de Mercado Pago** ([¿Qué significa el error "Card token service not found"?](https://www.mercadopago.com.co/developers/es/support/error-card-token-service-not-found_35882) → [Suscripción con plan Asociado](https://www.mercadopago.com.co/ayuda/35886) → [¿Cómo generar card_token para Suscripciones?](https://www.mercadopago.com.co/ayuda/35883)): **este error es esperado cuando se usan las credenciales de prueba (`TEST-...`) genéricas de la cuenta real** (las que Patricio/PM cargaron en `.env.local`, generadas desde el panel de la cuenta principal). El flujo oficial que exige Mercado Pago para probar Suscripciones en sandbox es más profundo que "cuentas de prueba" simple:
+
+1. Crear cuenta de prueba Vendedor (ya lo confirmó la sección 2 del spike original).
+2. **Iniciar sesión con esa cuenta de prueba Vendedor** (login separado, con su propio código de verificación) y, **dentro de ella**, crear una aplicación propia.
+3. Usar el **`public_key` y `access_token` de esa aplicación anidada** (que Mercado Pago llama, confusamente, "credenciales de producción" — aunque la cuenta detrás sea de prueba y no mueva dinero real) tanto para generar el `card_token` como para el `POST /preapproval_plan` + `POST /preapproval`.
+
+Es decir: **el par `TEST-...` de un solo nivel (el que tenemos) alcanza para `/preapproval_plan` (confirmado, paso 1 funcionó) y para `/v1/card_tokens` (confirmado, paso 2 funcionó), pero no para `/preapproval` con `card_token_id`** — ese último paso exige el login anidado de la cuenta de prueba Vendedor, que es exactamente el tipo de acción (ingresar credenciales/loguearse) que un agente de Claude no puede ejecutar, ni con autorización explícita (mismo límite ya documentado en `docs/referencia/MERCADO-PAGO.md` sección 4).
+
+**Dato importante para no sobre-reaccionar:** esto es una particularidad **del entorno de pruebas**, no de producción. En producción, el Access Token de la cuenta real del vendedor **ya es** la credencial "de nivel único" que hace falta — no existe la cuenta anidada. El bloqueo de este paso es 100% de testing, no proyecta ningún riesgo nuevo sobre el flujo real de la Fase 5.
+
+### 6.4 Qué queda cerrado y qué no
+
+**Cerrado con dato real (ya no hace falta más investigación para esto):**
+- Formato `transaction_amount` para CLP: **confirmado con respuesta real de la API**, entero sin decimales, sin error.
+- `POST /preapproval_plan` funciona end-to-end con las credenciales que ya tenemos.
+- `POST /v1/card_tokens` funciona end-to-end con las credenciales que ya tenemos y con las tarjetas de prueba oficiales — con la corrección de que `identification.type` debe ser `"RUT"` para Chile, no `"OTHE"`.
+
+**Sigue sin cerrar (no bloquea arrancar la Fase 5, pero conviene saberlo antes de la primera demo en sandbox):**
+- `POST /preapproval` con `card_token_id` no se pudo probar end-to-end porque exige el login anidado en la cuenta de prueba Vendedor descrito en 6.3 — un paso que solo Patricio puede ejecutar (login), igual que ya pasó con la creación de la aplicación original.
+- Sigue sin existir una cuenta de prueba **Comprador** confirmada — el `payer_email` usado fue genérico, no de una cuenta de prueba real.
+
+**Recomendación:** esto **no bloquea empezar a implementar la Fase 5** — el código de producción usará el Access Token real de la cuenta del vendedor (sin el problema de anidamiento). Si Patricio quiere ver un `/preapproval` exitoso en sandbox antes de esa fecha (por ejemplo para una demo), el paso accionable es: loguearse en la cuenta de prueba Vendedor ya creada, crear ahí una aplicación, y pasarme ese segundo par de credenciales — mismo patrón que destrabó este spike la primera vez. No es un prerrequisito técnico para codear, es solo para poder demostrar el flujo end-to-end en sandbox antes de ir a producción.
+
+No se tocó `sistemaaiprocess/`. No se instalaron dependencias nuevas en `package.json` (todo se hizo con `curl`). No se dejó ningún script de prueba en el repo. No se hizo `git add`/`git commit`.

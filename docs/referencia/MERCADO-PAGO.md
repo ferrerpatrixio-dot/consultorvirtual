@@ -159,6 +159,13 @@ Detalle completo con fuentes: `docs/SPIKE-MERCADO-PAGO-BPMN-DESDE-PROMPT.md` sec
 
 ### 3.2 Integración con CardForm — flujo completo
 
+**⚠️ Gotcha confirmado con dato real (2026-08-04, `POST /v1/card_tokens`, `site_id: MLC`
+Chile):** el campo `identification.type` del titular **debe ser `"RUT"`**, no `"OTHE"` (aunque
+la tabla de tarjetas de prueba sugiera "otro" para el número genérico de prueba). Usar `"OTHE"`
+devuelve `400 "Invalid cardholder.identification.type: OTHE in site_id: MLC"`. Aplica también a
+`/preapproval` y `/v1/payments` cuando el `payer.identification.type` se arma con el mismo
+criterio.
+
 ```bash
 npm install @mercadopago/sdk-js
 ```
