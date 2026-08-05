@@ -204,3 +204,49 @@ Esto no descarta México — lo pospone a una decisión deliberada de expansión
 4. **¿ARQUITECTO IT puede confirmar si abrir una cuenta vendedor de Mercado Pago en México/Colombia/Perú/Argentina requiere entidad legal local, o si CONSULTORAVIRTUAL (entidad chilena) puede operar esas cuentas sin constituirse en cada país?** Esto determina si la expansión LATAM es un cambio de configuración o una decisión de inversión/LEGAL.
 5. ¿Se confirma la secuencia "validar en Chile primero, expandir a México después", o hay una razón de negocio (que yo no tengo visibilidad) para entrar a ambos mercados en simultáneo pese al costo de adquisición más alto en México sin canal propio?
 6. ¿"Latinoamérica" incluye Brasil? Si sí, hay que replantear el supuesto de "sin i18n porque todo es en español" — Brasil es de habla portuguesa.
+
+---
+
+## 8. Extensión (2026-08-05): Reevaluación de trial gratis con restricción de alcance
+
+**Contexto:** en la sección 1 recomendé "trial gratis: no en v1" porque, en ese momento, no existía límite de uso — un usuario podía generar diagramas sin tope y erosionar margen. Patricio propone ahora un trial de **3 días** con una restricción dura: el usuario puede loguearse y trabajar, pero **no puede crear un diagrama nuevo — solo trabajar sobre uno ya existente**. Corresponde reevaluar con este diseño específico, no repetir el "no" genérico.
+
+### 8.1 ¿La restricción resuelve el riesgo de costo? Sí, y de forma más completa de lo que la pregunta asume
+
+Revisé el código real (`generador-bpmn/src/app/(app)/actions.ts`), no solo el diseño en abstracto. Hallazgo clave: **la única acción de todo el producto que invoca al LLM es `generarDesdePromptAction`, y esa acción siempre crea un diagrama nuevo (`prisma.diagram.create`)**. No existe una acción de "regenerar" o "reprocesar" sobre un diagrama existente. Todas las demás acciones sobre un diagrama ya creado (`agregarActorAction`, `actualizarPasoAction`, `quitarPasoAction`, `actualizarMetaAction`, etc.) son operaciones CRUD puras sobre la base de datos — **cero llamadas al LLM, costo cero**.
+
+Esto significa que "no crear diagrama nuevo" no *reduce* el riesgo de costo — **lo elimina casi por completo**, porque bloquea el único camino de código que cuesta dinero. Un usuario en trial que reciba un diagrama ya generado (por él mismo o precargado) puede editarlo actor por actor, paso por paso, tantas veces como quiera durante los 3 días, sin generar un solo cargo de API adicional.
+
+**Costo real por usuario de trial, con el precio de Haiku 4.5 confirmado por ARQUITECTO IT el 2026-08-04** (`docs/PROPUESTA-ARQUITECTO-BPMN-DESDE-PROMPT.md`, ~$0,0065 USD por llamada con 1.500 tokens de entrada / 1.000 de salida): si el diagrama de trial se genera con el propio prompt del usuario, el costo es **una sola llamada, ≈USD $0,0065 (≈CLP $6) por usuario de trial, una única vez, para siempre** — no hay forma de repetirla sin crear un diagrama nuevo, que está bloqueado. Si el diagrama es precargado (ver 8.4), el costo es **CLP $0 por usuario de trial** — es una sola generación pagada una vez por CONSULTORAVIRTUAL, reutilizada por todos.
+
+**¿Hace falta además un límite de reintentos/generaciones dentro del único diagrama?** No. No existe ninguna acción en el código actual que dispare una llamada al LLM sobre un diagrama ya creado — construir un límite adicional sería resolver un problema que la arquitectura ya no tiene. La única superficie a vigilar (no es un límite nuevo, es una verificación de implementación) es que quien construya el gating de trial **bloquee el acceso a `generarDesdePromptAction` y a la ruta `/diagramas/nuevo-ia` por completo para usuarios en trial**, no solo la UI del botón "nuevo diagrama" — un bloqueo solo de interfaz (botón oculto/deshabilitado) es trivialmente evitable llamando la Server Action directo. Esto es una nota para DEV al implementar, no una condición nueva de negocio.
+
+### 8.2 ¿3 días es el número correcto? Sí, mantenerlo
+
+El comprador objetivo (sección 4: consultor/analista independiente que factura su propio tiempo) evalúa una herramienta de este tipo en una sola sesión de trabajo real — no es una compra enterprise con comité de aprobación que necesita semanas. El valor de este producto ("documenta y comunica un proceso en minutos") se percibe o no se percibe en los primeros 10-15 minutos de uso. 3 días da margen para que ese momento ocurra sin depender de que el usuario se loguee el mismo día del registro (cubre un fin de semana o una agenda apretada de cliente), pero es corto para que alguien intente usarlo como sustituto gratuito de un diagrama de cliente real de principio a fin — que de todos modos está bloqueado por la restricción de "un solo diagrama, sin crear nuevos" (un proyecto de consultoría real normalmente necesita más de un diagrama: as-is, to-be, variantes por área). No hay evidencia de competencia que sugiera que un trial más largo convierte mejor — Just Flow It y Patchley usan límites por uso (prompts/generaciones), no por tiempo, así que no hay ancla de mercado directa para el número de días; 3 días es una decisión razonable por default y de bajo riesgo de revisar más adelante si los datos de conversión de la Etapa 1 (sección 5) muestran que el problema es otro.
+
+### 8.3 Qué necesita ver el usuario para que el trial convierta y no se fugue
+
+Mínimo indispensable (contenido, no diseño de UI — eso es DISEÑADOR-UX/DEV):
+
+1. **Días restantes de trial, visible de forma persistente** (ej. "Te quedan 2 días de prueba") — sin esto, el trial expira en silencio y el usuario nunca vuelve.
+2. **El momento de mayor intención de compra es cuando el usuario intenta crear un segundo diagrama y se lo bloquean.** Ese clic ("+ Nuevo diagrama" → bloqueado) es la señal más fuerte de que el usuario ya vio valor y quiere más — es el lugar correcto para mostrar el mensaje de conversión ("Activa tu plan para crear diagramas ilimitados"), no solo un banner pasivo en el dashboard. Si el bloqueo se siente como un error genérico en vez de una invitación clara a pagar, se pierde el momento de mayor conversión de todo el flujo.
+3. **Qué se pierde al no pagar, en términos concretos, no genéricos:** no "activa tu plan" sin contexto, sino algo como "en el plan pago puedes crear diagramas ilimitados por CLP $9.990/mes" — el precio visible en el momento de fricción reduce la sorpresa y la fricción de decisión.
+
+### 8.4 ¿Diagrama precargado o el primero que el propio usuario crea?
+
+**Recomiendo que sea el primer diagrama que el propio usuario crea con su propio prompt, no uno de ejemplo precargado.**
+
+Motivo: la propuesta de valor central de este producto (sección 4 y 5) es "documenta *tu* proceso en minutos" — dirigida a un consultor que quiere ver si la herramienta sirve para *su* trabajo real, no para un ejemplo genérico de una empresa ficticia. Un diagrama precargado deja al usuario evaluando la interfaz de edición, pero nunca prueba la parte que más vale del producto: la extracción por IA de una descripción propia. Eso debilita la señal de conversión — el usuario podría abandonar sin haber visto nunca el "momento mágico" (prompt → diagrama en segundos), que es exactamente lo que Patchley vende como su gancho ("diagrama listo antes de que termine la reunión", citado en sección 3). Dejar generar el primer diagrama con IA y bloquear la creación de un *segundo* es la versión de la restricción que sí deja experimentar el producto completo una vez, y el costo (≈CLP $6, sección 8.1) es irrelevante.
+
+La única razón para preferir un diagrama precargado sería costo — y ya se descartó en 8.1 (la diferencia es de centavos, no de negocio).
+
+**Riesgo de abuso — ¿cuentas nuevas cada 3 días para seguir usando gratis?** Es un riesgo real de *señal de conversión distorsionada* (usuarios que nunca pretendieron pagar inflan el conteo de "trials activos"), pero **no es un riesgo de costo** — a ≈CLP $6 por cuenta nueva, habría que crear miles de cuentas por mes para que sea un número que le importe al margen del negocio, y a ese volumen ya sería un patrón detectable (mismo IP/email/tarjeta) antes de doler económicamente. Mitigación mínima razonable: exigir verificación de email al registrarse (mismo patrón que ya se implementó en `sistemaaiprocess` para el termómetro de madurez, ver memoria `termometro-deployment`) — no bloquea el lanzamiento, es higiene estándar ya conocida por el equipo, no un desarrollo nuevo de alcance.
+
+### 8.5 Recomendación final
+
+**Aceptar la propuesta de Patricio, con un solo ajuste: el diagrama del trial debe ser el que el propio usuario genera con su primer prompt, no uno precargado (sección 8.4).** El resto de la propuesta —3 días, bloqueo de creación de diagramas nuevos, sin límite adicional de reintentos— se acepta tal cual.
+
+**Motivo principal:** la objeción original ("sin límite de generaciones, un usuario puede erosionar margen") no solo queda resuelta por este diseño — queda sobre-resuelta, porque la arquitectura actual no tiene ningún camino de código que permita generar costo de LLM sobre un diagrama ya existente. El riesgo de costo pasa de "hay que controlarlo" a "estructuralmente no existe" en cuanto se bloquea `generarDesdePromptAction` para usuarios en trial. Con eso fuera de la mesa, el trial deja de ser una decisión de margen y pasa a ser una decisión de conversión — y ahí la única corrección que vale la pena hacer es dejar que el usuario pruebe el producto con su propio caso real (8.4), porque es lo que va a decidir si compra, no el límite de alcance en sí.
+
+**Condición de implementación para DEV (no de negocio):** el gating de trial debe bloquear la Server Action `generarDesdePromptAction` y la ruta `/diagramas/nuevo-ia` a nivel de servidor, no solo ocultar el botón en la UI (ver 8.1).
