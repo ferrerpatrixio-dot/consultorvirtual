@@ -1,11 +1,13 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { AlertCircle } from "lucide-react";
 import { generarDesdePromptAction } from "@/app/(app)/actions";
 import type { FormState } from "@/app/(app)/actions";
 
 const estadoInicial: FormState = {};
+const PROMPT_MAX = 4000;
+const PROMPT_UMBRAL_AMBAR = 3600;
 
 const LABEL = "block text-sm font-medium text-ink";
 const INPUT =
@@ -29,6 +31,7 @@ export function NuevoDiagramaIAForm() {
   const e = state.errors ?? {};
   const borde = (campo: string) =>
     `${INPUT} ${e[campo] ? "border-danger" : "border-line"}`;
+  const [promptLength, setPromptLength] = useState(0);
 
   return (
     <form action={formAction} className="mt-6 space-y-4">
@@ -68,14 +71,23 @@ export function NuevoDiagramaIAForm() {
           id="prompt"
           name="prompt"
           rows={8}
+          maxLength={PROMPT_MAX}
           placeholder="Ej. El distribuidor llega con el camión y presenta la documentación al guardián. El guardián registra la entrada y revisa que la documentación esté válida; si no lo está, rechaza la entrega. Si está válida, el bodeguero traslada las cajas..."
           className={borde("prompt")}
           aria-invalid={!!e.prompt}
+          onChange={(ev) => setPromptLength(ev.target.value.length)}
         />
         <CampoError mensaje={e.prompt} />
         <p className="mt-1.5 text-xs text-ink-2">
           La IA puede interpretar mal algo ambiguo — después de generar el
           diagrama vas a poder revisarlo y corregirlo con el editor.
+        </p>
+        <p
+          className={`mt-1 text-right text-xs ${
+            promptLength >= PROMPT_UMBRAL_AMBAR ? "text-amber-600" : "text-ink-2"
+          }`}
+        >
+          {promptLength} / {PROMPT_MAX}
         </p>
       </div>
 

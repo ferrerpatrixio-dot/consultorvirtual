@@ -69,7 +69,8 @@ const promptSchema = z.object({
   prompt: z
     .string()
     .trim()
-    .min(20, "Describe el proceso con un poco más de detalle (mínimo 20 caracteres)"),
+    .min(20, "Describe el proceso con un poco más de detalle (mínimo 20 caracteres)")
+    .max(4000, "El texto no puede superar los 4.000 caracteres"),
 });
 
 /** Crea un diagrama a partir de una descripción libre: llama al motor
