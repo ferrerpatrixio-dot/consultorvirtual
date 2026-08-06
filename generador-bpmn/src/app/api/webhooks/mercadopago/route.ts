@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { obtenerPreapproval, obtenerPagoAutorizado } from "@/lib/mercadopago";
+import { verificarFirmaWebhook } from "@/lib/mercadopago-webhook-signature";
 
 // Receptor de notificaciones de Mercado Pago para los tres tópicos de la
 // Fase 5 (ver docs/SPIKE-MERCADO-PAGO-BPMN-DESDE-PROMPT.md sección 1.2 y
@@ -15,11 +16,12 @@ import { obtenerPreapproval, obtenerPagoAutorizado } from "@/lib/mercadopago";
 // mercadopagoPreapprovalId (columna única seteada al crear la suscripción
 // en src/app/suscripcion/actions.ts).
 //
-// ⚠️ Sin verificación de firma todavía (MERCADOPAGO_WEBHOOK_SECRET no está
-// configurado — ver .env.local). Mientras tanto este endpoint confía en
-// cualquier POST que le llegue; agregar verificación de `x-signature` antes
-// de ir a producción (Mercado Pago documenta el esquema HMAC en el panel de
-// la Aplicación → Webhooks).
+// Verificación de firma (`x-signature`/`x-request-id`, HMAC-SHA256 — ver
+// src/lib/mercadopago-webhook-signature.ts): solo se aplica si
+// MERCADOPAGO_WEBHOOK_SECRET está configurado. Mientras no lo esté (hoy en
+// .env.local, hallazgo #2 de docs/AUDITORIA-SECURITY-FASE5-MERCADOPAGO.md)
+// se procesa sin verificar pero se deja un console.warn visible en cada
+// request para que no pase desapercibido en logs de producción.
 
 type WebhookBody = {
   type?: string;
@@ -48,6 +50,35 @@ export async function POST(req: NextRequest) {
   if (!topic || !resourceId) {
     // Nada accionable — confirmamos recepción igual para que MP no reintente.
     return NextResponse.json({ ok: true });
+  }
+
+  const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
+  if (!secret) {
+    // Sin secreto configurado no hay forma de verificar — se procesa igual
+    // (comportamiento actual) pero queda visible en logs de producción.
+    console.warn(
+      "[webhook mercadopago] MERCADOPAGO_WEBHOOK_SECRET no configurado — procesando notificación SIN verificar firma",
+      { topic, resourceId },
+    );
+  } else {
+    const firmaValida = verificarFirmaWebhook({
+      dataId: resourceId,
+      xRequestId: req.headers.get("x-request-id"),
+      xSignature: req.headers.get("x-signature"),
+      secret,
+    });
+    if (!firmaValida) {
+      // 401 (no 200) para que Mercado Pago sepa que la notificación fue
+      // rechazada y reintente — a diferencia del catch de abajo, donde SÍ
+      // devolvemos 200 para tópicos que nunca vamos a poder procesar. Un
+      // secreto mal configurado hace que esto rechace TODO tráfico legítimo
+      // hasta que se corrija; no es un loop infinito (MP reintenta con
+      // backoff creciente y desiste tras un tiempo, comportamiento estándar
+      // documentado por MP), pero si se ve esto sostenido en logs hay que
+      // revisar el valor de MERCADOPAGO_WEBHOOK_SECRET antes que nada.
+      console.error("[webhook mercadopago] firma inválida — notificación rechazada", { topic, resourceId });
+      return NextResponse.json({ ok: false, error: "invalid signature" }, { status: 401 });
+    }
   }
 
   try {

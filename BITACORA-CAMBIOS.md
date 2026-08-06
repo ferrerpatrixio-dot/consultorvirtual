@@ -814,6 +814,23 @@ que Patricio decida pasar a credenciales de producción — decisión de negocio
 
 ---
 
+### 2026-08-05 (cont. 3) — Verificación de firma de webhook implementada
+
+Cierra el último hallazgo pendiente de la auditoría de SECURITY (hallazgo #2,
+`docs/AUDITORIA-SECURITY-FASE5-MERCADOPAGO.md`). DEV confirmó el algoritmo oficial de Mercado
+Pago (HMAC-SHA256 sobre manifest `id:{data.id};request-id:{x-request-id};ts:{ts};`, comparado
+contra `x-signature`) y lo implementó en `src/lib/mercadopago-webhook-signature.ts` +
+`src/app/api/webhooks/mercadopago/route.ts`, con comparación constant-time
+(`crypto.timingSafeEqual`). Si `MERCADOPAGO_WEBHOOK_SECRET` no está configurado, sigue
+procesando sin verificar (comportamiento actual) pero con `console.warn` visible en cada
+request — para que no pase desapercibido en producción. `tsc`/`eslint`/`build` limpios,
+verificado por PM.
+
+**Pendiente:** que Patricio configure `MERCADOPAGO_WEBHOOK_SECRET` (panel de Mercado Pago →
+Webhooks de la aplicación) — el código ya está listo para leerlo apenas se agregue.
+
+---
+
 ## 🎯 PRÓXIMAS AUDITORÍAS
 
 - **Próximo semanal:** 2026-08-08 (viernes)
