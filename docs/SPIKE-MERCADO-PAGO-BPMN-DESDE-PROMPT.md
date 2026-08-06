@@ -185,3 +185,23 @@ Es decir: **el par `TEST-...` de un solo nivel (el que tenemos) alcanza para `/p
 **Recomendación:** esto **no bloquea empezar a implementar la Fase 5** — el código de producción usará el Access Token real de la cuenta del vendedor (sin el problema de anidamiento). Si Patricio quiere ver un `/preapproval` exitoso en sandbox antes de esa fecha (por ejemplo para una demo), el paso accionable es: loguearse en la cuenta de prueba Vendedor ya creada, crear ahí una aplicación, y pasarme ese segundo par de credenciales — mismo patrón que destrabó este spike la primera vez. No es un prerrequisito técnico para codear, es solo para poder demostrar el flujo end-to-end en sandbox antes de ir a producción.
 
 No se tocó `sistemaaiprocess/`. No se instalaron dependencias nuevas en `package.json` (todo se hizo con `curl`). No se dejó ningún script de prueba en el repo. No se hizo `git add`/`git commit`.
+
+---
+
+## 7. Cierre total: `/preapproval` exitoso end-to-end en sandbox (2026-08-05)
+
+**Autor:** PM (vía `curl` directo, con Patricio ejecutando los pasos de login/creación que un agente no puede hacer)
+
+Patricio creó las cuentas de prueba Vendedor y Comprador (Chile), inició sesión con la cuenta de prueba Vendedor, y creó ahí una aplicación anidada — exactamente el camino que la sección 6.3 dejó pendiente. Con las credenciales de esa aplicación anidada (que Mercado Pago llama, confusamente, "Credenciales de producción" aunque la cuenta detrás sea 100% simulada — confirmado con el propio texto de su UI: *"Usa las credenciales de producción de la cuenta de prueba para configurar la integración para pruebas"*), se completaron las tres llamadas reales en cadena:
+
+1. `POST /preapproval_plan` con las credenciales anidadas → **`201`**, plan `77f9e7be6c02474bb6ceccb4a569c99a`.
+2. `POST /v1/card_tokens` con la misma tarjeta de prueba (Mastercard `5416 7526 0258 2580`) → **`201`**.
+3. `POST /preapproval` con ese plan + ese token + el email de la cuenta de prueba Comprador → **`"status": "authorized"`**. Suscripción real activada en sandbox, id `7f30dd7c945c40bf9603374d13eac227`.
+
+**Tres hallazgos nuevos, no documentados hasta ahora:**
+
+- **El plan y la suscripción deben crearse con las mismas credenciales (mismo "vendedor").** El plan `6e6db3c...` creado en la sección 6 (con las credenciales de nivel único de la cuenta real) **no sirve** para una `preapproval` hecha con las credenciales anidadas de la cuenta de prueba — son vendedores distintos para Mercado Pago. Hubo que crear un plan nuevo con las credenciales anidadas antes de poder activar la suscripción.
+- **`"Payer and collector cannot be the same user"`:** el `payer_email` no puede coincidir con la cuenta del vendedor. Si por error se usa el email de la cuenta de prueba Vendedor en vez de la Comprador, la API lo rechaza con este mensaje — señal clara de qué revisar si aparece.
+- **`cardholder.identification.number` para `type: "RUT"` exige un dígito verificador real, válido según el algoritmo módulo 11 chileno — no cualquier número de 9 dígitos.** Tanto un número inventado (`123456789`) como un "ejemplo oficial" encontrado por búsqueda web (`19119119100`, que además tenía largo incorrecto — 11 dígitos, un RUT chileno real tiene máximo 9) fueron rechazados con `400 "Invalid parameter 'cardholder.document'"`. Se resolvió calculando un RUT válido con el algoritmo real (base `12345678` + dígito verificador `5` = `123456785`). **Para cualquier prueba futura con RUT chileno, calcular el dígito verificador correctamente en vez de usar un número al azar.**
+
+**Spike de Mercado Pago cerrado en su totalidad — sin gaps de validación pendientes.** El flujo completo de suscripción con plan asociado está confirmado con datos reales de la API, extremo a extremo.

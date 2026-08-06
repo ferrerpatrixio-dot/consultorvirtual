@@ -786,6 +786,34 @@ de verdad) en lugar de inventar una estructura genérica.
 
 ---
 
+### 2026-08-05 (cont. 2) — Compra de prueba completa: `/preapproval` cerrado end-to-end en sandbox
+
+Patricio creó las cuentas de prueba Vendedor + Comprador, entró a la cuenta Vendedor, y creó
+ahí una aplicación anidada — el paso que quedó pendiente desde el spike del 2026-08-04. Con esas
+credenciales anidadas (que Mercado Pago llama "Credenciales de producción" pese a que la cuenta
+es 100% simulada), PM completó las tres llamadas reales en cadena: `preapproval_plan` → `card_token`
+→ `preapproval`, esta última con **`"status": "authorized"`** — suscripción de prueba activada
+de verdad, cerrando el único gap que quedaba del spike.
+
+**Tres hallazgos nuevos, documentados en `docs/referencia/MERCADO-PAGO.md` y
+`docs/SPIKE-MERCADO-PAGO-BPMN-DESDE-PROMPT.md` sección 7:**
+1. El plan y la suscripción deben crearse con el mismo par de credenciales — un plan de un
+   "vendedor" no sirve para una suscripción de otro, aunque ambos sean de prueba.
+2. `payer_email` no puede coincidir con la cuenta del vendedor (`"Payer and collector cannot be
+   the same user"`) — mezclamos el email del Vendedor con el del Comprador al principio.
+3. El `RUT` de prueba necesita un dígito verificador real (módulo 11), no un número inventado —
+   incluso un "ejemplo oficial" encontrado por búsqueda web resultó tener formato inválido.
+
+**Corregido también:** un plan duplicado que había quedado en la cuenta real de Mercado Pago de
+Patricio (sin clientes activos, sin riesgo de cobro) — desactivado, queda solo el plan que usa
+la app.
+
+**Spike de Mercado Pago cerrado en su totalidad.** Con Fase 5 + Free Trial ya en producción
+(`mapea.aiprocess.cl`) y esta validación completa, lo único que falta para cobrar de verdad es
+que Patricio decida pasar a credenciales de producción — decisión de negocio, no técnica.
+
+---
+
 ## 🎯 PRÓXIMAS AUDITORÍAS
 
 - **Próximo semanal:** 2026-08-08 (viernes)

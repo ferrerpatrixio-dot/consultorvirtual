@@ -166,6 +166,26 @@ devuelve `400 "Invalid cardholder.identification.type: OTHE in site_id: MLC"`. A
 `/preapproval` y `/v1/payments` cuando el `payer.identification.type` se arma con el mismo
 criterio.
 
+**⚠️ Gotcha confirmado con dato real (2026-08-05):** cuando `identification.type` es `"RUT"`,
+el `identification.number` **exige un dígito verificador real y válido** (algoritmo módulo 11
+chileno), no cualquier número de 9 dígitos. Un número inventado (`123456789`) y hasta un
+"ejemplo" encontrado por búsqueda web (`19119119100`, que además tenía largo incorrecto — un
+RUT chileno real tiene máximo 9 dígitos, no 11) fueron rechazados con
+`400 "Invalid parameter 'cardholder.document'"`. Solución: calcular el dígito verificador con
+el algoritmo real en vez de inventar un número — ejemplo válido: base `12345678` → dígito
+verificador `5` → RUT completo `123456785`.
+
+**⚠️ Gotcha confirmado con dato real (2026-08-05):** el `preapproval_plan_id` usado en
+`POST /preapproval` debe haber sido creado **con las mismas credenciales** (mismo "vendedor"/
+`collector_id`) que las que se usan para crear la `preapproval`. Un plan creado con un par de
+credenciales no sirve para una suscripción creada con otro par — aunque ambos sean válidos y
+de prueba, Mercado Pago los trata como vendedores distintos.
+
+**⚠️ Gotcha confirmado con dato real (2026-08-05):** `POST /preapproval` rechaza con
+`400 "Payer and collector cannot be the same user"` si el `payer_email` coincide con la cuenta
+del vendedor. Señal clara de qué revisar si aparece este error: confirmar que el email usado
+es el de la cuenta **Comprador**, no el de la cuenta **Vendedor**.
+
 ```bash
 npm install @mercadopago/sdk-js
 ```
@@ -247,6 +267,18 @@ exige loguearse con una cuenta real de Mercado Pago, o crear una cuenta nueva. N
 Claude debe hacer esto — es un paso que el humano dueño del proyecto tiene que ejecutar él mismo
 (entrar contraseñas y crear cuentas están fuera de lo que un agente puede hacer, incluso con
 autorización explícita). El agente puede consumir las credenciales de prueba una vez generadas.
+
+**⚠️ Importante, confirmado con dato real (2026-08-05):** las credenciales de prueba genéricas
+de la cuenta real (sección 3.1, las que da el panel normal de "Credenciales de prueba") **no
+alcanzan para `POST /preapproval` con `card_token_id`** — fallan con
+`404 "Card token service not found"`. Hace falta un segundo nivel: **loguearse dentro de la
+cuenta de prueba Vendedor** (con el usuario/contraseña que Mercado Pago le da al crearla) y,
+desde esa sesión, **crear una aplicación nueva ahí adentro**. Las credenciales de esa
+aplicación anidada (que Mercado Pago llama, confusamente, **"Credenciales de producción"**
+aunque la cuenta detrás sea 100% simulada — su propia UI lo aclara: *"Usa las credenciales de
+producción de la cuenta de prueba para configurar la integración para pruebas"*) son las que
+sí funcionan para el flujo completo de suscripciones en sandbox. Confirmado con una suscripción
+de prueba activada de punta a punta (`status: "authorized"`) usando este camino.
 
 ---
 
