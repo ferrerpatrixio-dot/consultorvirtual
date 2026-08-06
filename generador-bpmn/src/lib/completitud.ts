@@ -59,9 +59,9 @@ function alcanzablesDesde(startIds: string[], pasosPorId: Map<string, Paso>): Se
   while (cola.length > 0) {
     const id = cola.shift()!;
     if (visitados.has(id)) continue;
-    visitados.add(id);
     const paso = pasosPorId.get(id);
     if (!paso) continue;
+    visitados.add(id);
     for (const destino of destinosDe(paso, pasosPorId)) {
       if (!visitados.has(destino)) cola.push(destino);
     }
