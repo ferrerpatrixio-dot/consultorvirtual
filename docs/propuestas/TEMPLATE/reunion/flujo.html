@@ -1,0 +1,231 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objeciones y Seguimiento - AIProcess.cl</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .page-break {
+            max-width: 900px;
+            background: white;
+            margin: 20px auto;
+            padding: 60px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .nav-buttons {
+            max-width: 900px;
+            margin: 20px auto;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .nav-buttons a {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .nav-buttons a:hover { background: #764ba2; }
+        h1 { color: #667eea; margin-bottom: 15px; font-size: 2em; text-align: center; }
+        h2 { color: #667eea; margin-top: 40px; margin-bottom: 20px; font-size: 1.5em; border-bottom: 2px solid #e9ecef; padding-bottom: 10px; }
+        h3 { color: #764ba2; margin-top: 25px; margin-bottom: 12px; font-size: 1.1em; }
+        p { margin-bottom: 15px; }
+        ul, ol { margin-left: 20px; margin-bottom: 15px; }
+        li { margin-bottom: 8px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; vertical-align: top; }
+        th { background: #667eea; color: white; }
+        tr:nth-child(even) { background: #f8f9fa; }
+        .guion { background: #fff9e6; border-left: 4px solid #ffc107; padding: 20px; margin: 15px 0; border-radius: 4px; font-style: italic; }
+        .objecion {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        .objecion h3 { margin-top: 0; color: #667eea; }
+        .alerta { background: #fff5f5; border: 2px solid #dc3545; padding: 15px; border-radius: 4px; margin: 20px 0; }
+        .alerta strong { color: #dc3545; }
+        .nota { background: #f8f9fa; border-left: 3px solid #999; padding: 12px 15px; margin: 15px 0; font-size: 0.92em; color: #555; }
+        .checklist { background: #f0f4ff; padding: 20px; margin: 20px 0; border-radius: 4px; }
+        .checklist ul { list-style: none; margin-left: 0; }
+        .checklist input { margin-right: 8px; }
+        .footer { margin-top: 50px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 0.9em; color: #999; text-align: center; }
+        @media print {
+            body { background: white; padding: 0; }
+            .nav-buttons { display: none; }
+            .page-break { box-shadow: none; padding: 20px; max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-buttons">
+        <a href="valores.html">← Anterior</a>
+        <a href="../index.html">Inicio</a>
+        <a href="cotizacion.html">Siguiente →</a>
+    </div>
+
+    <div class="page-break">
+        <h1>🛡️ Objeciones y Seguimiento</h1>
+        <p style="text-align: center; color: #666;"><em>Qué responder cuando se traba, y qué hacer los días después.</em></p>
+
+        <div class="nota">
+            El guión de la reunión en sí está en el <a href="levantamiento.html">Formulario de Levantamiento</a>. Este documento cubre solo lo que pasa cuando el cliente objeta, y el seguimiento posterior.
+        </div>
+
+        <h2>Las objeciones y qué responder</h2>
+
+        <div class="objecion">
+            <h3>"¿Cuánto me va a costar?" — preguntado al principio</h3>
+            <div class="guion">
+                <p>"Todavía no sé qué tienes. Si te tiro un número ahora te estoy mintiendo. Dame la hora, la semana de visitas, y el informe te llega con el número. Ahí decides."</p>
+            </div>
+            <p><strong>Por qué:</strong> dar un precio antes de conocer el dolor te deja sin ancla. El precio se entrega al cierre, cuando el cliente ya dijo en voz alta cuánta plata pierde.</p>
+        </div>
+
+        <div class="objecion">
+            <h3>"Es caro"</h3>
+            <div class="guion">
+                <p>"Comparémoslo con lo que ya estás perdiendo. Tú me dijiste que son del orden de [la cifra que él dio] al mes. La Fase 1 cuesta una fracción de eso, una sola vez.</p>
+                <p>Y si al final resulta que no vale la pena arreglarlo, te lo digo y paramos ahí. No te voy a cobrar por venderte humo."</p>
+            </div>
+            <div class="alerta">
+                <p style="margin: 0;"><strong>No bajes el precio.</strong> Está fijado por tramo de headcount y no se negocia en la reunión. Si presiona, la respuesta es el alcance más acotado, no un descuento.</p>
+            </div>
+        </div>
+
+        <div class="objecion">
+            <h3>"Suena a proyecto largo y caro"</h3>
+            <div class="guion">
+                <p>"Mira, parte del trabajo es justamente separar lo que se arregla de inmediato —sin invertir nada y con tu propia gente— de lo que sí necesita un proyecto.</p>
+                <p>Si durante el diagnóstico veo algo obvio, te lo digo en el momento, no espero a la entrega."</p>
+            </div>
+            <div class="alerta">
+                <p style="margin: 0;"><strong>Nunca prometas una cantidad ni un porcentaje de ahorro.</strong> "No te prometo cuántas cosas van a aparecer porque depende de tu operación, pero si están, las vas a saber." Un número prometido es una deuda sobre algo que no controlas.</p>
+            </div>
+        </div>
+
+        <div class="objecion">
+            <h3>"¿Esto me lo financia Sercotec?"</h3>
+            <div class="guion">
+                <p>"La implementación sí puede postularse. El diagnóstico no, y te explico por qué: las bases solo dejan rendir lo que compras <em>después</em> de firmar con el Agente Operador. Un diagnóstico hecho para postular queda fuera por definición.</p>
+                <p>Pero mira el orden: el informe que te entrego es justo el papel que te van a pedir para postular — el diagnóstico, el plan y la cotización. Lo pagas ahora, chico, y con eso postulas a lo grande."</p>
+            </div>
+            <div class="alerta">
+                <p style="margin: 0;"><strong>No prometas plazos de pago ni porcentajes de Sercotec.</strong> No están verificados, y las bases cambian por región y por convocatoria. Si el cliente va a postular, hay que bajar las bases específicas de SU región antes de decir cualquier cifra.</p>
+            </div>
+        </div>
+
+        <div class="objecion">
+            <h3>"Ya me pasó: vino uno, hizo un informe y desapareció"</h3>
+            <div class="guion">
+                <p>"Te entiendo, y es la razón por la que la Fase 1 termina en un plan de implementación con plazos y valores, no en un PDF con recomendaciones.</p>
+                <p>Y si quieres, te mando hoy mismo el acuerdo de confidencialidad firmado por mí, antes de que exista contrato. Vas a mostrarme cómo funciona tu negocio por dentro, es lo mínimo."</p>
+            </div>
+            <p><strong>Señal para el semáforo:</strong> si el cliente quedó quemado por un consultor previo, el informe solo no basta. Hay que comprometer implementación o baja a 🟡.</p>
+        </div>
+
+        <div class="objecion">
+            <h3>"Necesito pensarlo"</h3>
+            <div class="guion">
+                <p>"Perfecto. Te dejo la propuesta y el acuerdo de confidencialidad firmado.</p>
+                <p>Una cosa: lo que sí me gustaría dejar amarrado hoy son las visitas. No te cuestan nada y no te ocupan a ti — es media hora con tu gente. Si después decides que no, las cancelamos y no pasó nada.</p>
+                <p>¿Te sirve el martes?"</p>
+            </div>
+            <p><strong>Por qué:</strong> agendar las visitas mantiene el proceso vivo aunque la decisión quede pendiente. Es lo único que hay que rescatar de una reunión que no cierra.</p>
+        </div>
+
+        <div class="objecion">
+            <h3>"No, gracias"</h3>
+            <div class="guion">
+                <p>"Dale, lo respeto. Una cosa: si en unos meses esto sigue siendo un problema, me escribes y retomamos donde quedamos."</p>
+            </div>
+            <p><strong>Un descarte limpio trae referidos.</strong> Si el semáforo te dio 🔴, dilo con honestidad tú mismo: "mirando lo que me contaste, creo que hoy no te conviene meterte en esto". Esa franqueza es lo que hace que te recomienden.</p>
+        </div>
+
+        <h2>Cierre administrativo</h2>
+
+        <div class="checklist">
+            <p><strong>Preguntar antes de irte:</strong></p>
+            <ul>
+                <li><input type="checkbox"> Nombre completo del contacto principal</li>
+                <li><input type="checkbox"> Email y teléfono</li>
+                <li><input type="checkbox"> ¿Quién es el que decide?</li>
+                <li><input type="checkbox"> Nombre y celular de cada persona a visitar</li>
+                <li><input type="checkbox"> Nombre del software de facturación y quién tiene la clave</li>
+            </ul>
+        </div>
+
+        <div class="checklist">
+            <p><strong>Dejar:</strong></p>
+            <ul>
+                <li><input type="checkbox"> Acuerdo de confidencialidad ya firmado por ti</li>
+                <li><input type="checkbox"> Cotización de la Fase 1 (si el semáforo dio 🟢)</li>
+                <li><input type="checkbox"> Tu email y teléfono</li>
+            </ul>
+        </div>
+
+        <h2>Seguimiento posterior</h2>
+
+        <h3>El mismo día — WhatsApp</h3>
+        <div class="guion">
+            <p>"Hola [Nombre], gracias por el tiempo de hoy.</p>
+            <p>Te confirmo las visitas: [día] con [persona] y [día] con [persona].</p>
+            <p>Para esa semana necesito que tengan a mano:<br>
+            · Un mes de registros del proceso, tal cual estén<br>
+            · Cuántas unidades/pedidos en los últimos 3 meses<br>
+            · Una copia de la planilla Excel que usan a diario<br>
+            · Lista de reclamos o devoluciones de los últimos 3 meses</p>
+            <p>El [fecha] te llevo el informe. Saludos, Patricio"</p>
+        </div>
+
+        <h3>Si quedó en "lo pienso" — 3 días después</h3>
+        <div class="guion">
+            <p>"Hola [Nombre], ¿cómo va?</p>
+            <p>¿Alcanzaste a mirar la propuesta? Si tienes preguntas o quieres que lo veamos con alguien más del equipo, avísame y coordinamos.</p>
+            <p>Saludos, Patricio"</p>
+        </div>
+
+        <div class="nota">
+            Un solo recordatorio. Si no responde, se deja pasar y se retoma en unos meses. Insistir quema el contacto.
+        </div>
+
+        <h3>Lo que haces internamente ese mismo día</h3>
+        <table>
+            <thead>
+                <tr><th>Qué</th><th>A quién</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Hoja de captura digitalizada</td><td>PM</td></tr>
+                <tr><td>Bloque B (operación) para empezar el BPMN</td><td>ARQUITECTO</td></tr>
+                <tr><td>Marcador de financiamiento (particular / público)</td><td>FINANCE</td></tr>
+                <tr><td>Semáforo y motivo</td><td>PM</td></tr>
+            </tbody>
+        </table>
+
+        <div class="footer">
+            <p>Objeciones y Seguimiento | AIProcess.cl</p>
+            <p>Basado en GUIA-PRIMERA-ENTREVISTA-CLIENTE.md v1.0 y MODELO-FASES-Y-PRECIOS.md</p>
+        </div>
+    </div>
+
+    <div class="nav-buttons">
+        <a href="valores.html">← Anterior</a>
+        <a href="../index.html">Inicio</a>
+        <a href="cotizacion.html">Siguiente →</a>
+    </div>
+</body>
+</html>
+

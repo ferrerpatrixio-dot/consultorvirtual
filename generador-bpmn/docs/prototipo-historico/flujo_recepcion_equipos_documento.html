@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documento BPM - Recepción de Equipos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Calibri', 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: white;
+            padding: 0;
+        }
+
+        .page {
+            width: 21cm;
+            height: 29.7cm;
+            margin: 0 auto;
+            padding: 1.5cm;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            page-break-after: always;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        /* Portada */
+        .cover {
+            text-align: center;
+            padding-top: 80px;
+            padding-bottom: 40px;
+        }
+
+        .cover h1 {
+            font-size: 28pt;
+            color: #667eea;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .cover .subtitle {
+            font-size: 18pt;
+            color: #764ba2;
+            margin-bottom: 60px;
+        }
+
+        .cover .content {
+            margin-top: 100px;
+            font-size: 12pt;
+        }
+
+        .cover .info-box {
+            background: #f0f0f0;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            margin: -1.5cm -1.5cm 20px -1.5cm;
+            text-align: center;
+        }
+
+        .header h2 {
+            font-size: 16pt;
+            margin: 0;
+        }
+
+        /* Contenido */
+        h2 {
+            font-size: 14pt;
+            color: #667eea;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        h3 {
+            font-size: 12pt;
+            color: #764ba2;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        p {
+            font-size: 11pt;
+            margin-bottom: 10px;
+            text-align: justify;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        /* Tablas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        table thead {
+            background: #667eea;
+            color: white;
+        }
+
+        table th {
+            padding: 10px;
+            text-align: left;
+            font-weight: bold;
+            border: 1px solid #667eea;
+        }
+
+        table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        table tbody tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        /* Listas */
+        ul, ol {
+            margin: 10px 0 10px 25px;
+            font-size: 11pt;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .role-box {
+            background: #f0f7ff;
+            border-left: 4px solid #667eea;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 11pt;
+        }
+
+        .role-box strong {
+            color: #667eea;
+        }
+
+        .highlight {
+            background: #fffacd;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ff9800;
+            padding: 12px;
+            margin: 15px 0;
+            font-size: 11pt;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 12px;
+            margin: 15px 0;
+            font-size: 11pt;
+        }
+
+        .footer {
+            font-size: 9pt;
+            color: #666;
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+        .process-step {
+            background: white;
+            border: 1px solid #667eea;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-size: 11pt;
+        }
+
+        .process-step .step-number {
+            background: #667eea;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            .page {
+                box-shadow: none;
+                margin: 0;
+                padding: 1.5cm;
+                width: 100%;
+                height: auto;
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- PORTADA -->
+    <div class="page cover">
+        <h1>📦 FLUJO BPM</h1>
+        <p class="subtitle">Recepción y Validación de Equipos</p>
+
+        <div class="cover content">
+            <div class="info-box">
+                <h3>Documento Oficial de Proceso</h3>
+                <p>Este documento contiene la especificación completa del flujo de recepción, validación y gestión de inventario de equipos en la sucursal.</p>
+            </div>
+
+            <div class="info-box">
+                <h3>Versión 1.0</h3>
+                <p><strong>Fecha:</strong> 22 de Julio, 2024</p>
+                <p><strong>Estado:</strong> Activo</p>
+                <p><strong>Áreas Involucradas:</strong> Logística, Bodega, Administración</p>
+            </div>
+
+            <div style="margin-top: 60px; font-size: 11pt;">
+                <p><strong>Actores del Proceso:</strong></p>
+                <ul style="margin-left: 20px;">
+                    <li>Distribuidor</li>
+                    <li>Guardián</li>
+                    <li>Bodeguero/Administrativo</li>
+                    <li>Supervisor</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 2: DESCRIPCIÓN GENERAL -->
+    <div class="page">
+        <div class="header"><h2>DESCRIPCIÓN GENERAL DEL PROCESO</h2></div>
+
+        <div class="section">
+            <h2>Objetivo del Proceso</h2>
+            <p>Establecer un flujo estandarizado para la recepción, validación física y registro en SAP de equipos entregados por distribuidores, asegurando la consistencia entre lo físicamente recibido y lo registrado en el sistema.</p>
+        </div>
+
+        <div class="section">
+            <h2>Alcance</h2>
+            <p>Este proceso aplica a todas las entregas de equipos en la sucursal, independientemente del distribuidor o proveedor. Incluye desde la entrada del distribuidor hasta el registro final en SAP.</p>
+        </div>
+
+        <div class="section">
+            <h2>Actores y Responsabilidades</h2>
+
+            <div class="role-box">
+                <strong>🚚 DISTRIBUIDOR</strong>
+                <p>Responsable de llevar el camión con los equipos a la sucursal y presentar la documentación de entrega. Recibe la guía firmada como comprobante.</p>
+            </div>
+
+            <div class="role-box">
+                <strong>👤 GUARDIÁN</strong>
+                <p>Responsable del control de entrada a la sucursal. Registra al distribuidor y valida que la documentación sea correcta antes de autorizar el acceso a bodega.</p>
+            </div>
+
+            <div class="role-box">
+                <strong>📦 BODEGUERO/ADMINISTRATIVO</strong>
+                <p>Mismo rol responsable de trasladar cajas a bodega, verificar contenido, firmar guías e ingresar manualmente cada serie a SAP mediante pistolaje.</p>
+            </div>
+
+            <div class="role-box">
+                <strong>⚠️ SUPERVISOR</strong>
+                <p>Responsable de revisar y resolver discrepancias detectadas durante el proceso. Puede autorizar soluciones o escalar casos críticos.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            Documento oficial de proceso | Página 1
+        </div>
+    </div>
+
+    <!-- PÁGINA 3: ETAPAS DEL PROCESO -->
+    <div class="page">
+        <div class="header"><h2>ETAPAS DEL PROCESO</h2></div>
+
+        <div class="section">
+            <h2>Etapa 1: Recepción y Registro</h2>
+
+            <div class="process-step">
+                <span class="step-number">1</span>
+                <strong>Distribuidor llega con camión</strong>
+                <p>El distribuidor presenta el camión con las cajas de equipos en la entrada de la sucursal.</p>
+            </div>
+
+            <div class="process-step">
+                <span class="step-number">2</span>
+                <strong>Guardián registra entrada</strong>
+                <p>El guardián registra los datos del distribuidor y valida la documentación de entrega.</p>
+            </div>
+
+            <div class="process-step">
+                <span class="step-number">3</span>
+                <strong>Validación de documentación</strong>
+                <p><span class="highlight">PUNTO DE CONTROL:</span> Se verifica que la documentación sea válida. Si no es válida, se rechaza la entrada.</p>
+            </div>
+
+            <div class="process-step">
+                <span class="step-number">4</span>
+                <strong>Autorización de acceso</strong>
+                <p>Una vez validado, el guardián autoriza el acceso a la bodega.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Etapa 2: Verificación Física</h2>
+
+            <div class="process-step">
+                <span class="step-number">5</span>
+                <strong>Traslado a bodega</strong>
+                <p>El bodeguero/administrativo traslada todas las cajas al sector de bodega.</p>
+            </div>
+
+            <div class="process-step">
+                <span class="step-number">6</span>
+                <strong>Apertura y verificación inicial</strong>
+                <p>Se abren las cajas y se procede a la verificación sistemática.</p>
+            </div>
+
+            <div class="process-step">
+                <span class="step-number">7</span>
+                <strong>Verificación de cantidades</strong>
+                <p><span class="highlight">PUNTO DE CONTROL CRÍTICO:</span> Se cuenta el número exacto de cajas y se compara con la guía de remisión. Debe coincidir al 100%.</p>
+            </div>
+
+            <div class="process-step">
+                <span class="step-number">8</span>
+                <strong>Verificación de modelos</strong>
+                <p><span class="highlight">PUNTO DE CONTROL CRÍTICO:</span> Se verifica que cada equipo corresponda al modelo especificado en la guía. Deben coincidir exactamente.</p>
+            </div>
+
+            <div class="process-step">
+                <span class="step-number">9</span>
+                <strong>Inspección física de daños</strong>
+                <p><span class="highlight">PUNTO DE CONTROL CRÍTICO:</span> Se inspecciona cada caja en busca de daños. Los daños críticos se registran como discrepancia.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            Documento oficial de proceso | Página 2
+        </div>
+    </div>
+
+    <!-- PÁGINA 4: FIRMA Y ENTREGA SAP -->
+    <div class="page">
+        <div class="header"><h2>CONTINUACIÓN: FIRMA E INGRESO A SAP</h2></div>
+
+        <div class="section">
+            <h2>Etapa 3: Firma de Conformidad</h2>
+
+            <div class="process-step">
+                <span class="step-number">10</span>
+                <strong>Firma de guía de entrega</strong>
+                <p>Una vez que todas las verificaciones son satisfactorias, el bodeguero/administrativo firma la guía de remisión como comprobante de recepción correcta.</p>
+            </div>
+
+            <div class="process-step">
+                <span class="step-number">11</span>
+                <strong>Entrega al distribuidor</strong>
+                <p>Se entrega la guía firmada al distribuidor como comprobante. El distribuidor se retira con su copia.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Etapa 4: Ingreso a SAP (LA MÁS IMPORTANTE)</h2>
+
+            <div class="warning-box">
+                <strong>⚠️ PROCEDIMIENTO CRÍTICO:</strong>
+                <p>No se permite ingreso masivo por sistema. CADA SERIE debe ingresarse manualmente mediante pistolaje/escaneo individual para validar que lo físico coincida con lo registrado.</p>
+            </div>
+
+            <div class="process-step">
+                <span class="step-number">12</span>
+                <strong>Preparación para ingreso a SAP</strong>
+                <p>El bodeguero/administrativo se prepara para ingresar los datos en SAP, teniendo a la mano la documentación de entrega.</p>
+            </div>
+
+            <div class="process-step">
+                <span class="step-number">13</span>
+                <strong>Pistolaje individual de cada caja</strong>
+                <p><span class="highlight">PUNTO DE CONTROL CRÍTICO:</span> Se escanea/pistola cada caja obteniendo su número de serie. ESTO ES OBLIGATORIO para cada unidad.</p>
+            </div>
+
+            <div class="process-step">
+                <span class="step-number">14</span>
+                <strong>Comparación físico vs SAP</strong>
+                <p><span class="highlight">PUNTO DE CONTROL CRÍTICO:</span> Se compara lo que el sistema SAP tiene registrado vs lo que físicamente se escaneó. Deben coincidir.</p>
+            </div>
+
+            <div class="process-step">
+                <span class="step-number">15</span>
+                <strong>Ingreso de serie confirmada</strong>
+                <p>Una vez validado que físico = SAP, se ingresa/confirma la serie en el sistema. SOLO después de esta validación.</p>
+            </div>
+
+            <div class="process-step">
+                <span class="step-number">16</span>
+                <strong>Repetir para todas las cajas</strong>
+                <p>Se repiten los pasos 13-15 para CADA CAJA de la entrega hasta completar el 100%.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            Documento oficial de proceso | Página 3
+        </div>
+    </div>
+
+    <!-- PÁGINA 5: GESTIÓN DE DISCREPANCIAS -->
+    <div class="page">
+        <div class="header"><h2>GESTIÓN DE DISCREPANCIAS</h2></div>
+
+        <div class="section">
+            <h2>Procedimiento de Discrepancia</h2>
+
+            <p>Cuando se detecte una discrepancia en cualquier punto de control, se sigue este procedimiento:</p>
+
+            <div class="process-step">
+                <span class="step-number">A</span>
+                <strong>Registro de discrepancia</strong>
+                <p>El bodeguero/administrativo registra el detalle de la discrepancia encontrada.</p>
+            </div>
+
+            <div class="process-step">
+                <span class="step-number">B</span>
+                <strong>Notificación a supervisor</strong>
+                <p>Se notifica inmediatamente al supervisor con los detalles.</p>
+            </div>
+
+            <div class="process-step">
+                <span class="step-number">C</span>
+                <strong>Revisión por supervisor</strong>
+                <p>El supervisor revisa la documentación, las cajas y el registro de la discrepancia.</p>
+            </div>
+
+            <div class="process-step">
+                <span class="step-number">D</span>
+                <strong>Decisión</strong>
+                <p>El supervisor decide si puede resolverse o si es necesario escalar.</p>
+            </div>
+
+            <div class="process-step">
+                <span class="step-number">E</span>
+                <strong>Resolución o escalada</strong>
+                <p>Si es resolvible, se autoriza solución y se retoma el flujo desde el punto de discrepancia. Si no, se escala al nivel superior.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Tipos de Discrepancias</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tipo de Discrepancia</th>
+                        <th>Acción Inmediata</th>
+                        <th>Resolución</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Cantidad menor a lo esperado</td>
+                        <td>Detener proceso, registrar faltantes</td>
+                        <td>Supervisor contacta distribuidor</td>
+                    </tr>
+                    <tr>
+                        <td>Modelo incorrecto</td>
+                        <td>Detener proceso, aislar equipos</td>
+                        <td>Supervisor contacta distribuidor, posible devolución</td>
+                    </tr>
+                    <tr>
+                        <td>Daño crítico en caja</td>
+                        <td>Detener proceso, documentar daño fotográficamente</td>
+                        <td>Supervisor valida cobertura de seguro, contacta distribuidor</td>
+                    </tr>
+                    <tr>
+                        <td>Físico ≠ SAP (serie)</td>
+                        <td>Detener ingreso de esa serie</td>
+                        <td>Supervisor revisa documentación, actualiza SAP o investiga diferencia</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            Documento oficial de proceso | Página 4
+        </div>
+    </div>
+
+    <!-- PÁGINA 6: CRITERIOS DE ACEPTACIÓN -->
+    <div class="page">
+        <div class="header"><h2>CRITERIOS DE ACEPTACIÓN</h2></div>
+
+        <div class="section">
+            <h2>Requisitos de Aceptación de Entrega</h2>
+
+            <div class="success-box">
+                <h3>✅ La entrega es ACEPTADA si:</h3>
+                <ul>
+                    <li>El número de cajas coincide exactamente con la guía</li>
+                    <li>TODOS los equipos son del modelo especificado</li>
+                    <li>No hay daños críticos en ninguna caja</li>
+                    <li>Cada equipo tiene su número de serie completo</li>
+                    <li>El 100% de las series han sido escaneadas/pistoleadas</li>
+                    <li>Lo físico coincide exactamente con lo ingresado en SAP</li>
+                    <li>La documentación está completa y firmada</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h3>❌ La entrega es RECHAZADA si:</h3>
+                <ul>
+                    <li>Hay discrepancia en cantidades que no se puede resolver</li>
+                    <li>Hay equipos de modelo incorrecto sin solución</li>
+                    <li>Hay daños críticos sin cobertura de seguros</li>
+                    <li>Faltan números de serie de equipos</li>
+                    <li>No se puede validar físico vs SAP</li>
+                    <li>La documentación es incompleta o inválida</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Flujo de Decisión Final</h2>
+
+            <p><strong>Pregunta clave:</strong> ¿Toda la entrega pasó TODOS los controles de validación?</p>
+
+            <ul>
+                <li><strong>SÍ:</strong> Proceder a firma y SAP. Marcar como ACEPTADO.</li>
+                <li><strong>NO:</strong> Registrar discrepancias y notificar supervisor. Esperar resolución.</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            Documento oficial de proceso | Página 5
+        </div>
+    </div>
+
+    <!-- PÁGINA 7: RESUMEN DE CONTROLES -->
+    <div class="page">
+        <div class="header"><h2>RESUMEN DE PUNTOS DE CONTROL</h2></div>
+
+        <div class="section">
+            <h2>Matriz de Controles del Proceso</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Punto de Control</th>
+                        <th>Responsable</th>
+                        <th>Validación</th>
+                        <th>Acción si NO Pasa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Registro Guardián</td>
+                        <td>Guardián</td>
+                        <td>Documentación válida</td>
+                        <td>Rechazar entrada</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Cantidad de cajas</td>
+                        <td>Bodeguero</td>
+                        <td>= a guía</td>
+                        <td>Registrar faltantes</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Modelos de equipos</td>
+                        <td>Bodeguero</td>
+                        <td>= a guía</td>
+                        <td>Aislar y reportar</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Condición física</td>
+                        <td>Bodeguero</td>
+                        <td>Sin daño crítico</td>
+                        <td>Documentar y reportar</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Pistolaje individual</td>
+                        <td>Bodeguero</td>
+                        <td>100% escaneado</td>
+                        <td>No ingresar a SAP</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>Físico = SAP</td>
+                        <td>Bodeguero</td>
+                        <td>Coinciden exactamente</td>
+                        <td>Investigar diferencia</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>Resolución final</td>
+                        <td>Supervisor</td>
+                        <td>Todas discrepancias resueltas</td>
+                        <td>Escalar o rechazar</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Nota Importante sobre SAP</h2>
+
+            <div class="warning-box">
+                <p><strong>REGLA DE ORO:</strong> "NO SE PERMITE INGRESO MASIVO POR SISTEMA"</p>
+                <p>Cada serie DEBE ser ingresada manualmente después de verificación física. Esto garantiza que lo que está en SAP coincida exactamente con lo que hay en bodega, evitando pérdidas, robo o errores administrativos.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            Documento oficial de proceso | Página 6
+        </div>
+    </div>
+
+    <!-- PÁGINA 8: CONCLUSIONES -->
+    <div class="page">
+        <div class="header"><h2>CONCLUSIONES Y RECOMENDACIONES</h2></div>
+
+        <div class="section">
+            <h2>Beneficios del Proceso</h2>
+
+            <ul>
+                <li><strong>Trazabilidad completa:</strong> Cada equipo es verificado en cada etapa</li>
+                <li><strong>Control de calidad:</strong> Se detectan daños, modelos incorrectos y faltantes inmediatamente</li>
+                <li><strong>Consistencia de datos:</strong> Físico siempre = SAP (no hay discrepancias ocultas)</li>
+                <li><strong>Responsabilidad clara:</strong> Cada rol tiene funciones específicas y verificables</li>
+                <li><strong>Reducción de errores:</strong> El pistolaje individual es más seguro que importación masiva</li>
+                <li><strong>Cumplimiento normativo:</strong> Documentación completa para auditorías</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Recomendaciones Operacionales</h2>
+
+            <ul>
+                <li>Capacitar a todo el personal en este procedimiento</li>
+                <li>Usar formatos estandarizados para registro de discrepancias</li>
+                <li>Realizar auditorías periódicas al proceso</li>
+                <li>Mantener un registro histórico de discrepancias</li>
+                <li>Revisar y mejorar el proceso anualmente</li>
+                <li>Tener disponibilidad de supervisor durante horarios de recepción</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Contacto y Escaladas</h2>
+
+            <p><strong>Para preguntas sobre el proceso:</strong> Contactar al área de Logística</p>
+            <p><strong>Para discrepancias sin resolver:</strong> Escalar a Supervisor</p>
+            <p><strong>Para casos críticos:</strong> Escalar a Gerencia de Bodega</p>
+        </div>
+
+        <div class="footer">
+            Documento oficial de proceso | Página 7<br>
+            <strong>Fin del documento</strong>
+        </div>
+    </div>
+
+</body>
+</html>

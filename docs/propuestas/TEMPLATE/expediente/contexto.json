@@ -1,0 +1,95 @@
+{
+  "cliente": {
+    "nombre": "[COMPLETAR]",
+    "tipo": "[COMPLETAR]",
+    "rubro": "[COMPLETAR]",
+    "estado": "Pre-Fase 1",
+    "fecha_creacion": "[COMPLETAR]"
+  },
+  "contacto": {
+    "nombre_principal": "[A llenar en reunión]",
+    "cargo": "[A llenar]",
+    "email": "[A llenar]",
+    "telefono": "[A llenar]",
+    "nombre_gerente_operativo": "[A llenar]",
+    "email_gerente": "[A llenar]"
+  },
+  "negocio": {
+    "descripcion": "[COMPLETAR]",
+    "volumen_semanal": "[A investigar en reunión]",
+    "modelos_principales": "[A investigar]",
+    "cantidad_tecnicos": "[A investigar]",
+    "tiempo_promedio_reparacion": "[A investigar]"
+  },
+  "problemas_identificados": {
+    "logistica_recepcion": "[COMPLETAR]",
+    "seguimiento_estado": "[COMPLETAR]",
+    "control_operativo": "[COMPLETAR]",
+    "visibilidad_interna": "[COMPLETAR]",
+    "notificacion_cliente": "[COMPLETAR]"
+  },
+  "oportunidades_ia": {
+    "corto_plazo": "[COMPLETAR]",
+    "mediano_plazo": "[COMPLETAR]",
+    "largo_plazo": "[COMPLETAR]"
+  },
+  "estado_mma_od": {
+    "estimado": "[COMPLETAR]",
+    "confirmado": false,
+    "confirmado_fecha": null
+  },
+  "propuesta_inicial": {
+    "fase_0": {
+      "nombre": "Termómetro + reunión inicial",
+      "costo": 0,
+      "estado": "Por realizar"
+    },
+    "fase_1": {
+      "nombre": "Consultoría inicial",
+      "costo_tramo_a": 450000,
+      "costo_tramo_b": 600000,
+      "tramo_aplicable": null,
+      "headcount": null,
+      "financiamiento": "particular",
+      "duracion_semanas": "1-2",
+      "entrega_informe_dias_max": 10,
+      "estado": "Por proponer"
+    },
+    "fase_2_opciones": [
+      {
+        "nombre": "Opción A: Dashboard + Notificaciones",
+        "banda": 1,
+        "costo": 1200000,
+        "plazo_semanas": "2-3",
+        "familia": "DIGITALIZAR"
+      },
+      {
+        "nombre": "Opción B: Recepción Digital + Control",
+        "banda": 2,
+        "costo": 2500000,
+        "plazo_semanas": "3-4",
+        "familia": "AUTOMATIZAR básica"
+      },
+      {
+        "nombre": "Opción C: Flujo Punta a Punta",
+        "banda": 2,
+        "costo": 2500000,
+        "plazo_semanas": "4-5",
+        "familia": "AUTOMATIZAR completa"
+      }
+    ]
+  },
+  "timeline": {
+    "preparacion_kit": "[COMPLETAR]",
+    "revision_por_patricio": "[COMPLETAR]",
+    "reunión_inicial": "[A confirmar]",
+    "contratacion_fase_1": "[Pendiente reunión]",
+    "inicio_fase_1": "[A confirmar]",
+    "fin_fase_1": "[A determinar]",
+    "decision_fase_2": "[Pendiente Fase 1]"
+  },
+  "notas": {
+    "preparacion": "[COMPLETAR]",
+    "seguimiento": "[Se actualizará post-reunión]"
+  }
+}

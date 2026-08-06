@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagrama de Flujo - Swimlanes Mejorado</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 30px;
+            overflow-x: auto;
+        }
+
+        svg {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+        }
+
+        .legend {
+            margin-top: 40px;
+            padding: 25px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .legend h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .legend-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .legend-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            flex-shrink: 0;
+            border: 2px solid #333;
+        }
+
+        .footer {
+            background: #f5f5f5;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .print-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+
+        .print-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+            .print-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📦 Diagrama de Flujo - Swimlanes</h1>
+            <p>Recepción y Validación de Equipos (Mejorado)</p>
+        </div>
+
+        <div class="content">
+            <svg viewBox="0 0 2400 2400" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <style>
+                        .swimlane-header { font-size: 16px; font-weight: bold; fill: white; text-anchor: middle; }
+                        .swimlane-bg { fill: #f9f9f9; stroke: #333; stroke-width: 3; }
+                        .swimlane-sep { stroke: #999; stroke-width: 2; }
+                        .activity-box { fill: #667eea; stroke: #333; stroke-width: 2; rx: 8; }
+                        .activity-text { font-size: 12px; fill: white; font-weight: bold; text-anchor: middle; }
+                        .gateway { fill: #ff9800; stroke: #333; stroke-width: 2; }
+                        .gateway-text { font-size: 11px; fill: white; font-weight: bold; text-anchor: middle; }
+                        .start-end { fill: #28a745; stroke: #333; stroke-width: 2; }
+                        .end-failed { fill: #dc3545; stroke: #333; stroke-width: 2; }
+                        .arrow { stroke: #333; stroke-width: 2.5; fill: none; marker-end: url(#arrowhead); }
+                        .arrow-label { font-size: 11px; fill: #333; font-weight: bold; background: white; }
+                        .arrow-yes { stroke: #28a745; stroke-width: 2.5; }
+                        .arrow-no { stroke: #dc3545; stroke-width: 2.5; }
+                    </style>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#333" />
+                    </marker>
+                </defs>
+
+                <!-- SWIMLANES BACKGROUNDS -->
+                <rect x="50" y="50" width="2300" height="550" class="swimlane-bg" fill="#e8f4f8" stroke="#667eea"/>
+                <rect x="50" y="600" width="2300" height="350" class="swimlane-bg" fill="#f3e5f5" stroke="#764ba2"/>
+                <rect x="50" y="950" width="2300" height="900" class="swimlane-bg" fill="#e8f5e9" stroke="#28a745"/>
+                <rect x="50" y="1850" width="2300" height="350" class="swimlane-bg" fill="#fff3e0" stroke="#ff9800"/>
+
+                <!-- SWIMLANE HEADERS -->
+                <rect x="50" y="50" width="200" height="120" fill="#667eea" stroke="#333" stroke-width="3"/>
+                <text x="150" y="115" class="swimlane-header" font-size="18">🚚 DISTRIBUIDOR</text>
+
+                <rect x="50" y="600" width="200" height="120" fill="#764ba2" stroke="#333" stroke-width="3"/>
+                <text x="150" y="665" class="swimlane-header" font-size="18">👤 GUARDIÁN</text>
+
+                <rect x="50" y="950" width="200" height="120" fill="#28a745" stroke="#333" stroke-width="3"/>
+                <text x="150" y="1015" class="swimlane-header" font-size="16">📦 BODEGUERO/</text>
+                <text x="150" y="1035" class="swimlane-header" font-size="16">ADMINISTRATIVO</text>
+
+                <rect x="50" y="1850" width="200" height="120" fill="#ff9800" stroke="#333" stroke-width="3"/>
+                <text x="150" y="1915" class="swimlane-header" font-size="18">⚠️ SUPERVISOR</text>
+
+                <!-- SEPARADORES HORIZONTALES -->
+                <line x1="250" y1="600" x2="2350" y2="600" class="swimlane-sep"/>
+                <line x1="250" y1="950" x2="2350" y2="950" class="swimlane-sep"/>
+                <line x1="250" y1="1850" x2="2350" y2="1850" class="swimlane-sep"/>
+
+                <!-- ==================== DISTRIBUIDOR ==================== -->
+                <!-- INICIO -->
+                <circle cx="350" cy="180" r="40" class="start-end"/>
+                <text x="350" y="190" class="activity-text" font-size="13">INICIO</text>
+
+                <!-- LLEGA CAMION -->
+                <rect x="470" y="140" width="140" height="80" class="activity-box"/>
+                <text x="540" y="170" class="activity-text">Llega con</text>
+                <text x="540" y="188" class="activity-text">camión</text>
+
+                <path d="M 390 180 L 470 180" class="arrow"/>
+
+                <!-- PRESENTA DOCUMENTOS -->
+                <rect x="680" y="140" width="140" height="80" class="activity-box"/>
+                <text x="750" y="170" class="activity-text">Presenta</text>
+                <text x="750" y="188" class="activity-text">documentación</text>
+
+                <path d="M 610 180 L 680 180" class="arrow"/>
+
+                <!-- FLECHA A GUARDIA -->
+                <path d="M 750 220 L 750 380 L 750 600" class="arrow" stroke="#666" stroke-dasharray="5,5"/>
+
+                <!-- RECIBE GUIA (cuando viene del bodeguero) -->
+                <rect x="1450" y="140" width="140" height="80" class="activity-box"/>
+                <text x="1520" y="170" class="activity-text">Recibe</text>
+                <text x="1520" y="188" class="activity-text">guía firmada</text>
+
+                <!-- SE RETIRA -->
+                <rect x="1650" y="140" width="140" height="80" class="activity-box"/>
+                <text x="1720" y="170" class="activity-text">Se retira</text>
+                <text x="1720" y="188" class="activity-text">con copia</text>
+
+                <path d="M 1590 180 L 1650 180" class="arrow"/>
+
+                <!-- FIN DISTRIBUIDOR -->
+                <circle cx="1850" cy="180" r="40" class="start-end"/>
+                <text x="1850" y="195" class="activity-text" font-size="12">FIN OK</text>
+
+                <path d="M 1790 180 L 1810 180" class="arrow"/>
+
+                <!-- ==================== GUARDIÁN ==================== -->
+                <!-- REGISTRA ENTRADA -->
+                <rect x="470" y="640" width="140" height="80" class="activity-box" fill="#764ba2"/>
+                <text x="540" y="675" class="activity-text">Registra</text>
+                <text x="540" y="693" class="activity-text">entrada</text>
+
+                <path d="M 750 220 L 540 640" class="arrow" stroke="#666" stroke-dasharray="5,5"/>
+
+                <!-- DECISION: ¿VÁLIDO? -->
+                <polygon points="750,720 820,780 750,840 680,780" class="gateway"/>
+                <text x="750" y="783" class="gateway-text">¿Documentación</text>
+                <text x="750" y="798" class="gateway-text">válida?</text>
+
+                <path d="M 610 680 L 680 780" class="arrow"/>
+
+                <!-- NO - RECHAZA -->
+                <path d="M 680 780 L 550 780 L 550 920" class="arrow arrow-no"/>
+                <text x="600" y="765" class="arrow-label" fill="#dc3545">NO</text>
+
+                <rect x="450" y="920" width="140" height="80" class="activity-box" fill="#dc3545"/>
+                <text x="520" y="955" class="activity-text">Rechaza</text>
+                <text x="520" y="973" class="activity-text">entrada</text>
+
+                <circle cx="520" cy="1070" r="40" class="end-failed"/>
+                <text x="520" y="1080" class="activity-text" font-size="12">RECHAZADO</text>
+
+                <path d="M 520 1000 L 520 1030" class="arrow arrow-no"/>
+
+                <!-- SÍ - AUTORIZA A BODEGA -->
+                <path d="M 750 840 L 750 920" class="arrow arrow-yes"/>
+                <text x="770" y="880" class="arrow-label" fill="#28a745">SÍ</text>
+
+                <rect x="680" y="920" width="140" height="80" class="activity-box" fill="#764ba2"/>
+                <text x="750" y="955" class="activity-text">Autoriza</text>
+                <text x="750" y="973" class="activity-text">acceso bodega</text>
+
+                <path d="M 750 1000 L 750 1020" class="arrow arrow-yes"/>
+
+                <!-- ==================== BODEGUERO/ADMINISTRATIVO ==================== -->
+                <!-- TRASLADA CAJAS -->
+                <rect x="680" y="1020" width="140" height="80" class="activity-box" fill="#28a745"/>
+                <text x="750" y="1050" class="activity-text">Traslada</text>
+                <text x="750" y="1068" class="activity-text">cajas bodega</text>
+
+                <!-- ABRE CAJAS -->
+                <rect x="910" y="1020" width="140" height="80" class="activity-box" fill="#28a745"/>
+                <text x="980" y="1050" class="activity-text">Abre cajas</text>
+                <text x="980" y="1068" class="activity-text">y verifica</text>
+
+                <path d="M 820 1060 L 910 1060" class="arrow"/>
+
+                <!-- DECISIÓN: ¿CANTIDADES? -->
+                <polygon points="1140,1060 1210,1120 1140,1180 1070,1120" class="gateway"/>
+                <text x="1140" y="1115" class="gateway-text">¿Cantidades</text>
+                <text x="1140" y="1130" class="gateway-text">correctas?</text>
+
+                <path d="M 1050 1060 L 1070 1120" class="arrow"/>
+
+                <!-- NO CANTIDADES -->
+                <path d="M 1070 1120 L 980 1120 L 980 1320" class="arrow arrow-no"/>
+                <text x="1010" y="1105" class="arrow-label" fill="#dc3545">NO</text>
+
+                <!-- SÍ CANTIDADES -->
+                <path d="M 1210 1120 L 1340 1120" class="arrow arrow-yes"/>
+                <text x="1270" y="1105" class="arrow-label" fill="#28a745">SÍ</text>
+
+                <!-- DECISIÓN: ¿MODELOS? -->
+                <polygon points="1470,1120 1540,1180 1470,1240 1400,1180" class="gateway"/>
+                <text x="1470" y="1175" class="gateway-text">¿Modelos</text>
+                <text x="1470" y="1190" class="gateway-text">correctos?</text>
+
+                <path d="M 1340 1120 L 1400 1180" class="arrow"/>
+
+                <!-- NO MODELOS -->
+                <path d="M 1400 1180 L 1340 1180 L 1340 1320" class="arrow arrow-no"/>
+                <text x="1370" y="1165" class="arrow-label" fill="#dc3545">NO</text>
+
+                <!-- SÍ MODELOS -->
+                <path d="M 1540 1180 L 1670 1180" class="arrow arrow-yes"/>
+                <text x="1600" y="1165" class="arrow-label" fill="#28a745">SÍ</text>
+
+                <!-- INSPECCIONA DAÑOS -->
+                <rect x="1670" y="1140" width="140" height="80" class="activity-box" fill="#28a745"/>
+                <text x="1740" y="1170" class="activity-text">Inspecciona</text>
+                <text x="1740" y="1188" class="activity-text">daños físicos</text>
+
+                <!-- DECISIÓN: ¿DAÑOS CRÍTICOS? -->
+                <polygon points="1900,1180 1970,1240 1900,1300 1830,1240" class="gateway"/>
+                <text x="1900" y="1235" class="gateway-text">¿Daños</text>
+                <text x="1900" y="1250" class="gateway-text">críticos?</text>
+
+                <path d="M 1810 1180 L 1830 1240" class="arrow"/>
+
+                <!-- NO DAÑOS (continuar) -->
+                <path d="M 1970 1240 L 2050 1240" class="arrow arrow-yes"/>
+                <text x="2000" y="1225" class="arrow-label" fill="#28a745">NO</text>
+
+                <!-- SÍ DAÑOS -->
+                <path d="M 1900 1300 L 1900 1350 L 980 1350 L 980 1320" class="arrow arrow-no"/>
+                <text x="1950" y="1330" class="arrow-label" fill="#dc3545">SÍ</text>
+
+                <!-- FIRMA GUÍA -->
+                <rect x="2050" y="1200" width="140" height="80" class="activity-box" fill="#28a745"/>
+                <text x="2120" y="1235" class="activity-text">Firma</text>
+                <text x="2120" y="1253" class="activity-text">guía entrega</text>
+
+                <!-- FLECHA A DISTRIBUIDOR (recibe guía) -->
+                <path d="M 2120 1200 L 2120 800 L 1520 800 L 1520 220" class="arrow" stroke="#666" stroke-dasharray="5,5"/>
+                <text x="2180" y="1000" class="arrow-label">Entrega</text>
+                <text x="2180" y="1015" class="arrow-label">guía firmada</text>
+
+                <!-- INGRESA SAP - PREPARACIÓN -->
+                <rect x="680" y="1320" width="140" height="80" class="activity-box" fill="#28a745"/>
+                <text x="750" y="1355" class="activity-text">Prepara</text>
+                <text x="750" y="1373" class="activity-text">ingreso SAP</text>
+
+                <path d="M 980 1320 L 820 1320" class="arrow"/>
+
+                <!-- PISTOLA CADA CAJA -->
+                <rect x="910" y="1320" width="140" height="80" class="activity-box" fill="#28a745"/>
+                <text x="980" y="1355" class="activity-text">Pistola</text>
+                <text x="980" y="1373" class="activity-text">cada caja</text>
+
+                <path d="M 820 1360 L 910 1360" class="arrow"/>
+
+                <!-- DECISIÓN: ¿FÍSICO = SAP? -->
+                <polygon points="1140,1360 1210,1420 1140,1480 1070,1420" class="gateway"/>
+                <text x="1140" y="1415" class="gateway-text">¿Físico</text>
+                <text x="1140" y="1430" class="gateway-text">= SAP?</text>
+
+                <path d="M 1050 1360 L 1070 1420" class="arrow"/>
+
+                <!-- NO COINCIDE -->
+                <path d="M 1070 1420 L 1000 1420 L 1000 1500" class="arrow arrow-no"/>
+                <text x="1020" y="1405" class="arrow-label" fill="#dc3545">NO</text>
+
+                <!-- SÍ COINCIDE -->
+                <path d="M 1210 1420 L 1340 1420" class="arrow arrow-yes"/>
+                <text x="1270" y="1405" class="arrow-label" fill="#28a745">SÍ</text>
+
+                <!-- INGRESA CONFIRMADO -->
+                <rect x="1340" y="1380" width="140" height="80" class="activity-box" fill="#28a745"/>
+                <text x="1410" y="1415" class="activity-text">Ingresa</text>
+                <text x="1410" y="1433" class="activity-text">confirmado</text>
+
+                <!-- DECISIÓN: ¿MÁS CAJAS? -->
+                <polygon points="1570,1420 1640,1480 1570,1540 1500,1480" class="gateway"/>
+                <text x="1570" y="1475" class="gateway-text">¿Más</text>
+                <text x="1570" y="1490" class="gateway-text">cajas?</text>
+
+                <path d="M 1480 1420 L 1500 1480" class="arrow"/>
+
+                <!-- SÍ MÁS CAJAS (LOOP) -->
+                <path d="M 1570 1540 L 1570 1600 L 980 1600 L 980 1400" class="arrow arrow-yes"/>
+                <text x="1300" y="1620" class="arrow-label" fill="#28a745">SÍ - REPEMIR PISTOLAJE</text>
+
+                <!-- NO MÁS CAJAS -->
+                <path d="M 1640 1480 L 1750 1480" class="arrow arrow-yes"/>
+                <text x="1690" y="1465" class="arrow-label" fill="#28a745">NO</text>
+
+                <!-- FIN EXITOSO -->
+                <circle cx="1830" cy="1480" r="40" class="start-end"/>
+                <text x="1830" y="1490" class="activity-text" font-size="12">FIN OK</text>
+
+                <!-- ==================== DISCREPANCIA → SUPERVISOR ==================== -->
+                <!-- REGISTRA DISCREPANCIA (desde errores) -->
+                <rect x="900" y="1320" width="140" height="80" class="activity-box" fill="#ff9800"/>
+                <text x="970" y="1350" class="activity-text">Registra</text>
+                <text x="970" y="1368" class="activity-text">discrepancia</text>
+
+                <!-- CONECTAR ERRORES A DISCREPANCIA -->
+                <path d="M 970 1320 L 970 1320" class="arrow arrow-no"/>
+
+                <!-- FLECHA A SUPERVISOR -->
+                <path d="M 970 1400 L 970 1500 L 970 1850" class="arrow" stroke="#ff9800" stroke-dasharray="5,5"/>
+
+                <!-- REVISA SUPERVISOR -->
+                <rect x="900" y="1850" width="140" height="80" class="activity-box" fill="#ff9800"/>
+                <text x="970" y="1885" class="activity-text">Revisa</text>
+                <text x="970" y="1903" class="activity-text">discrepancia</text>
+
+                <!-- DECISIÓN: ¿RESOLVIBLE? -->
+                <polygon points="1140,1890 1210,1950 1140,2010 1070,1950" class="gateway"/>
+                <text x="1140" y="1945" class="gateway-text">¿Se puede</text>
+                <text x="1140" y="1960" class="gateway-text">resolver?</text>
+
+                <path d="M 1040 1890 L 1070 1950" class="arrow"/>
+
+                <!-- SÍ RESUELVE - LOOP -->
+                <path d="M 1210 1950 L 1320 1950 L 1320 1400 L 980 1400" class="arrow arrow-yes"/>
+                <text x="1250" y="1935" class="arrow-label" fill="#28a745">SÍ</text>
+
+                <!-- NO ESCALADO -->
+                <path d="M 1140 2010 L 1140 2100" class="arrow arrow-no"/>
+                <text x="1165" y="2050" class="arrow-label" fill="#dc3545">NO</text>
+
+                <!-- ESCALADO A GERENCIA -->
+                <rect x="1070" y="2100" width="140" height="80" class="activity-box" fill="#dc3545"/>
+                <text x="1140" y="2130" class="activity-text">Escalado</text>
+                <text x="1140" y="2148" class="activity-text">a Gerencia</text>
+
+                <circle cx="1140" cy="2250" r="40" class="end-failed"/>
+                <text x="1140" y="2265" class="activity-text" font-size="11">ESCALADO</text>
+
+                <path d="M 1140 2180 L 1140 2210" class="arrow arrow-no"/>
+
+            </svg>
+
+            <button class="print-btn" onclick="window.print()">🖨️ Descargar / Imprimir como PDF</button>
+
+            <div class="legend">
+                <h3>📋 Leyenda y Explicación</h3>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: #28a745;"></div>
+                        <span><strong>Cajas Verde</strong> - Actividades normales (acciones a realizar)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: #ff9800;"></div>
+                        <span><strong>Cajas Naranja</strong> - Procesos de revisión/supervisor</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: #667eea;"></div>
+                        <span><strong>Cajas Azul</strong> - Actividades de distribuidor/guardián</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: #dc3545;"></div>
+                        <span><strong>Cajas Rojo</strong> - Rechazo o error en el proceso</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: #28a745; border-radius: 50%;"></div>
+                        <span><strong>Círculos Verdes</strong> - Inicio o fin exitoso</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: #dc3545; border-radius: 50%;"></div>
+                        <span><strong>Círculos Rojos</strong> - Fin con error o escalada</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: #ff9800; transform: rotate(45deg); width: 35px; height: 35px; margin: 2px;"></div>
+                        <span><strong>Diamantes</strong> - Puntos de decisión/validación</span>
+                    </div>
+                    <div class="legend-item">
+                        <div style="width: 40px; height: 3px; background: #28a745;"></div>
+                        <span><strong>Flecha Verde</strong> - Camino exitoso (SÍ)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div style="width: 40px; height: 3px; background: #dc3545;"></div>
+                        <span><strong>Flecha Roja</strong> - Camino de error (NO)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div style="width: 40px; height: 3px; background: #666; stroke-dasharray: 5,5;"></div>
+                        <span><strong>Flecha Punteada</strong> - Comunicación entre roles</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><strong>Diagrama de Flujo BPM - Recepción de Equipos</strong></p>
+            <p>Swimlanes por Rol | Conexiones Completas | Versión 2.0 | 2024</p>
+        </div>
+    </div>
+</body>
+</html>

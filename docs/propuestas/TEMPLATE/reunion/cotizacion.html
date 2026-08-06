@@ -1,0 +1,394 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotización Borrador - AIProcess.cl</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .page-break {
+            max-width: 900px;
+            background: white;
+            margin: 20px auto;
+            padding: 60px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .nav-buttons {
+            max-width: 900px;
+            margin: 20px auto;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .nav-buttons a {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .nav-buttons a:hover { background: #764ba2; }
+        h1 { color: #667eea; margin-bottom: 10px; font-size: 2em; text-align: center; }
+        .header-line { text-align: center; color: #999; margin-bottom: 30px; font-size: 0.9em; }
+        h2 { color: #667eea; margin-top: 30px; margin-bottom: 15px; font-size: 1.3em; border-bottom: 2px solid #e9ecef; padding-bottom: 10px; }
+        h3 { color: #764ba2; margin-top: 15px; margin-bottom: 10px; font-size: 1em; }
+        p { margin-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        label { font-weight: bold; color: #667eea; display: block; margin-bottom: 5px; }
+        input, textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; }
+        textarea { resize: vertical; min-height: 60px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #667eea; color: white; }
+        tr:nth-child(even) { background: #f8f9fa; }
+        .total-row { font-weight: bold; background: #e7f3ff; }
+        .summary-box { background: #f0f4ff; border-left: 4px solid #667eea; padding: 15px; margin: 20px 0; border-radius: 4px; }
+        .print-button { text-align: center; margin: 20px 0; }
+        .print-button button {
+            padding: 10px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .print-button button:hover { background: #764ba2; }
+        .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 0.85em; color: #999; }
+        .conditions { background: #fff9e6; border-left: 4px solid #ffc107; padding: 15px; margin: 15px 0; border-radius: 4px; font-size: 0.9em; }
+        @media print {
+            .nav-buttons, .print-button { display: none; }
+            body { background: white; }
+            .page-break { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-buttons">
+        <a href="flujo.html">← Anterior</a>
+        <a href="../index.html">Inicio</a>
+        <a href="confidencialidad.html">Siguiente →</a>
+    </div>
+
+    <div class="page-break">
+        <h1>📄 COTIZACIÓN — BORRADOR</h1>
+        <div class="header-line">Propuesta Fase 1 y Fase 2 | AIProcess.cl</div>
+
+        <h2>DATOS DEL CLIENTE</h2>
+
+        <div class="form-group">
+            <label>Nombre de la Empresa:</label>
+            <input type="text" id="empresa" placeholder="Ej: SSTT Ernesto Andino">
+        </div>
+
+        <div class="form-group">
+            <label>Contacto Principal:</label>
+            <input type="text" id="contacto" placeholder="Nombre del contacto">
+        </div>
+
+        <div class="form-group">
+            <label>Email:</label>
+            <input type="email" id="email" placeholder="email@empresa.com">
+        </div>
+
+        <div class="form-group">
+            <label>Teléfono:</label>
+            <input type="tel" id="telefono" placeholder="+56 9 XXXX XXXX">
+        </div>
+
+        <div class="form-group">
+            <label>Fecha de Cotización:</label>
+            <input type="date" id="fecha">
+        </div>
+
+        <script>
+            // Auto-llenar fecha de hoy
+            document.getElementById('fecha').valueAsDate = new Date();
+        </script>
+
+        <div class="form-group">
+            <label>Proceso acotado que se aborda:</label>
+            <input type="text" id="proceso" placeholder="Un solo proceso, el que más duele">
+        </div>
+
+        <div class="form-group">
+            <label>Dinero perdido estimado (validado por el cliente):</label>
+            <input type="text" id="perdida" placeholder="$______ al mes">
+        </div>
+
+        <h2>FASE 0: TERMÓMETRO + REUNIÓN INICIAL</h2>
+
+        <table>
+            <tbody>
+                <tr>
+                    <td><strong>Test de madurez online</strong> (8 preguntas) + primera entrevista (1 hora)</td>
+                    <td style="width: 140px;"><strong>SIN COSTO</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>FASE 1: CONSULTORÍA INICIAL</h2>
+
+        <p>El precio se define por headcount. Es el único dato que lo determina.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Tramo</th>
+                    <th>Personas</th>
+                    <th>Qué incluye</th>
+                    <th>Precio</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="radio" name="tramo" value="A"> <strong>A</strong></td>
+                    <td>Hasta 10</td>
+                    <td rowspan="2">Mapa BPMN del proceso actual · riesgos y puntos de quiebre · arreglos inmediatos · dinero perdido medido (ya no estimado) · plan de implementación</td>
+                    <td><strong>$450.000</strong></td>
+                </tr>
+                <tr>
+                    <td><input type="radio" name="tramo" value="B"> <strong>B</strong></td>
+                    <td>Más de 10</td>
+                    <td><strong>$600.000</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p><strong>Duración:</strong> 1–2 semanas | <strong>Entrega del informe:</strong> máximo 10 días desde la firma</p>
+
+        <div class="conditions">
+            <p style="margin: 0;"><strong>Financiamiento de la Fase 1: particular.</strong> Las bases del Fondo Crece solo permiten rendir compras posteriores a la firma del contrato con el Agente Operador, por lo que un diagnóstico realizado para postular no es un gasto reembolsable. El informe de la Fase 1 es, en cambio, el documento que se presenta en la postulación.</p>
+        </div>
+
+        <h2>FASE 2: IMPLEMENTACIÓN</h2>
+
+        <h3>Selecciona la opción que se ajusta al cliente:</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Opción</th>
+                    <th>Banda</th>
+                    <th>Costo Fase 2</th>
+                    <th>Plazo</th>
+                    <th>Qué Incluye</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="radio" name="fase2" value="banda1"> <strong>A</strong></td>
+                    <td><strong>Banda 1</strong></td>
+                    <td>$1.200.000</td>
+                    <td>2–3 sem</td>
+                    <td>Dashboard + notificaciones (DIGITALIZAR)</td>
+                </tr>
+                <tr>
+                    <td><input type="radio" name="fase2" value="banda2"> <strong>B</strong></td>
+                    <td><strong>Banda 2</strong></td>
+                    <td>$2.500.000</td>
+                    <td>3–4 sem</td>
+                    <td>Recepción digital + alertas (AUTOMATIZAR básica)</td>
+                </tr>
+                <tr>
+                    <td><input type="radio" name="fase2" value="banda3"> <strong>C</strong></td>
+                    <td><strong>Banda 3</strong></td>
+                    <td>$4.500.000</td>
+                    <td>4–5 sem</td>
+                    <td>Flujo punta a punta (AUTOMATIZAR completa)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Mantención de operación</h3>
+
+        <p><strong>Costo:</strong> 15% a 20% anual del valor del servicio, pagadero mensualmente. | <strong>Modelo:</strong> sin lock-in, cancelable en cualquier momento.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 50%;">Incluido en la mensualidad</th>
+                    <th>Se cotiza aparte, por hora</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        · Que el servicio siga disponible y funcionando<br>
+                        · Si se cae, levantarlo<br>
+                        · Si deja de responder, restablecerlo<br>
+                        · Corregir fallas de lo entregado
+                    </td>
+                    <td>
+                        · Cambiar reglas de negocio o alcance<br>
+                        · Funcionalidades nuevas<br>
+                        · Adaptaciones por cambios en sistemas de terceros<br>
+                        · Re-entrenar modelos<br>
+                        · Capacitar personal nuevo
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p style="background: #fff9e6; border-left: 4px solid #ffc107; padding: 12px 15px; border-radius: 4px;">
+            La mantención mantiene la operación andando. <strong>No es una bolsa de horas para pedir cambios:</strong> lo que sea trabajo nuevo se cotiza antes de hacerlo, para que nunca haya una factura sorpresa.
+        </p>
+
+        <h3>Soporte al equipo — Productividad con IA</h3>
+
+        <p>Acá no hay mantención: no existe un sistema en producción que pueda caerse. Lo que se contrata es <strong>soporte a las personas que usan el entorno</strong>.</p>
+
+        <p><strong>Costo:</strong> bolsa de horas mensual, dimensionada por la cantidad de usuarios (mínimo 1 hora). | <strong>Modelo:</strong> una bolsa por empresa, sin lock-in.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 50%;">Incluido en la bolsa</th>
+                    <th>Se cotiza aparte</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        · Consultas de uso del entorno<br>
+                        · Ayuda para resolver casos nuevos con las herramientas<br>
+                        · Problemas de acceso o configuración<br>
+                        · Ajustes de la instalación existente
+                    </td>
+                    <td>
+                        · Instalar el entorno a usuarios nuevos (cargo único por persona)<br>
+                        · Curso de fundamentos para gente que entra después<br>
+                        · Desarrollos a medida sobre el entorno
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p><strong>El curso de fundamentos no lleva soporte mensual:</strong> se dicta y se cierra.</p>
+
+        <h2>RESUMEN COMERCIAL</h2>
+
+        <div class="summary-box">
+            <p><strong>Propuesta:</strong></p>
+            <ul>
+                <li>✅ Fase 0 (termómetro + esta reunión): <strong>sin costo</strong></li>
+                <li>✅ Fase 1 (consultoría inicial): <strong>$450.000 o $600.000</strong> según headcount — financiamiento particular</li>
+                <li>✅ Fase 2 (implementación): <strong>banda a seleccionar</strong> — es la fase que sí puede postularse a Sercotec</li>
+                <li>✅ Mantención de operación (Proyecto): <strong>15–20% anual del servicio</strong> — cubre disponibilidad, no cambios</li>
+                <li>✅ Soporte al equipo (Productividad): <strong>bolsa mensual según usuarios</strong> — atiende a las personas, no a un sistema</li>
+                <li>✅ Modelo: sin compromiso a largo plazo, revisable cada mes</li>
+            </ul>
+        </div>
+
+        <div class="form-group">
+            <label>Observaciones / Descuentos Aplicables:</label>
+            <textarea id="observaciones" placeholder="Ej: Se aplica 5% por bundling de Digitalizar + Automatizar..."></textarea>
+        </div>
+
+        <h2>TÉRMINOS Y CONDICIONES</h2>
+
+        <div class="conditions">
+            <p><strong>Validez de la cotización:</strong> 30 días desde la fecha</p>
+            <p><strong>Forma de pago Fase 1:</strong> 50% al firmar contrato, 50% al cierre</p>
+            <p><strong>Forma de pago Fase 2:</strong> Según progreso (hitos). Detalle en contrato Fase 2</p>
+            <p><strong>Descuento por pago anticipado:</strong> el descuento de primer contrato aumenta mientras antes se pague. Con la misma selección de servicios: <strong>30% adelanto</strong> accede al tramo menor, <strong>50/50</strong> al intermedio y <strong>100% anticipado</strong> al mayor. El descuento se calcula sobre Fase 2 y Productividad; la Fase 1 no se descuenta.</p>
+            <p><strong>Confidencialidad:</strong> Se firmará NDA antes del inicio</p>
+            <p><strong>Cancelación:</strong> Sin penalidad antes de inicio de Fase 1. Post-inicio: se prorratea según días utilizados</p>
+            <p><strong>Responsables:</strong> Se designará revisor del cliente para control de entregas</p>
+            <p><strong>Documento tributario:</strong> El servicio se documenta con <strong>boleta de honorarios electrónica</strong> emitida por Patricio Ferrer, persona natural. <strong>No se emite factura y la operación no está afecta a IVA</strong>, por lo que no genera crédito fiscal para el CLIENTE. El gasto se acredita con la boleta.</p>
+            <p><strong>Retención:</strong> Los valores de esta cotización son <strong>netos para el prestador</strong>. Si el CLIENTE es contribuyente de primera categoría, debe practicar la retención de impuesto vigente sobre la boleta y enterarla en Tesorería; <strong>dicha retención se agrega al valor cotizado</strong>, de modo que el prestador perciba el monto neto aquí indicado. Si el CLIENTE no está obligado a retener, el prestador declara y paga el impuesto por su cuenta.</p>
+        </div>
+
+        <div class="summary-box" style="border-left-color: #ffc107; background: #fff9e6;">
+            <p style="margin-bottom: 8px;"><strong>Desembolso total del cliente</strong></p>
+            <p style="margin-bottom: 10px; font-size: 0.9em;">Confirma la tasa vigente en sii.cl antes de entregar la cotización: la retención de honorarios está en alza gradual programada por ley, así que el valor cambia de un año a otro.</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px;">
+                <div>
+                    <label style="font-size: 0.85em;">Valor neto cotizado</label>
+                    <input type="number" id="neto" placeholder="450000">
+                </div>
+                <div>
+                    <label style="font-size: 0.85em;">Retención vigente (%)</label>
+                    <input type="number" id="tasa" step="0.25" value="10">
+                </div>
+            </div>
+            <table style="margin-top: 12px; margin-bottom: 0;">
+                <tbody>
+                    <tr><td>Monto bruto de la boleta</td><td id="bruto" style="font-weight: bold;">—</td></tr>
+                    <tr><td>Retención que entera el cliente</td><td id="retencion">—</td></tr>
+                    <tr><td><strong>Recibe el prestador</strong></td><td id="liquido" style="font-weight: bold;">—</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <script>
+            (function () {
+                function pesos(n) { return '$' + Math.round(n).toLocaleString('es-CL'); }
+                function calcular() {
+                    var neto = Number(document.getElementById('neto').value) || 0;
+                    var tasa = Number(document.getElementById('tasa').value) || 0;
+                    var bruto = document.getElementById('bruto');
+                    var ret = document.getElementById('retencion');
+                    var liq = document.getElementById('liquido');
+                    if (!neto || tasa <= 0 || tasa >= 100) {
+                        bruto.textContent = ret.textContent = liq.textContent = '—';
+                        return;
+                    }
+                    var montoBruto = neto / (1 - tasa / 100);
+                    bruto.textContent = pesos(montoBruto);
+                    ret.textContent = pesos(montoBruto - neto);
+                    liq.textContent = pesos(neto);
+                }
+                document.getElementById('neto').addEventListener('input', calcular);
+                document.getElementById('tasa').addEventListener('input', calcular);
+            })();
+        </script>
+
+        <div class="form-group">
+            <label>Notas Finales:</label>
+            <textarea id="notas" placeholder="Ej: Sujeto a confirmación de acceso a sistemas, disponibilidad de horarios, etc..."></textarea>
+        </div>
+
+        <h2>AUTORIZACIÓN</h2>
+
+        <table>
+            <tbody>
+                <tr>
+                    <td><strong>Preparado por:</strong> Patricio Ferrer (AIProcess.cl)</td>
+                    <td><strong>Email:</strong> ferrer.patricio@gmail.com</td>
+                </tr>
+                <tr>
+                    <td><strong>Representante cliente:</strong> <input type="text" style="width: 100%;" placeholder="Nombre y cargo"></td>
+                    <td><strong>Firma:</strong> ________________________</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="print-button">
+            <button onclick="window.print()">🖨️ Imprimir Cotización</button>
+        </div>
+
+        <div class="footer">
+            <p>Cotización Borrador | AIProcess.cl | 2026-07-30</p>
+            <p><em>Este documento es una propuesta comercial. Requiere confirmación y firma de ambas partes antes de ser válido.</em></p>
+        </div>
+    </div>
+
+    <div class="nav-buttons">
+        <a href="flujo.html">← Anterior</a>
+        <a href="../index.html">Inicio</a>
+        <a href="confidencialidad.html">Siguiente →</a>
+    </div>
+</body>
+</html>
+
+
+

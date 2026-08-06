@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "bpmn": {
+      "source": "markdown-viewer/skills",
+      "sourceType": "github",
+      "skillPath": "bpmn/SKILL.md",
+      "computedHash": "96f4ce33d1d3fa0cdac02b23c8eb218c35d2d60b5ef0db1ca665184896992a5a"
+    },
+    "bpmn-architect": {
+      "source": "jeffercb1/skill-bpmn-architect",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "5b10f279a493acaf1b5e76dd8a20a005c2bcc46fa88672ad684cec8e6df62728"
+    },
+    "supabase": {
+      "source": "supabase/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/supabase/SKILL.md",
+      "computedHash": "19fca56d93a6d212c6373ad921dcaeddf2ff13e3558e6bfd6e63acb063255f86"
+    }
+  }
+}
