@@ -32,15 +32,21 @@ export type Hueco = {
 const TIPOS_ACTIVIDAD = ["tarea", "sistema"] as const;
 const TIPOS_FIN = ["fin_ok", "fin_error"] as const;
 
-/** Destinos declarados de un paso, sin filtrar si existen en la lista de
- * pasos (esa validación la hace normalizarResultado en extraccion-llm.ts /
- * pasoSchema; acá solo se listan para recorrer el grafo). */
-function destinosDe(p: Paso): string[] {
+/** Destinos declarados de un paso, filtrados a los que existen en
+ * `pasosPorId`. Un id que no existe en el diagrama ("id fantasma") nunca
+ * debe contar como alcanzado ni como punto de convergencia del BFS de
+ * `alcanzablesDesde` (bug detectado por ARQUITECTO-IT en M3: dos ramas que
+ * apuntan al mismo id fantasma "convergían" aunque ambas apuntaran a la
+ * nada). La validación de que un id inexistente es en sí mismo un error de
+ * datos queda para incremento 2 (regla de "destino inexistente"). */
+function destinosDe(p: Paso, pasosPorId: Map<string, Paso>): string[] {
   if (p.tipo === "decision") {
-    return [p.siguienteSi, p.siguienteNo].filter((d): d is string => !!d);
+    return [p.siguienteSi, p.siguienteNo].filter(
+      (d): d is string => !!d && pasosPorId.has(d),
+    );
   }
   if (TIPOS_FIN.includes(p.tipo as (typeof TIPOS_FIN)[number])) return [];
-  return p.siguiente ? [p.siguiente] : [];
+  return p.siguiente && pasosPorId.has(p.siguiente) ? [p.siguiente] : [];
 }
 
 /** BFS simple sobre el grafo de pasos a partir de un conjunto de ids de
@@ -56,7 +62,7 @@ function alcanzablesDesde(startIds: string[], pasosPorId: Map<string, Paso>): Se
     visitados.add(id);
     const paso = pasosPorId.get(id);
     if (!paso) continue;
-    for (const destino of destinosDe(paso)) {
+    for (const destino of destinosDe(paso, pasosPorId)) {
       if (!visitados.has(destino)) cola.push(destino);
     }
   }
