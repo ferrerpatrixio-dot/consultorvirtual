@@ -107,13 +107,19 @@ export default async function DiagramaPage({
           {actores.length > 0 && pasos.length > 0 && (
             <a
               href={`/api/diagramas/${diagrama.id}/exportar`}
+              title="Compatible con Bizagi, demo.bpmn.io, Camunda y otras herramientas BPMN 2.0 estándar"
               className="inline-flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-sm font-medium text-ink-2 transition hover:bg-bg"
             >
               <Download className="h-4 w-4" />
-              Exportar XML (.bpmn)
+              Descargar BPMN
             </a>
           )}
         </div>
+        {actores.length > 0 && pasos.length > 0 && (
+          <p className="mt-1.5 text-right text-xs text-ink-2">
+            Compatible con Bizagi, demo.bpmn.io, Camunda y otras herramientas BPMN 2.0 estándar
+          </p>
+        )}
         <div className="mt-3">
           <DiagramaPreview codigo={codigoMermaid} />
         </div>

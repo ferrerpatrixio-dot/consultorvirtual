@@ -61,9 +61,16 @@ export function DiagramaPreview({ codigo }: { codigo: string | null }) {
   }
 
   return (
-    <div
-      ref={contenedorRef}
-      className="flex min-h-[120px] items-center justify-center overflow-x-auto rounded-lg border border-line bg-white p-4"
-    />
+    <>
+      <div
+        ref={contenedorRef}
+        className="flex min-h-[120px] items-center justify-center overflow-x-auto rounded-lg border border-line bg-white p-4"
+      />
+      <p className="mt-2 text-center text-xs italic text-ink-2">
+        Esta vista es un borrador visual rápido, no un archivo BPMN — para el
+        formato estándar (compatible con Bizagi, Camunda, etc.) descargá el
+        archivo BPMN.
+      </p>
+    </>
   );
 }
