@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 import { parseActores, parsePasos, TIPOS_PASO, TIPO_LABEL } from "@/lib/diagramas";
 import { generarMermaid, idNodoParaPaso } from "@/lib/mermaid-render";
+import { evaluarCompletitud, tienePendientesSinResolver } from "@/lib/completitud";
 import {
   actualizarMetaAction,
   eliminarDiagramaAction,
@@ -59,6 +60,8 @@ export default async function DiagramaPage({
   const pasoEnEdicion = editId ? pasos.find((p) => p.id === editId) : undefined;
   const preguntasPendientes = parsePreguntasPendientes(preguntas);
   const codigoMermaid = generarMermaid(actores, pasos);
+  const huecos = evaluarCompletitud(pasos);
+  const exportacionBloqueada = tienePendientesSinResolver(huecos);
 
   // Opciones de destino: cualquier otro paso del diagrama (no el que se
   // está editando, para no dejarlo apuntándose a sí mismo).
@@ -106,7 +109,7 @@ export default async function DiagramaPage({
           <h2 className="text-sm font-bold uppercase tracking-wide text-primary-ink">
             Diagrama
           </h2>
-          {actores.length > 0 && pasos.length > 0 && (
+          {actores.length > 0 && pasos.length > 0 && !exportacionBloqueada && (
             <a
               href={`/api/diagramas/${diagrama.id}/exportar`}
               title="Compatible con Bizagi, demo.bpmn.io, Camunda y otras herramientas BPMN 2.0 estándar"
@@ -117,9 +120,14 @@ export default async function DiagramaPage({
             </a>
           )}
         </div>
-        {actores.length > 0 && pasos.length > 0 && (
+        {actores.length > 0 && pasos.length > 0 && !exportacionBloqueada && (
           <p className="mt-1.5 text-right text-xs text-ink-2">
             Compatible con Bizagi, demo.bpmn.io, Camunda y otras herramientas BPMN 2.0 estándar
+          </p>
+        )}
+        {exportacionBloqueada && (
+          <p className="mt-1.5 text-right text-xs font-medium text-danger">
+            No se puede descargar: hay puntos sin resolver (ver &quot;Qué falta definir&quot; abajo).
           </p>
         )}
         <div className="mt-3">
@@ -131,6 +139,36 @@ export default async function DiagramaPage({
           />
         </div>
       </section>
+
+      {/* Qué falta definir — huecos de completitud del motor de reglas
+          (CA-10/CA-12/CA-15, ver src/lib/completitud.ts). Se recalcula en
+          cada carga, no se persiste: siempre refleja el estado actual del
+          diagrama tras cualquier edición. */}
+      {huecos.length > 0 && (
+        <section className="mt-6 rounded-xl border border-line bg-surface p-5">
+          <h2 className="text-sm font-bold uppercase tracking-wide text-primary-ink">
+            Qué falta definir
+          </h2>
+          <ul className="mt-3 space-y-1.5 text-sm">
+            {huecos.map((h, i) => (
+              <li key={i} className="flex items-start gap-2">
+                <span
+                  className={`mt-0.5 shrink-0 rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                    h.severidad === "bloqueante"
+                      ? "bg-danger/10 text-danger"
+                      : h.severidad === "pendiente"
+                        ? "bg-amber-100 text-amber-800"
+                        : "bg-bg text-ink-2"
+                  }`}
+                >
+                  {h.severidad}
+                </span>
+                <span className="text-ink-2">{h.mensaje}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {/* Cliente / proceso */}
       <section className="mt-6 rounded-xl border border-line bg-surface p-5">

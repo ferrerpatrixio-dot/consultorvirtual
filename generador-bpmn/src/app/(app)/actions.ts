@@ -10,9 +10,11 @@ import {
   TIPOS_PASO,
   parseActores,
   parsePasos,
+  pasoSchema,
   type Paso,
 } from "@/lib/diagramas";
 import { extraerProcesoDesdePrompt } from "@/lib/extraccion-llm";
+import { evaluarCompletitud, tieneBloqueantes, type Hueco } from "@/lib/completitud";
 import { registrarDiagramaDeTrial } from "@/lib/trial";
 import type { Prisma } from "@prisma/client";
 
@@ -27,7 +29,24 @@ const metaSchema = z.object({
 });
 
 /** Estado del formulario de creación: errores por campo. */
-export type FormState = { errors?: Record<string, string> };
+export type FormState = { errors?: Record<string, string>; revision?: RevisionGenerada };
+
+/** Resultado transitorio de generarDesdePromptAction: NO se persiste en BD
+ * hasta que el usuario confirma (spec F02 §3.1 "lista revisable" — ver
+ * docs/BRECHA-MAPEA-VS-SPEC-F02.md incremento 1). Viaja de vuelta al
+ * formulario dentro del FormState de useActionState; el propio formulario
+ * lo re-envía como campos ocultos a confirmarDiagramaGeneradoAction. No
+ * hay tabla de "borradores" ni sesión de servidor: es más barato que el
+ * diagrama nunca sobreviva a un refresh de página que agregar
+ * infraestructura nueva para un preliminar de un solo uso. */
+export type RevisionGenerada = {
+  cliente: string;
+  proceso: string;
+  actores: string[];
+  pasos: Paso[];
+  pendingQuestions: string[];
+  huecos: Hueco[];
+};
 
 /** Crea un diagrama vacío (sin actores ni pasos) para que Fase 2 (IA) o el
  * usuario lo llenen después. */
@@ -73,18 +92,24 @@ const promptSchema = z.object({
     .max(4000, "El texto no puede superar los 4.000 caracteres"),
 });
 
-/** Crea un diagrama a partir de una descripción libre: llama al motor
- * prompt→JSON (Fase 2, ver docs/PROPUESTA-ARQUITECTO-BPMN-DESDE-PROMPT.md)
- * y guarda el resultado ya con actores/pasos poblados. Si el LLM dejó
- * "pending_questions" (dudas que no pudo inferir), se pasan por query string
- * al redirect para que la página del diagrama las muestre — no se persisten
- * en la BD porque son un aviso de una sola vez, no parte del modelo de
- * datos del diagrama. */
+/** Genera la lista revisable a partir de una descripción libre: llama al
+ * motor prompt→JSON (Fase 2) y al motor de reglas de completitud
+ * (src/lib/completitud.ts), pero NO persiste nada todavía (spec F02 §3.1:
+ * "el sistema devuelve, antes de dibujar nada, una lista revisable...").
+ * El resultado (actores, pasos, huecos por severidad) vuelve al formulario
+ * para que el usuario lo revise; solo se guarda en BD cuando confirma vía
+ * confirmarDiagramaGeneradoAction.
+ *
+ * Si hay algún hueco bloqueante, igual se devuelve la revisión completa
+ * (con los huecos listados) — la spec exige mostrar exactamente qué falta
+ * definir (CA-11), no ocultar la lista. Lo que el usuario no puede hacer
+ * es confirmar mientras queden bloqueantes: eso lo valida
+ * confirmarDiagramaGeneradoAction. */
 export async function generarDesdePromptAction(
   _prevState: FormState,
   formData: FormData,
 ): Promise<FormState> {
-  const user = await requireCreationAccess();
+  await requireCreationAccess();
 
   const parsed = promptSchema.safeParse({
     cliente: formData.get("cliente"),
@@ -110,20 +135,97 @@ export async function generarDesdePromptAction(
     };
   }
 
+  const huecos = evaluarCompletitud(resultado.pasos);
+
+  return {
+    revision: {
+      cliente: parsed.data.cliente,
+      proceso: parsed.data.proceso,
+      actores: resultado.actores,
+      pasos: resultado.pasos,
+      pendingQuestions: resultado.pendingQuestions,
+      huecos,
+    },
+  };
+}
+
+/** Persiste el diagrama de la lista revisable que el usuario acaba de
+ * confirmar. Recibe actores/pasos serializados en campos ocultos del
+ * formulario (ver RevisionGenerada) y NO confía en ese round-trip: valida
+ * la forma con los mismos schemas que el resto de la app y recalcula los
+ * huecos de completitud desde cero (CA-14, determinismo — y defensa ante
+ * un payload manipulado). Si queda algún hueco bloqueante, rechaza guardar
+ * (spec CA-11: "no se genera diagrama"). */
+export async function confirmarDiagramaGeneradoAction(
+  _prevState: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const user = await requireCreationAccess();
+
+  const parsedMeta = metaSchema.safeParse({
+    cliente: formData.get("cliente"),
+    proceso: formData.get("proceso"),
+  });
+  if (!parsedMeta.success) {
+    const errors: Record<string, string> = {};
+    for (const issue of parsedMeta.error.issues) {
+      errors[String(issue.path[0] ?? "form")] = issue.message;
+    }
+    return { errors };
+  }
+
+  let actoresBrutos: unknown;
+  let pasosBrutos: unknown;
+  try {
+    actoresBrutos = JSON.parse(String(formData.get("actoresJson") ?? "[]"));
+    pasosBrutos = JSON.parse(String(formData.get("pasosJson") ?? "[]"));
+  } catch {
+    return { errors: { prompt: "La revisión expiró o es inválida. Genera el diagrama de nuevo." } };
+  }
+
+  const actores = parseActores(actoresBrutos);
+  const pasosParseados = z.array(pasoSchema).safeParse(pasosBrutos);
+  if (!pasosParseados.success || actores.length === 0 || pasosParseados.data.length === 0) {
+    return { errors: { prompt: "La revisión expiró o es inválida. Genera el diagrama de nuevo." } };
+  }
+  const pasos = pasosParseados.data as Paso[];
+
+  const huecos = evaluarCompletitud(pasos);
+  if (tieneBloqueantes(huecos)) {
+    return {
+      errors: {
+        prompt:
+          "El diagrama todavía tiene puntos bloqueantes (ver la lista de abajo) — corrígelos antes de confirmar.",
+      },
+      revision: {
+        cliente: parsedMeta.data.cliente,
+        proceso: parsedMeta.data.proceso,
+        actores,
+        pasos,
+        pendingQuestions: [],
+        huecos,
+      },
+    };
+  }
+
   const diagrama = await prisma.diagram.create({
     data: {
       userId: user.id,
-      cliente: parsed.data.cliente,
-      proceso: parsed.data.proceso,
-      actores: resultado.actores as Prisma.InputJsonValue,
-      pasos: resultado.pasos as unknown as Prisma.InputJsonValue,
+      cliente: parsedMeta.data.cliente,
+      proceso: parsedMeta.data.proceso,
+      actores: actores as Prisma.InputJsonValue,
+      pasos: pasos as unknown as Prisma.InputJsonValue,
     },
   });
   await registrarDiagramaDeTrial(user.id);
 
+  const pendingQuestions = z
+    .array(z.string())
+    .safeParse(JSON.parse(String(formData.get("pendingQuestionsJson") ?? "[]")));
+
   const destino =
-    resultado.pendingQuestions.length > 0
-      ? `/diagramas/${diagrama.id}?preguntas=${encodeURIComponent(JSON.stringify(resultado.pendingQuestions))}`
+    pendingQuestions.success && pendingQuestions.data.length > 0
+      ? `/diagramas/${diagrama.id}?preguntas=${encodeURIComponent(JSON.stringify(pendingQuestions.data))}`
       : `/diagramas/${diagrama.id}`;
 
   redirect(destino);

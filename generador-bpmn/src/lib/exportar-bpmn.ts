@@ -31,6 +31,27 @@ import type { Paso, TipoPaso } from "@/lib/diagramas";
 // X/Y de actores distintos se solapan — dibujar cajas ahí produciría
 // carriles visualmente rotos, no reales. Ver detalle en el reporte de DEV
 // del spike (2026-08-04).
+//
+// RS-3 / RS-4 (spec F02 §7, CA-22) — verificado en el código de las
+// dependencias, no asumido:
+// - RS-3 (escapar todo string del modelo al exportar): moddle-xml (la
+//   librería que serializa con moddle.toXML(), dependencia de bpmn-moddle)
+//   escapa automáticamente TODO valor de atributo string vía
+//   `escapeAttr()` al construir cada `bpmn:*Attribute` (ver
+//   node_modules/moddle-xml/dist/index.js, ElementSerializer.addAttribute,
+//   línea ~1619). Por eso los `name` de actividad/lane (p.texto, actor)
+//   NO se escapan a mano acá: hacerlo produciría doble escape ("&" →
+//   "&amp;" → "&amp;amp;"), corrompiendo el texto real del proceso. Un
+//   nombre con `<script>` o comillas queda como texto plano en el XML,
+//   nunca como marcado.
+// - RS-4 (XXE / expansión de entidades): bpmn-auto-layout vuelve a
+//   parsear el XML semántico con bpmn-moddle (mismo moddle-xml). Su
+//   parser (`saxen`) no implementa DOCTYPE ni ENTITY externas en
+//   absoluto: solo decodifica las 5 entidades XML estándar (amp, lt, gt,
+//   quot, apos) más referencias numéricas de carácter, con una tabla fija
+//   en código (ver node_modules/saxen/dist/*.js, ENTITY_MAPPING) — no hay
+//   resolución de archivos ni de red. No hace falta configurar nada para
+//   desactivar XXE: la librería nunca tuvo esa capacidad.
 
 const TIPO_A_ELEMENTO: Record<TipoPaso, string> = {
   inicio: "bpmn:StartEvent",

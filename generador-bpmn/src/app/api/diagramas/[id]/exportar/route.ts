@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAppAccess } from "@/lib/session";
 import { parseActores, parsePasos } from "@/lib/diagramas";
 import { exportarBpmn } from "@/lib/exportar-bpmn";
+import { evaluarCompletitud, tienePendientesSinResolver } from "@/lib/completitud";
 
 /** Descarga el diagrama como .bpmn (XML BPMN 2.0), ver Fase 3
  * (docs/PROPUESTA-ARQUITECTO-BPMN-DESDE-PROMPT.md "Actualización
@@ -23,6 +24,24 @@ export async function GET(
 
   const actores = parseActores(diagrama.actores);
   const pasos = parsePasos(diagrama.pasos);
+
+  // Bloqueo de exportación con pendientes sin resolver (spec F02 CA-12):
+  // un hueco bloqueante o pendiente hace que el diagrama sea falso o esté
+  // incompleto — en ambos casos no se exporta, aunque sí se puede seguir
+  // viendo y editando en la app. Se recalcula acá (no se confía en un
+  // estado guardado) porque cualquier edición nivel 1 posterior a la
+  // generación puede haber vuelto a introducir un hueco.
+  const huecos = evaluarCompletitud(pasos);
+  if (tienePendientesSinResolver(huecos)) {
+    return NextResponse.json(
+      {
+        error:
+          "El diagrama tiene puntos sin resolver y no se puede exportar todavía. Corrígelos en el editor y vuelve a intentar.",
+        huecos,
+      },
+      { status: 422 },
+    );
+  }
 
   let xml: string;
   try {
