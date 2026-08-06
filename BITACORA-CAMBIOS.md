@@ -872,6 +872,45 @@ contexto.
 
 ---
 
+### 2026-08-05 (cont. 5) — DECISIÓN GRANDE: Mapea absorbe la spec F02 de sistemaaiprocess
+
+ANALISTA DE PROCESOS DE NEGOCIO definió una metodología de jerarquía guiada para Mapea (4
+niveles: Diagrama de Valor → Proceso → Subproceso opcional → Procedimiento, con reportes de
+riesgo en niveles 2-3), validada por Patricio (Diagrama de Valor = mapa de macroprocesos; sin
+To-Be como quinto entregable). Ver `docs/METODOLOGIA-JERARQUIA-MAPEA.md`.
+
+**Al revisar `sistemaaiprocess` en paralelo (pedido explícito de Patricio, "parece que
+separamos"), se encontró que esta metodología ya existía especificada ahí, con mucho más
+rigor, y sin construir:**
+
+- `sistemaaiprocess/sdd/ROADMAP.md`: cadena completa de features F13→F01→**F02**→F03→F04→F06→F07→F08,
+  todas en estado 📋 Planeado/Specify — **nada construido**.
+- `sistemaaiprocess/sdd/features/F02/spec.md`: spec completa (487 líneas, 23 criterios de
+  aceptación, 10 casos de uso) del "Diagramador BPMN" — el mismo problema que resuelve Mapea,
+  pero con: validación de completitud con severidad (bloqueante/pendiente/sugerencia),
+  validación 7PMG, coherencia cruzada con SIPOC (F01), tope de tamaño (15-20 actividades meta,
+  50 nodos duro) con propuesta de descomposición en subprocesos, 3 niveles de corrección
+  (edición directa / instrucción localizada / regeneración) con versionado, 4 formatos de
+  exportación, y 6 restricciones de seguridad específicas contra inyección de prompt desde
+  archivos de terceros (RS-1 a RS-6).
+- `sistemaaiprocess/prompts/mapa-procesos-nivel0.md`: el "Diagrama de Valor" (Nivel 0) ya está
+  resuelto — entrevista guiada, nomenclatura estricta de macroprocesos, clasificación en
+  Estratégicos/Productivos/Apoyo, JSON de salida ya definido.
+
+**Conclusión:** Mapea se construyó como MVP rápido y aislado de "solo generar el diagrama",
+sin incorporar este roadmap más amplio que ya existía especificado pero nunca se implementó.
+
+**Decisión de Patricio: Mapea absorbe/implementa la spec F02** (y eventualmente el resto de la
+cadena — F01/F03/F04/F06/F07/F08) en vez de construir una versión más simple desde cero. La
+spec F02 confirma que puede funcionar sin SIPOC previo (no bloquea, ofrece derivarlo después),
+así que no hace falta construir F13/F01 primero.
+
+**Próximo paso:** ARQUITECTO IT hace el análisis de brecha entre lo que existe hoy en
+`generador-bpmn` y lo que exige la spec F02, antes de que DEV toque código — es un cambio
+grande, mismo rigor que el diseño original del producto.
+
+---
+
 ## 🎯 PRÓXIMAS AUDITORÍAS
 
 - **Próximo semanal:** 2026-08-08 (viernes)
