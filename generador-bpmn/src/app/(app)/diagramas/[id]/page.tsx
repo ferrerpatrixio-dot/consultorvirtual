@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { ArrowLeft, Download, X, HelpCircle } from "lucide-react";
+import { ArrowLeft, Download, X, HelpCircle, Pencil, ChevronUp, ChevronDown } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 import { parseActores, parsePasos, TIPOS_PASO, TIPO_LABEL } from "@/lib/diagramas";
-import { generarMermaid } from "@/lib/mermaid-render";
+import { generarMermaid, idNodoParaPaso } from "@/lib/mermaid-render";
 import {
   actualizarMetaAction,
   eliminarDiagramaAction,
@@ -14,6 +14,8 @@ import {
   agregarPasoAction,
   actualizarPasoAction,
   quitarPasoAction,
+  moverPasoArribaAction,
+  moverPasoAbajoAction,
 } from "@/app/(app)/actions";
 import { EliminarDiagramaButton } from "./EliminarDiagramaButton";
 import { DiagramaPreview } from "./DiagramaPreview";
@@ -121,7 +123,12 @@ export default async function DiagramaPage({
           </p>
         )}
         <div className="mt-3">
-          <DiagramaPreview codigo={codigoMermaid} />
+          <DiagramaPreview
+            codigo={codigoMermaid}
+            resaltarNodoId={
+              pasoEnEdicion ? idNodoParaPaso(pasos, pasoEnEdicion.id) : undefined
+            }
+          />
         </div>
       </section>
 
@@ -220,6 +227,7 @@ export default async function DiagramaPage({
             <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b border-line text-xs text-ink-2">
+                  <th className="py-2 pr-2">#</th>
                   <th className="py-2 pr-2">Actor</th>
                   <th className="py-2 pr-2">Tipo</th>
                   <th className="py-2 pr-2">Texto</th>
@@ -228,8 +236,39 @@ export default async function DiagramaPage({
                 </tr>
               </thead>
               <tbody>
-                {pasos.map((p) => (
+                {pasos.map((p, idx) => (
                   <tr key={p.id} className="border-b border-line">
+                    <td className="py-2 pr-2 text-ink-2">
+                      <div className="flex items-center gap-1">
+                        <span className="w-5 text-right tabular-nums">{idx + 1}</span>
+                        <div className="flex flex-col">
+                          <form action={moverPasoArribaAction}>
+                            <input type="hidden" name="diagramId" value={diagrama.id} />
+                            <input type="hidden" name="pasoId" value={p.id} />
+                            <button
+                              type="submit"
+                              disabled={idx === 0}
+                              title="Mover arriba"
+                              className="cursor-pointer text-ink-2 hover:text-ink disabled:cursor-not-allowed disabled:opacity-30"
+                            >
+                              <ChevronUp className="h-3.5 w-3.5" />
+                            </button>
+                          </form>
+                          <form action={moverPasoAbajoAction}>
+                            <input type="hidden" name="diagramId" value={diagrama.id} />
+                            <input type="hidden" name="pasoId" value={p.id} />
+                            <button
+                              type="submit"
+                              disabled={idx === pasos.length - 1}
+                              title="Mover abajo"
+                              className="cursor-pointer text-ink-2 hover:text-ink disabled:cursor-not-allowed disabled:opacity-30"
+                            >
+                              <ChevronDown className="h-3.5 w-3.5" />
+                            </button>
+                          </form>
+                        </div>
+                      </div>
+                    </td>
                     <td className="py-2 pr-2">{p.actor || "—"}</td>
                     <td className="py-2 pr-2">{TIPO_LABEL[p.tipo]}</td>
                     <td className="py-2 pr-2">{p.texto || "(sin texto)"}</td>
@@ -241,8 +280,9 @@ export default async function DiagramaPage({
                     <td className="py-2 pr-2 whitespace-nowrap">
                       <Link
                         href={`/diagramas/${diagrama.id}?editId=${p.id}`}
-                        className="text-primary-ink hover:underline"
+                        className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-line px-2.5 py-1 text-xs font-medium text-ink-2 transition hover:bg-bg"
                       >
+                        <Pencil className="h-3.5 w-3.5" />
                         Editar
                       </Link>
                       <form action={quitarPasoAction} className="inline">
@@ -263,19 +303,16 @@ export default async function DiagramaPage({
           </div>
         )}
 
-        {/* Formulario agregar / editar paso. Todos los campos de destino se
-            muestran siempre (sin JS de cliente): el servidor descarta los que
-            no aplican al tipo elegido (ver normalizarDestinos en actions.ts). */}
+        {/* Formulario agregar paso. Todos los campos de destino se muestran
+            siempre (sin JS de cliente): el servidor descarta los que no
+            aplican al tipo elegido (ver normalizarDestinos en actions.ts). */}
         <form
-          action={pasoEnEdicion ? actualizarPasoAction : agregarPasoAction}
+          action={agregarPasoAction}
           className="mt-5 space-y-3 rounded-lg border border-line bg-bg p-4"
         >
           <input type="hidden" name="diagramId" value={diagrama.id} />
-          {pasoEnEdicion && (
-            <input type="hidden" name="pasoId" value={pasoEnEdicion.id} />
-          )}
           <p className="text-xs font-bold uppercase tracking-wide text-ink-2">
-            {pasoEnEdicion ? "Editar paso" : "Agregar paso"}
+            Agregar paso
           </p>
 
           <div className="grid gap-3 sm:grid-cols-3">
@@ -283,12 +320,7 @@ export default async function DiagramaPage({
               <label className={LABEL} htmlFor="actor">
                 Actor
               </label>
-              <select
-                id="actor"
-                name="actor"
-                defaultValue={pasoEnEdicion?.actor ?? actores[0] ?? ""}
-                className={INPUT}
-              >
+              <select id="actor" name="actor" defaultValue={actores[0] ?? ""} className={INPUT}>
                 <option value="">— sin actor —</option>
                 {actores.map((a) => (
                   <option key={a} value={a}>
@@ -301,12 +333,7 @@ export default async function DiagramaPage({
               <label className={LABEL} htmlFor="tipo">
                 Tipo
               </label>
-              <select
-                id="tipo"
-                name="tipo"
-                defaultValue={pasoEnEdicion?.tipo ?? "tarea"}
-                className={INPUT}
-              >
+              <select id="tipo" name="tipo" defaultValue="tarea" className={INPUT}>
                 {TIPOS_PASO.map((t) => (
                   <option key={t} value={t}>
                     {TIPO_LABEL[t]}
@@ -321,7 +348,6 @@ export default async function DiagramaPage({
               <input
                 id="texto"
                 name="texto"
-                defaultValue={pasoEnEdicion?.texto ?? ""}
                 placeholder="Ej. Verifica cantidades"
                 className={INPUT}
               />
@@ -333,14 +359,9 @@ export default async function DiagramaPage({
               <label className={LABEL} htmlFor="siguiente">
                 Siguiente (si no es decisión ni fin)
               </label>
-              <select
-                id="siguiente"
-                name="siguiente"
-                defaultValue={pasoEnEdicion?.siguiente ?? ""}
-                className={INPUT}
-              >
+              <select id="siguiente" name="siguiente" defaultValue="" className={INPUT}>
                 <option value="">— automático / sin destino —</option>
-                {opcionesDestino.map((p) => (
+                {pasos.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.texto || "(sin texto)"}
                   </option>
@@ -351,14 +372,9 @@ export default async function DiagramaPage({
               <label className={LABEL} htmlFor="siguienteSi">
                 Si es decisión: Sí →
               </label>
-              <select
-                id="siguienteSi"
-                name="siguienteSi"
-                defaultValue={pasoEnEdicion?.siguienteSi ?? ""}
-                className={INPUT}
-              >
+              <select id="siguienteSi" name="siguienteSi" defaultValue="" className={INPUT}>
                 <option value="">— elegir —</option>
-                {opcionesDestino.map((p) => (
+                {pasos.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.texto || "(sin texto)"}
                   </option>
@@ -369,14 +385,9 @@ export default async function DiagramaPage({
               <label className={LABEL} htmlFor="siguienteNo">
                 Si es decisión: No →
               </label>
-              <select
-                id="siguienteNo"
-                name="siguienteNo"
-                defaultValue={pasoEnEdicion?.siguienteNo ?? ""}
-                className={INPUT}
-              >
+              <select id="siguienteNo" name="siguienteNo" defaultValue="" className={INPUT}>
                 <option value="">— elegir —</option>
-                {opcionesDestino.map((p) => (
+                {pasos.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.texto || "(sin texto)"}
                   </option>
@@ -385,24 +396,164 @@ export default async function DiagramaPage({
             </div>
           </div>
 
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              className="cursor-pointer rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover"
-            >
-              {pasoEnEdicion ? "Guardar cambios" : "+ Agregar paso"}
-            </button>
-            {pasoEnEdicion && (
-              <Link
-                href={`/diagramas/${diagrama.id}`}
-                className="inline-flex items-center rounded-lg border border-line px-4 py-2 text-sm font-medium text-ink-2 transition hover:bg-surface"
-              >
-                Cancelar
-              </Link>
-            )}
-          </div>
+          <button
+            type="submit"
+            className="cursor-pointer rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover"
+          >
+            + Agregar paso
+          </button>
         </form>
       </section>
+
+      {/* Popup de edición de paso. Se abre navegando a ?editId=... (SSR, sin
+          JS de cliente) — el overlay fixed evita que el formulario empuje el
+          layout de la página, a diferencia del form inline de arriba. */}
+      {pasoEnEdicion && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-lg rounded-xl border border-line bg-surface p-5 shadow-xl">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-bold uppercase tracking-wide text-ink-2">
+                Editar paso
+              </p>
+              <Link
+                href={`/diagramas/${diagrama.id}`}
+                title="Cerrar"
+                className="cursor-pointer rounded-full p-1 text-ink-2 hover:text-ink"
+              >
+                <X className="h-4 w-4" />
+              </Link>
+            </div>
+
+            <form action={actualizarPasoAction} className="mt-3 space-y-3">
+              <input type="hidden" name="diagramId" value={diagrama.id} />
+              <input type="hidden" name="pasoId" value={pasoEnEdicion.id} />
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className={LABEL} htmlFor="actor-edit">
+                    Actor
+                  </label>
+                  <select
+                    id="actor-edit"
+                    name="actor"
+                    defaultValue={pasoEnEdicion.actor}
+                    className={INPUT}
+                  >
+                    <option value="">— sin actor —</option>
+                    {actores.map((a) => (
+                      <option key={a} value={a}>
+                        {a}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className={LABEL} htmlFor="tipo-edit">
+                    Tipo
+                  </label>
+                  <select
+                    id="tipo-edit"
+                    name="tipo"
+                    defaultValue={pasoEnEdicion.tipo}
+                    className={INPUT}
+                  >
+                    {TIPOS_PASO.map((t) => (
+                      <option key={t} value={t}>
+                        {TIPO_LABEL[t]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className={LABEL} htmlFor="texto-edit">
+                  Texto
+                </label>
+                <input
+                  id="texto-edit"
+                  name="texto"
+                  defaultValue={pasoEnEdicion.texto}
+                  placeholder="Ej. Verifica cantidades"
+                  className={INPUT}
+                />
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div>
+                  <label className={LABEL} htmlFor="siguiente-edit">
+                    Siguiente
+                  </label>
+                  <select
+                    id="siguiente-edit"
+                    name="siguiente"
+                    defaultValue={pasoEnEdicion.siguiente ?? ""}
+                    className={INPUT}
+                  >
+                    <option value="">— automático / sin destino —</option>
+                    {opcionesDestino.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.texto || "(sin texto)"}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className={LABEL} htmlFor="siguienteSi-edit">
+                    Sí →
+                  </label>
+                  <select
+                    id="siguienteSi-edit"
+                    name="siguienteSi"
+                    defaultValue={pasoEnEdicion.siguienteSi ?? ""}
+                    className={INPUT}
+                  >
+                    <option value="">— elegir —</option>
+                    {opcionesDestino.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.texto || "(sin texto)"}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className={LABEL} htmlFor="siguienteNo-edit">
+                    No →
+                  </label>
+                  <select
+                    id="siguienteNo-edit"
+                    name="siguienteNo"
+                    defaultValue={pasoEnEdicion.siguienteNo ?? ""}
+                    className={INPUT}
+                  >
+                    <option value="">— elegir —</option>
+                    {opcionesDestino.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.texto || "(sin texto)"}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  className="cursor-pointer rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover"
+                >
+                  Guardar cambios
+                </button>
+                <Link
+                  href={`/diagramas/${diagrama.id}`}
+                  className="inline-flex items-center rounded-lg border border-line px-4 py-2 text-sm font-medium text-ink-2 transition hover:bg-bg"
+                >
+                  Cancelar
+                </Link>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

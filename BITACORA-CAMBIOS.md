@@ -831,6 +831,47 @@ Webhooks de la aplicación) — el código ya está listo para leerlo apenas se 
 
 ---
 
+### 2026-08-05 (cont. 4) — Webhook configurado, ANTHROPIC_API_KEY rotada, límite de prompt, copy BPMN, y rediseño del editor de pasos
+
+**Webhook:** Patricio configuró `MERCADOPAGO_WEBHOOK_SECRET` en el panel real (app
+`sistemaBPMNBuilder`, modo de prueba) y en Vercel — cierre completo del hallazgo #2 de SECURITY.
+
+**`ANTHROPIC_API_KEY` rota:** la key original (2026-08-04) dejó de funcionar en producción
+(`401 invalid x-api-key`) al primer uso real por un usuario. Patricio generó una nueva, PM la
+probó de forma independiente contra la API real antes de indicar el redeploy — confirmada
+funcionando.
+
+**Límite de caracteres del prompt:** ARQUITECTO IT investigó (patrones de UX de herramientas
+comparables, costo real con Haiku 4.5, límites técnicos de Mermaid/exportar-bpmn) y recomendó
+**4.000 caracteres, igual para trial y plan pago** — no es límite de costo ni técnico, es de
+calidad del entregable (diagramas enormes se vuelven ilegibles). DEV implementó validación de
+servidor (Zod `.max`) + contador `X/4.000` con aviso ámbar cerca del límite.
+`docs/LIMITE-CARACTERES-PROMPT-BPMN.md`.
+
+**Copy de exportación:** botón renombrado a "Descargar BPMN" con nota de compatibilidad
+(Bizagi, demo.bpmn.io, Camunda); el preview Mermaid en pantalla ahora aclara que es un borrador
+visual, no un archivo BPMN válido.
+
+**Rediseño del editor de pasos** (pedido de UX de Patricio tras probar con un diagrama real
+grande): botón "Editar" en vez de link de texto; popup/modal en vez de formulario inline
+creciente; columna de número secuencial por paso; botones ↑/↓ para reordenar (sin cambio de
+schema, reordena el array `pasos` en la BD). El resaltado del nodo correspondiente en el
+diagrama Mermaid al editar (pedido como "solo si es de bajo esfuerzo") resultó viable — DEV lo
+implementó post-procesando el SVG ya renderizado, sin tocar el motor de render. Revisado línea
+por línea por PM, `tsc`/`eslint`/`build` limpios. **Pendiente: confirmación visual de Patricio
+en producción** — ni DEV ni PM pueden completar un login real de Google para probarlo en
+navegador (mismo límite de siempre).
+
+**Pregunta de Patricio sobre "diagrama de valor / reporte de riesgos / recomendaciones de
+errores de proceso" como secuencia guiada:** investigado — esos cuatro entregables corresponden
+al rol del agente interno **ANALISTA DE PROCESOS DE NEGOCIO** de CONSULTORAVIRTUAL (uso interno
+de la casa para levantamientos de cliente), **no** están documentados como parte del alcance de
+Mapea. Ni la propuesta técnica original ni el análisis de viabilidad los mencionan. Queda
+pendiente que Patricio confirme si es un alcance nuevo real para el producto o una confusión de
+contexto.
+
+---
+
 ## 🎯 PRÓXIMAS AUDITORÍAS
 
 - **Próximo semanal:** 2026-08-08 (viernes)

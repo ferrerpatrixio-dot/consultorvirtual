@@ -304,6 +304,41 @@ export async function actualizarPasoAction(formData: FormData) {
   revalidatePath(`/diagramas/${id}`);
 }
 
+/** Mueve un paso una posición hacia arriba o abajo en el array (el orden del
+ * array es el orden de la tabla y del diagrama — no hay campo de posición
+ * separado en el schema). No hace nada si el paso ya está en el extremo. */
+async function moverPaso(id: string, pasoId: string, userId: string, delta: 1 | -1) {
+  const diagrama = await diagramaDelUsuario(id, userId);
+  if (!diagrama) return;
+
+  const pasos = parsePasos(diagrama.pasos);
+  const idx = pasos.findIndex((p) => p.id === pasoId);
+  const destino = idx + delta;
+  if (idx === -1 || destino < 0 || destino >= pasos.length) return;
+
+  [pasos[idx], pasos[destino]] = [pasos[destino], pasos[idx]];
+
+  await prisma.diagram.update({
+    where: { id },
+    data: { pasos: pasos as unknown as Prisma.InputJsonValue },
+  });
+  revalidatePath(`/diagramas/${id}`);
+}
+
+export async function moverPasoArribaAction(formData: FormData) {
+  const user = await requireAppAccess();
+  const id = String(formData.get("diagramId") ?? "");
+  const pasoId = String(formData.get("pasoId") ?? "");
+  await moverPaso(id, pasoId, user.id, -1);
+}
+
+export async function moverPasoAbajoAction(formData: FormData) {
+  const user = await requireAppAccess();
+  const id = String(formData.get("diagramId") ?? "");
+  const pasoId = String(formData.get("pasoId") ?? "");
+  await moverPaso(id, pasoId, user.id, 1);
+}
+
 /** Quita un paso y limpia las referencias de otros pasos que apuntaban a él
  * (mismo criterio que el prototipo: evita destinos rotos). */
 export async function quitarPasoAction(formData: FormData) {

@@ -49,6 +49,16 @@ function formaNodo(nodoId: string, p: Paso): string {
 }
 
 /**
+ * Id de nodo Mermaid ("n0", "n1"...) que le corresponde a un paso, según la
+ * misma regla que usa generarMermaid (posición en el array). Se usa para
+ * resaltar en el preview el nodo del paso que se está editando.
+ */
+export function idNodoParaPaso(pasos: Paso[], pasoId: string): string | undefined {
+  const idx = pasos.findIndex((p) => p.id === pasoId);
+  return idx === -1 ? undefined : `n${idx}`;
+}
+
+/**
  * Genera el código Mermaid (flowchart TD) a partir de actores + pasos.
  * Devuelve null si no hay suficiente data para dibujar nada, igual que el
  * prototipo original.

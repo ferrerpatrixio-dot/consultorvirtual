@@ -3,8 +3,18 @@
 import { useEffect, useId, useRef, useState } from "react";
 
 /** Renderiza código Mermaid a SVG en el navegador. Import dinámico dentro de
- * useEffect porque mermaid toca el DOM (no puede cargarse en SSR). */
-export function DiagramaPreview({ codigo }: { codigo: string | null }) {
+ * useEffect porque mermaid toca el DOM (no puede cargarse en SSR).
+ *
+ * `resaltarNodoId` (opcional): id de nodo Mermaid ("n0", "n1"...) del paso
+ * que se está editando (ver idNodoParaPaso en mermaid-render.ts). Si viene,
+ * se le agrega un borde rojo en el SVG ya renderizado para dar foco visual. */
+export function DiagramaPreview({
+  codigo,
+  resaltarNodoId,
+}: {
+  codigo: string | null;
+  resaltarNodoId?: string;
+}) {
   const contenedorRef = useRef<HTMLDivElement>(null);
   const idBase = useId().replace(/[^a-zA-Z0-9]/g, "");
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +39,20 @@ export function DiagramaPreview({ codigo }: { codigo: string | null }) {
         const { svg } = await mermaid.render(`diagrama_${idBase}`, codigo);
         if (!cancelado) {
           setError(null);
-          if (contenedorRef.current) contenedorRef.current.innerHTML = svg;
+          if (contenedorRef.current) {
+            contenedorRef.current.innerHTML = svg;
+            if (resaltarNodoId) {
+              const grupo = contenedorRef.current.querySelector(
+                `[id^="flowchart-${resaltarNodoId}-"]`,
+              );
+              grupo
+                ?.querySelectorAll("rect, polygon, circle, path")
+                .forEach((forma) => {
+                  (forma as SVGElement).style.stroke = "#dc3545";
+                  (forma as SVGElement).style.strokeWidth = "4px";
+                });
+            }
+          }
         }
       } catch (e) {
         if (!cancelado) {
@@ -41,7 +64,7 @@ export function DiagramaPreview({ codigo }: { codigo: string | null }) {
     return () => {
       cancelado = true;
     };
-  }, [codigo, idBase]);
+  }, [codigo, idBase, resaltarNodoId]);
 
   if (!codigo) {
     return (
