@@ -10,16 +10,15 @@ import type { Paso } from "@/lib/diagramas";
 // código, no la IA (Artículo 3).
 //
 // Subset implementado en este incremento: A1, A2, A3, M1, M2, M3, E2, E3.
-// NO implementadas (fuera de scope, ver BRECHA-MAPEA-VS-SPEC-F02.md §3):
-// - E1/E1b: requieren campos de entradas/salidas por paso que no existen
-//   hoy en el modelo `Paso`. Agregarlos es decisión de modelo de datos,
-//   no de este motor.
-// - M4 (>50 nodos) y A5 (sin sistema/documento de respaldo): quedan para
-//   incremento 2, junto con el tope de tamaño.
+// Incremento 2 (docs/DISENO-INCREMENTO-2-F02-DESCOMPOSICION.md) suma M4
+// (tope de 50 nodos, G7). E1/E1b (entradas/salidas) quedan para cuando el
+// LLM las extraiga — los campos ya existen en `Paso` pero las reglas no se
+// construyen en este incremento (fuera del alcance pedido).
+// NO implementada: A5 (sin sistema/documento de respaldo).
 
 export type SeveridadHueco = "bloqueante" | "pendiente" | "sugerencia";
 
-export type ReglaHueco = "A1" | "A2" | "A3" | "M1" | "M2" | "M3" | "E2" | "E3";
+export type ReglaHueco = "A1" | "A2" | "A3" | "M1" | "M2" | "M3" | "M4" | "E2" | "E3";
 
 export type Hueco = {
   regla: ReglaHueco;
@@ -29,8 +28,18 @@ export type Hueco = {
   pasoId?: string;
 };
 
-const TIPOS_ACTIVIDAD = ["tarea", "sistema"] as const;
+// "subproceso" cuenta como actividad para todo el resto del motor
+// (alcanzabilidad, callejón sin salida, nombrado, actor) — diseño §1.1: "es
+// un nodo de flujo normal ... se trata igual que una actividad".
+const TIPOS_ACTIVIDAD = ["tarea", "sistema", "subproceso"] as const;
 const TIPOS_FIN = ["fin_ok", "fin_error"] as const;
+
+/** Umbral duro G7 (7PMG): sobre 50 nodos, la tasa de error documentada
+ * supera el 50% (Mendling/Neumann/van der Aalst 2007). Cuenta solo nodos
+ * (pasos), no arcos — verificado contra la fuente, ver diseño §2. */
+export const UMBRAL_M4_NODOS = 50;
+/** Aviso preventivo, no bloqueante: "vas por X nodos de 50" (diseño §2). */
+export const UMBRAL_AVISO_NODOS = 40;
 
 /** Destinos declarados de un paso, filtrados a los que existen en
  * `pasosPorId`. Un id que no existe en el diagrama ("id fantasma") nunca
@@ -148,6 +157,26 @@ export function evaluarCompletitud(pasos: Paso[]): Hueco[] {
       regla: "M1",
       severidad: "bloqueante",
       mensaje: "El diagrama no tiene ningún evento de fin (fin_ok / fin_error).",
+    });
+  }
+
+  // ── M4 — tope de tamaño (7PMG G7) ────────────────────────────────────
+  // Cuenta por diagrama individual, no acumulado en el árbol de
+  // subprocesos (diseño §2: contar el árbol invertiría el sentido de la
+  // guía, que prescribe descomponer). `pendiente`, no `bloqueante`: la
+  // spec §3.4 permite seguir con un diagrama único asumiendo la
+  // advertencia — bloquear del todo cerraría esa puerta.
+  if (pasos.length > UMBRAL_M4_NODOS) {
+    huecos.push({
+      regla: "M4",
+      severidad: "pendiente",
+      mensaje: `El diagrama tiene ${pasos.length} nodos (tope recomendado: ${UMBRAL_M4_NODOS}). Sobre 50 elementos, más de la mitad de los modelos contiene errores (Mendling et al., 2.000 modelos de industria). Se recomienda descomponer en subprocesos.`,
+    });
+  } else if (pasos.length > UMBRAL_AVISO_NODOS) {
+    huecos.push({
+      regla: "M4",
+      severidad: "sugerencia",
+      mensaje: `El diagrama tiene ${pasos.length} nodos, acercándose al tope recomendado de ${UMBRAL_M4_NODOS}.`,
     });
   }
 

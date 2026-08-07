@@ -122,8 +122,30 @@ model Diagram {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Incremento 2 de F02 (docs/DISENO-INCREMENTO-2-F02-DESCOMPOSICION.md §1.2):
+  // auto-relación que representa el árbol de descomposición en subprocesos.
+  // La fuente de verdad de "este paso abre este subproceso" es
+  // Paso.subprocesoDiagramId (src/lib/diagramas.ts) — estas columnas son un
+  // índice denormalizado para: borrado en cascada del árbol, breadcrumb sin
+  // recorrer JSON, y listar solo diagramas raíz (parentDiagramId: null).
+  // Se escriben ambos lados en la misma $transaction (ver
+  // descomponerEnSubprocesoAction en src/lib/descomposicion.ts).
+  parentDiagramId String?
+  parentPasoId    String? // id del Paso "subproceso" del padre que abre este diagrama
+  nivel           Int     @default(0)
+
+  // Backup del array `pasos` del padre justo antes del corte que originó
+  // este diagrama hijo (§6 riesgo 5 del diseño): permite deshacer una vez
+  // la descomposición mientras no exista versionado real (Incremento 3).
+  // null en diagramas raíz y en cualquier diagrama creado antes de este
+  // incremento.
+  pasosBackup Json?
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent   Diagram?  @relation("Descomposicion", fields: [parentDiagramId], references: [id], onDelete: Cascade)
+  children Diagram[] @relation("Descomposicion")
 
   @@index([userId])
+  @@index([parentDiagramId])
   @@schema("generador_bpmn")
 }

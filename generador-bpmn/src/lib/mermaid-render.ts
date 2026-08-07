@@ -21,6 +21,11 @@ const ICONOS: Record<TipoPaso, string> = {
   decision: "",
   fin_ok: "✓",
   fin_error: "✗",
+  // Ícono "+" (diseño §3.4: "en el render propio de Mapea lo dibujamos
+  // nosotros"). Forma/click real del nodo (navegar a /diagramas/{hijoId})
+  // es responsabilidad de DISEÑADOR-UX, fuera de este incremento — acá
+  // solo se evita que TIPOS_PASO nuevo rompa este Record exhaustivo.
+  subproceso: "+",
 };
 
 function slugify(actor: string): string {

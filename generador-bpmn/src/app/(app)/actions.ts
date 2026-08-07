@@ -16,6 +16,14 @@ import {
 import { extraerProcesoDesdePrompt } from "@/lib/extraccion-llm";
 import { evaluarCompletitud, tieneBloqueantes, type Hueco } from "@/lib/completitud";
 import { registrarDiagramaDeTrial } from "@/lib/trial";
+import {
+  esRegionSESE,
+  construirCorte,
+  raizDe,
+  contarDescendientes,
+  TOPE_NIVELES,
+  TOPE_SUBPROCESOS_POR_RAIZ,
+} from "@/lib/descomposicion";
 import type { Prisma } from "@prisma/client";
 
 /** Diagrama del usuario autenticado, o null si no existe / no le pertenece. */
@@ -442,7 +450,14 @@ export async function moverPasoAbajoAction(formData: FormData) {
 }
 
 /** Quita un paso y limpia las referencias de otros pasos que apuntaban a él
- * (mismo criterio que el prototipo: evita destinos rotos). */
+ * (mismo criterio que el prototipo: evita destinos rotos).
+ *
+ * Incremento 2 de F02 (diseño §6 riesgo 3): si el paso es tipo
+ * "subproceso", borrar solo el paso dejaría un `Diagram` hijo huérfano
+ * (sin nadie que lo enlace, pero sin borrarse solo). Se borra también el
+ * hijo, en la misma transacción — el borrado en cascada de Prisma
+ * (`onDelete: Cascade` en la auto-relación) se encarga de sus propios
+ * descendientes si el hijo a su vez tuviera subprocesos. */
 export async function quitarPasoAction(formData: FormData) {
   const user = await requireAppAccess();
   const id = String(formData.get("diagramId") ?? "");
@@ -450,7 +465,10 @@ export async function quitarPasoAction(formData: FormData) {
   const diagrama = await diagramaDelUsuario(id, user.id);
   if (!diagrama) return;
 
-  const pasos = parsePasos(diagrama.pasos)
+  const pasosOriginales = parsePasos(diagrama.pasos);
+  const pasoEliminado = pasosOriginales.find((p) => p.id === pasoId);
+
+  const pasos = pasosOriginales
     .filter((p) => p.id !== pasoId)
     .map((p) => ({
       ...p,
@@ -459,9 +477,113 @@ export async function quitarPasoAction(formData: FormData) {
       siguienteNo: p.siguienteNo === pasoId ? undefined : p.siguienteNo,
     }));
 
-  await prisma.diagram.update({
-    where: { id },
-    data: { pasos: pasos as unknown as Prisma.InputJsonValue },
-  });
+  if (pasoEliminado?.tipo === "subproceso" && pasoEliminado.subprocesoDiagramId) {
+    await prisma.$transaction([
+      prisma.diagram.delete({ where: { id: pasoEliminado.subprocesoDiagramId } }),
+      prisma.diagram.update({
+        where: { id },
+        data: { pasos: pasos as unknown as Prisma.InputJsonValue },
+      }),
+    ]);
+  } else {
+    await prisma.diagram.update({
+      where: { id },
+      data: { pasos: pasos as unknown as Prisma.InputJsonValue },
+    });
+  }
   revalidatePath(`/diagramas/${id}`);
+}
+
+// ─────────────────────────────────────────────────────────────
+// Descomposición en subprocesos (Incremento 2 de F02)
+// docs/DISENO-INCREMENTO-2-F02-DESCOMPOSICION.md §3.3
+// ─────────────────────────────────────────────────────────────
+
+export type ResultadoDescomposicion = { error: string } | { hijoId: string };
+
+/**
+ * Corta `pasoIds` del diagrama `diagramId` hacia un nuevo `Diagram`
+ * subproceso. Todo en una `$transaction`: si algo falla a mitad de camino
+ * no queda ni el hijo creado ni el padre modificado.
+ *
+ * No usa `requireCreationAccess`: descomponer no consume el cupo de
+ * trial (política de producto confirmada — los diagramas hijos no cuentan
+ * como "diagrama creado" porque no generan una llamada nueva al LLM). Un
+ * usuario en trial con el cupo ya usado puede seguir descomponiendo su
+ * único diagrama.
+ */
+export async function descomponerEnSubprocesoAction(
+  diagramId: string,
+  pasoIds: string[],
+  nombreSubproceso: string,
+): Promise<ResultadoDescomposicion> {
+  const user = await requireAppAccess();
+  const padre = await diagramaDelUsuario(diagramId, user.id);
+  if (!padre) return { error: "Diagrama no encontrado." };
+
+  const nombre = nombreSubproceso.trim();
+  if (!nombre) return { error: "El subproceso necesita un nombre." };
+
+  const padrePasos = parsePasos(padre.pasos);
+  const idsValidos = new Set(padrePasos.map((p) => p.id));
+  if (pasoIds.length === 0 || !pasoIds.every((pid) => idsValidos.has(pid))) {
+    return { error: "Selección de pasos inválida." };
+  }
+  if (!esRegionSESE(padrePasos, pasoIds)) {
+    return {
+      error:
+        "El tramo seleccionado no tiene una única entrada y una única salida — no se puede convertir en subproceso.",
+    };
+  }
+  if (padre.nivel >= TOPE_NIVELES) {
+    return { error: `No se puede descomponer más allá de ${TOPE_NIVELES} niveles de profundidad.` };
+  }
+
+  const raiz = await raizDe(prisma, padre.id);
+  const totalDescendientes = await contarDescendientes(prisma, raiz.id);
+  if (totalDescendientes >= TOPE_SUBPROCESOS_POR_RAIZ) {
+    return { error: `Este proceso ya alcanzó el máximo de ${TOPE_SUBPROCESOS_POR_RAIZ} subprocesos.` };
+  }
+
+  const corte = construirCorte(padrePasos, pasoIds, nombre);
+
+  const hijoId = await prisma.$transaction(async (tx) => {
+    const hijo = await tx.diagram.create({
+      data: {
+        userId: user.id,
+        cliente: padre.cliente,
+        proceso: nombre,
+        actores: corte.actoresHijo as Prisma.InputJsonValue,
+        pasos: corte.pasosHijo as unknown as Prisma.InputJsonValue,
+        parentDiagramId: padre.id,
+        parentPasoId: corte.nuevoNodo.id,
+        nivel: padre.nivel + 1,
+        pasosBackup: padrePasos as unknown as Prisma.InputJsonValue,
+      },
+    });
+
+    // El nuevo nodo del padre solo puede saber el id real del hijo una vez
+    // creado — se completa acá y recién entonces se persiste el padre.
+    const pasosPadreFinal = corte.pasosPadre.map((p) =>
+      p.id === corte.nuevoNodo.id ? { ...p, subprocesoDiagramId: hijo.id } : p,
+    );
+
+    await tx.diagram.update({
+      where: { id: padre.id },
+      data: { pasos: pasosPadreFinal as unknown as Prisma.InputJsonValue },
+    });
+
+    return hijo.id;
+  });
+
+  // Caso de QA obligatorio (pedido por PRODUCT MANAGER): crear una raíz en
+  // trial gasta el cupo (registrarDiagramaDeTrial se llamó en
+  // crearDiagramaAction/confirmarDiagramaGeneradoAction). Descomponer esa
+  // raíz NO vuelve a llamar registrarDiagramaDeTrial acá — el cupo sigue
+  // gastado (correcto, ya se gastó al crear la raíz) pero la descomposición
+  // no requiere cupo adicional ni falla por falta de él. Ver
+  // src/lib/descomposicion.test.ts para el caso de test end-to-end del
+  // conteo (sin llamar a esta acción, que requiere BD).
+  revalidatePath(`/diagramas/${padre.id}`);
+  return { hijoId };
 }

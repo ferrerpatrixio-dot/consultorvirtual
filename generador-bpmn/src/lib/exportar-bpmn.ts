@@ -60,6 +60,13 @@ const TIPO_A_ELEMENTO: Record<TipoPaso, string> = {
   decision: "bpmn:ExclusiveGateway",
   fin_ok: "bpmn:EndEvent",
   fin_error: "bpmn:EndEvent",
+  // Incremento 2 de F02 (docs/DISENO-INCREMENTO-2-F02-DESCOMPOSICION.md
+  // §4.1): CallActivity, NO SubProcess embebido — SubProcess sería la
+  // representación inline que Patricio descartó explícitamente (el
+  // subproceso se abre como diagrama separado, no colapsado en el mismo
+  // lienzo). CallActivity es la referencia a un proceso reutilizable
+  // definido aparte, que es la semántica real de la decisión de producto.
+  subproceso: "bpmn:CallActivity",
 };
 
 /**
@@ -67,8 +74,18 @@ const TIPO_A_ELEMENTO: Record<TipoPaso, string> = {
  * actores + pasos, con el mismo modelo de datos que el resto de la app.
  * Lanza un Error legible si no hay suficiente data para exportar — el
  * caller (route handler) es responsable de mostrarlo al usuario.
+ *
+ * `diagramId` es opcional por compatibilidad hacia atrás (tests/llamadas
+ * existentes); si no se pasa, el id de proceso cae al literal histórico
+ * "Process_1". Se necesita el id real para que `calledElement` de un
+ * `CallActivity` (§4.1 del diseño) pueda resolver contra el `bpmn:Process`
+ * del diagrama hijo cuando ese archivo se abre junto al de este diagrama.
  */
-export async function exportarBpmn(actores: string[], pasos: Paso[]): Promise<string> {
+export async function exportarBpmn(
+  actores: string[],
+  pasos: Paso[],
+  diagramId?: string,
+): Promise<string> {
   if (pasos.length === 0 || actores.length === 0) {
     throw new Error("El diagrama no tiene actores o pasos suficientes para exportar.");
   }
@@ -86,6 +103,13 @@ export async function exportarBpmn(actores: string[], pasos: Paso[]): Promise<st
       moddle.create(TIPO_A_ELEMENTO[p.tipo], {
         id: `Elem_${idx}`,
         name: p.texto || "(sin texto)",
+        // calledElement: el proceso al que este CallActivity llama. Es un
+        // QName; el estándar no exige que ese Process esté en el mismo
+        // documento (§4.2 del diseño) — queda como referencia colgante si
+        // se abre este archivo solo, pero es BPMN válido.
+        ...(p.tipo === "subproceso" && p.subprocesoDiagramId
+          ? { calledElement: `Process_${p.subprocesoDiagramId}` }
+          : {}),
       }),
     );
   });
@@ -148,7 +172,7 @@ export async function exportarBpmn(actores: string[], pasos: Paso[]): Promise<st
   });
 
   const proceso = moddle.create("bpmn:Process", {
-    id: "Process_1",
+    id: diagramId ? `Process_${diagramId}` : "Process_1",
     isExecutable: false,
     flowElements: [...nodoPorPaso.values(), ...flows],
     laneSets: lanes.length > 0 ? [moddle.create("bpmn:LaneSet", { id: "LaneSet_1", lanes })] : [],

@@ -45,7 +45,7 @@ export async function GET(
 
   let xml: string;
   try {
-    xml = await exportarBpmn(actores, pasos);
+    xml = await exportarBpmn(actores, pasos, diagrama.id);
   } catch (err) {
     return NextResponse.json(
       {
