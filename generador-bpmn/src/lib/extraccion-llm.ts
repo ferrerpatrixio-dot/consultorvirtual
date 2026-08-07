@@ -21,6 +21,13 @@ export type ResultadoExtraccion = {
   pendingQuestions: string[];
 };
 
+// La regla 3 del SYSTEM_PROMPT pide que, al modelar una decisión de 3+
+// salidas como cadena de compuertas binarias, el LLM declare ese supuesto
+// en pending_questions en vez de aplicarlo en silencio (revisión del
+// ANALISTA-PROCESOS-NEGOCIO sobre el caso de 3+ salidas). No es testeable
+// con vitest — depende de que el modelo real siga la instrucción — así que
+// no hay test unitario para esto; la verificación es manual/QA sobre
+// respuestas reales del LLM.
 const SYSTEM_PROMPT = `Eres un analista de procesos de negocio. Tu única tarea es leer la descripción en lenguaje natural de un proceso que te da el usuario y convertirla en un diagrama de flujo estructurado, en el formato JSON exacto que se te pide — sin diálogo, sin preguntas de vuelta al usuario: entregas el JSON final en una sola respuesta.
 
 ### Esquema de salida
@@ -48,7 +55,7 @@ const SYSTEM_PROMPT = `Eres un analista de procesos de negocio. Tu única tarea 
 
 1. **Nunca inventes una rama o un responsable que el texto no sugiere.** Si el usuario no dice qué pasa en un caso, deja el destino vacío y pregunta en "pending_questions" — no adivines.
 2. El primer paso siempre es "inicio". Si el proceso tiene una única salida feliz, ciérrala con "fin_ok"; los rechazos, cancelaciones o errores se cierran con "fin_error".
-3. Las decisiones son binarias (Sí/No). Si el texto describe una decisión con más de dos ramas, modélala como una cadena de decisiones binarias sucesivas.
+3. Las decisiones son binarias (Sí/No). Si el texto describe una decisión con más de dos ramas, modélala como una cadena de decisiones binarias sucesivas. Cuando armes una de estas cadenas, agrega SIEMPRE una entrada a "pending_questions" declarando explícitamente cómo la modelaste y preguntando si falta algún resultado posible (ej. "Modelé '¿Tipo de solicitud?' como una secuencia de preguntas Sí/No con los resultados Urgente, Normal y Baja prioridad. ¿Falta algún resultado posible?") — es un supuesto tuyo (cómo partir la decisión en binarios), y la regla 1 (cero invenciones silenciosas) exige declararlo, no solo ejecutarlo.
 4. Los loops (volver a un paso anterior) son válidos y esperados si el proceso real reintenta algo — no los evites, sigue las instrucciones del usuario.
 5. No agregues pasos, actores, validaciones o pasos de resiliencia que el usuario no haya descrito (nada de reintentos, backoff, idempotencia — este producto documenta el proceso tal como es, no lo diseña para automatización).
 6. Usa español, y mantén "texto" corto (idealmente menos de 8 palabras).

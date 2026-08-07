@@ -15,6 +15,12 @@ import type { Paso } from "@/lib/diagramas";
 // LLM las extraiga — los campos ya existen en `Paso` pero las reglas no se
 // construyen en este incremento (fuera del alcance pedido).
 // NO implementada: A5 (sin sistema/documento de respaldo).
+//
+// Revisión de decisiones 3+ salidas del ANALISTA-PROCESOS-NEGOCIO suma dos
+// reglas más (cadenas de compuertas binarias, patrón ya usado por el LLM
+// para modelar 3+ resultados): M6 (ramas gemelas) y A6 (decisión sin
+// redacción de pregunta). Se salta A5 a propósito porque ese código ya
+// está reservado (no implementado) para otro concepto.
 
 export type SeveridadHueco = "bloqueante" | "pendiente" | "sugerencia";
 
@@ -23,11 +29,13 @@ export type ReglaHueco =
   | "A2"
   | "A3"
   | "A4"
+  | "A6"
   | "M1"
   | "M2"
   | "M3"
   | "M4"
   | "M5"
+  | "M6"
   | "E2"
   | "E3";
 
@@ -289,6 +297,46 @@ export function evaluarCompletitud(pasos: Paso[]): Hueco[] {
       severidad: "sugerencia",
       mensaje: `El diagrama tiene ${pasos.length} nodos, acercándose al tope recomendado de ${UMBRAL_M4_NODOS}.`,
     });
+  }
+
+  // ── M6 — ramas gemelas (decisión que no decide nada) ─────────────────
+  // Si Sí y No apuntan al mismo destino, la decisión no bifurca el flujo:
+  // suele pasar cuando el LLM modela una cadena de compuertas binarias para
+  // 3+ resultados (regla 3 del prompt de extracción) y "estaciona"
+  // temporalmente un resultado sin ubicar en la misma rama que otro.
+  // `pendiente`, no bloqueante: es una señal a revisar, no un dato inválido
+  // (M5 ya cubre destinos que directamente no existen).
+  for (const p of pasos) {
+    if (p.tipo !== "decision") continue;
+    if (p.siguienteSi && p.siguienteSi === p.siguienteNo) {
+      huecos.push({
+        regla: "M6",
+        severidad: "pendiente",
+        mensaje: `La decisión "${p.texto || p.id}" no distingue Sí de No — ambas ramas van al mismo lugar.`,
+        pasoId: p.id,
+      });
+    }
+  }
+
+  // ── A6 — decisión no redactada como pregunta ─────────────────────────
+  // Heurística barata, sin NLP: el texto de una "decision" debería
+  // contener "¿" (apertura de interrogación en español) — si no lo tiene,
+  // probablemente sea un rótulo ("Estado del contrato") en vez de una
+  // pregunta cerrada Sí/No ("¿El contrato está aprobado?"), ilegible para
+  // el cliente que lee el diagrama. Limitación conocida: no valida que la
+  // pregunta sea cerrada (Sí/No) ni que tenga sentido, solo que exista el
+  // signo de apertura.
+  for (const p of pasos) {
+    if (p.tipo !== "decision") continue;
+    const texto = p.texto.trim();
+    if (texto !== "" && !texto.includes("¿")) {
+      huecos.push({
+        regla: "A6",
+        severidad: "pendiente",
+        mensaje: `La decisión "${texto}" no está redactada como pregunta (falta "¿"). Reformúlala como pregunta cerrada Sí/No, ej. "¿El contrato está aprobado?".`,
+        pasoId: p.id,
+      });
+    }
   }
 
   // ── M2 — rama de compuerta sin condición ─────────────────────────────

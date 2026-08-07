@@ -113,16 +113,18 @@ describe("evaluarCompletitud", () => {
       expect(huecosDe(pasos, "M3")).toHaveLength(0);
     });
 
-    it("QA-12: loop sin condición de salida (decisión que vuelve sobre sí misma, formalmente válida) — confirma que hoy no dispara ninguna regla, fuera de alcance del motor", () => {
+    it("QA-12: loop sin condición de salida (decisión que vuelve sobre sí misma, formalmente válida) — no dispara M2/M3/E2, pero SÍ dispara M6 (siguienteSi === siguienteNo, aunque el destino común sea la propia decisión)", () => {
       const pasos: Paso[] = [
         { id: "inicio", tipo: "inicio", texto: "Inicio", actor: "" , siguiente: "p1"},
         { id: "p1", tipo: "decision", texto: "¿Reintentar?", actor: "Analista", siguienteSi: "p1", siguienteNo: "p1" },
       ];
       const huecos = evaluarCompletitud(pasos);
       // No hay E2 (p1 es alcanzable), no hay M2 (ambas ramas tienen destino),
-      // no hay M3 (ambas ramas "convergen" en sí mismo, p1). Solo puede
-      // quedar M1 por falta de fin, que es esperado y no parte de este caso.
-      expect(huecos.filter((h) => h.regla !== "M1")).toHaveLength(0);
+      // no hay M3 (ambas ramas "convergen" en sí mismo, p1). Queda M1 por
+      // falta de fin (esperado, no parte de este caso) y M6 (regla nueva:
+      // ambas ramas van al mismo lugar, aunque ese lugar sea el propio p1).
+      expect(huecos.filter((h) => h.regla !== "M1" && h.regla !== "M6")).toHaveLength(0);
+      expect(huecos.some((h) => h.regla === "M6")).toBe(true);
     });
   });
 
@@ -336,6 +338,69 @@ describe("evaluarCompletitud", () => {
     it('"Bodeguero" (actor concreto) no dispara A4', () => {
       const pasos: Paso[] = [{ id: "p1", tipo: "tarea", texto: "Enviar correo", actor: "Bodeguero" }];
       expect(huecosDe(pasos, "A4")).toHaveLength(0);
+    });
+  });
+
+  // ── M6 — ramas gemelas (decisión que no decide nada) ─────────────────────
+  describe("M6 — ramas gemelas", () => {
+    it("siguienteSi === siguienteNo dispara M6 pendiente (caso: decisión 'estacionada' de una cadena 3+ salidas)", () => {
+      const pasos: Paso[] = [
+        { id: "p1", tipo: "decision", texto: "¿Es prioridad alta?", actor: "Analista", siguienteSi: "p2", siguienteNo: "p2" },
+        { id: "p2", tipo: "tarea", texto: "Registrar caso", actor: "Analista", siguiente: "fin" },
+        { id: "fin", tipo: "fin_ok", texto: "Fin", actor: "" },
+      ];
+      const m6 = huecosDe(pasos, "M6");
+      expect(m6).toHaveLength(1);
+      expect(m6[0].severidad).toBe("pendiente");
+      expect(m6[0].pasoId).toBe("p1");
+    });
+
+    it("ramas distintas no dispara M6", () => {
+      const pasos: Paso[] = [
+        { id: "p1", tipo: "decision", texto: "¿Aprueba?", actor: "Jefe", siguienteSi: "p2", siguienteNo: "p3" },
+        { id: "p2", tipo: "fin_ok", texto: "Fin OK", actor: "" },
+        { id: "p3", tipo: "fin_error", texto: "Fin error", actor: "" },
+      ];
+      expect(huecosDe(pasos, "M6")).toHaveLength(0);
+    });
+
+    it("siguienteSi vacío (ya cubierto por M2) no dispara M6", () => {
+      const pasos: Paso[] = [
+        { id: "p1", tipo: "decision", texto: "¿Aprueba?", actor: "Jefe", siguienteNo: "p2" },
+        { id: "p2", tipo: "fin_ok", texto: "Fin", actor: "" },
+      ];
+      expect(huecosDe(pasos, "M6")).toHaveLength(0);
+    });
+  });
+
+  // ── A6 — decisión no redactada como pregunta ──────────────────────────────
+  describe("A6 — decisión no redactada como pregunta", () => {
+    it('texto sin "¿" dispara A6 pendiente (caso: "Estado del contrato" en vez de una pregunta)', () => {
+      const pasos: Paso[] = [
+        { id: "p1", tipo: "decision", texto: "Estado del contrato", actor: "Analista", siguienteSi: "p2", siguienteNo: "p3" },
+        { id: "p2", tipo: "fin_ok", texto: "Fin OK", actor: "" },
+        { id: "p3", tipo: "fin_error", texto: "Fin error", actor: "" },
+      ];
+      const a6 = huecosDe(pasos, "A6");
+      expect(a6).toHaveLength(1);
+      expect(a6[0].severidad).toBe("pendiente");
+    });
+
+    it('texto con "¿" no dispara A6', () => {
+      const pasos: Paso[] = [
+        { id: "p1", tipo: "decision", texto: "¿El contrato está aprobado?", actor: "Analista", siguienteSi: "p2", siguienteNo: "p3" },
+        { id: "p2", tipo: "fin_ok", texto: "Fin OK", actor: "" },
+        { id: "p3", tipo: "fin_error", texto: "Fin error", actor: "" },
+      ];
+      expect(huecosDe(pasos, "A6")).toHaveLength(0);
+    });
+
+    it("texto vacío no dispara A6 (queda fuera de alcance, no es el caso que cubre esta regla)", () => {
+      const pasos: Paso[] = [
+        { id: "p1", tipo: "decision", texto: "", actor: "Analista", siguienteSi: "p2", siguienteNo: "p2" },
+        { id: "p2", tipo: "fin_ok", texto: "Fin", actor: "" },
+      ];
+      expect(huecosDe(pasos, "A6")).toHaveLength(0);
     });
   });
 
