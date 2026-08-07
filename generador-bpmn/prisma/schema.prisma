@@ -134,13 +134,6 @@ model Diagram {
   parentPasoId    String? // id del Paso "subproceso" del padre que abre este diagrama
   nivel           Int     @default(0)
 
-  // Backup del array `pasos` del padre justo antes del corte que originó
-  // este diagrama hijo (§6 riesgo 5 del diseño): permite deshacer una vez
-  // la descomposición mientras no exista versionado real (Incremento 3).
-  // null en diagramas raíz y en cualquier diagrama creado antes de este
-  // incremento.
-  pasosBackup Json?
-
   /// Incremento 3 de F02 (docs/DISENO-INCREMENTO-3-F02.md §2.3): claves de
   /// huecos `pendiente` que el usuario declaró aceptar a sabiendas, para
   /// destrabar la exportación. Array de strings con el formato
@@ -149,11 +142,50 @@ model Diagram {
   /// reconocerHuecoAction).
   huecosReconocidos Json @default("[]")
 
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  parent   Diagram?  @relation("Descomposicion", fields: [parentDiagramId], references: [id], onDelete: Cascade)
-  children Diagram[] @relation("Descomposicion")
+  // Versionado (docs/DISENO-VERSIONADO-F02.md §5.2a): borrado lógico del
+  // subárbol de subprocesos. quitarPasoAction ya no hace prisma.diagram.delete
+  // sobre el hijo: marca deletedAt en el hijo y todo su subárbol. TODAS las
+  // consultas de listado/carga deben filtrar deletedAt: null. Un diagrama con
+  // deletedAt != null solo se purga físicamente cuando ninguna DiagramVersion
+  // conservada lo referencia (ver poda en src/lib/versionado.ts).
+  deletedAt DateTime?
+
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent   Diagram?         @relation("Descomposicion", fields: [parentDiagramId], references: [id], onDelete: Cascade)
+  children Diagram[]        @relation("Descomposicion")
+  versions DiagramVersion[]
 
   @@index([userId])
   @@index([parentDiagramId])
+  @@index([userId, deletedAt])
+  @@schema("generador_bpmn")
+}
+
+// Versionado (docs/DISENO-VERSIONADO-F02.md §1.1): snapshot completo del
+// estado ANTERIOR a cada mutación de un Diagram ("imagen previa"). Se
+// escribe en la misma transacción que la mutación (ver
+// src/lib/versionado.ts). Reemplaza a Diagram.pasosBackup, que se elimina.
+model DiagramVersion {
+  id        String   @id @default(cuid())
+  diagramId String
+  userId    String // denormalizado: permite autorizar sin join al Diagram
+  seq       Int // 1, 2, 3... monotónico por diagrama. Es lo que ve el usuario.
+  createdAt DateTime @default(now())
+
+  // Qué operación produjo el estado que ESTA versión reemplazó (etiqueta de UI)
+  operacion String // ver OperacionVersion en src/lib/versionado.ts
+  detalle   String?
+
+  // Snapshot completo del estado ANTERIOR a la operación (imagen previa)
+  actores           Json
+  pasos             Json
+  huecosReconocidos Json
+  cliente           String
+  proceso           String
+
+  diagram Diagram @relation(fields: [diagramId], references: [id], onDelete: Cascade)
+
+  @@unique([diagramId, seq])
+  @@index([diagramId, createdAt])
   @@schema("generador_bpmn")
 }

@@ -25,11 +25,21 @@ import {
   TOPE_NIVELES,
   TOPE_SUBPROCESOS_POR_RAIZ,
 } from "@/lib/descomposicion";
+import {
+  mutarDiagramaVersionado,
+  marcarBorradoLogicoSubarbol,
+  revivirSubarbol,
+  reconciliarSubprocesos,
+  idsSubprocesoDePasos,
+} from "@/lib/versionado";
 import type { Prisma } from "@prisma/client";
 
-/** Diagrama del usuario autenticado, o null si no existe / no le pertenece. */
+/** Diagrama del usuario autenticado, o null si no existe / no le pertenece.
+ * Filtra `deletedAt: null` (§5.2a del diseño de versionado): un diagrama
+ * con borrado lógico no debe ser editable ni visible por esta vía — solo
+ * `restaurarVersionAction` puede revivirlo. */
 async function diagramaDelUsuario(id: string, userId: string) {
-  return prisma.diagram.findFirst({ where: { id, userId } });
+  return prisma.diagram.findFirst({ where: { id, userId, deletedAt: null } });
 }
 
 const metaSchema = z.object({
@@ -253,10 +263,12 @@ export async function actualizarMetaAction(formData: FormData) {
   });
   if (!parsed.success) return; // formulario básico: sin feedback de error acá
 
-  await prisma.diagram.update({
-    where: { id },
-    data: { cliente: parsed.data.cliente, proceso: parsed.data.proceso },
-  });
+  await prisma.$transaction((tx) =>
+    mutarDiagramaVersionado(tx, diagrama, "editar_meta", undefined, {
+      cliente: parsed.data.cliente,
+      proceso: parsed.data.proceso,
+    }),
+  );
 
   revalidatePath(`/diagramas/${id}`);
 }
@@ -287,10 +299,11 @@ export async function agregarActorAction(formData: FormData) {
   const actores = parseActores(diagrama.actores);
   if (actores.includes(nombre)) return;
 
-  await prisma.diagram.update({
-    where: { id },
-    data: { actores: [...actores, nombre] as Prisma.InputJsonValue },
-  });
+  await prisma.$transaction((tx) =>
+    mutarDiagramaVersionado(tx, diagrama, "editar_actores", undefined, {
+      actores: [...actores, nombre] as Prisma.InputJsonValue,
+    }),
+  );
   revalidatePath(`/diagramas/${id}`);
 }
 
@@ -308,13 +321,12 @@ export async function quitarActorAction(formData: FormData) {
     p.actor === nombre ? { ...p, actor: actores[0] ?? "" } : p,
   );
 
-  await prisma.diagram.update({
-    where: { id },
-    data: {
+  await prisma.$transaction((tx) =>
+    mutarDiagramaVersionado(tx, diagrama, "editar_actores", undefined, {
       actores: actores as Prisma.InputJsonValue,
       pasos: pasos as unknown as Prisma.InputJsonValue,
-    },
-  });
+    }),
+  );
   revalidatePath(`/diagramas/${id}`);
 }
 
@@ -376,10 +388,11 @@ export async function agregarPasoAction(formData: FormData) {
   };
 
   const pasos = [...parsePasos(diagrama.pasos), nuevo];
-  await prisma.diagram.update({
-    where: { id },
-    data: { pasos: pasos as unknown as Prisma.InputJsonValue },
-  });
+  await prisma.$transaction((tx) =>
+    mutarDiagramaVersionado(tx, diagrama, "agregar_paso", nuevo.id, {
+      pasos: pasos as unknown as Prisma.InputJsonValue,
+    }),
+  );
   revalidatePath(`/diagramas/${id}`);
 }
 
@@ -408,10 +421,11 @@ export async function actualizarPasoAction(formData: FormData) {
       : p,
   );
 
-  await prisma.diagram.update({
-    where: { id },
-    data: { pasos: pasos as unknown as Prisma.InputJsonValue },
-  });
+  await prisma.$transaction((tx) =>
+    mutarDiagramaVersionado(tx, diagrama, "editar_paso", pasoId, {
+      pasos: pasos as unknown as Prisma.InputJsonValue,
+    }),
+  );
   revalidatePath(`/diagramas/${id}`);
 }
 
@@ -429,10 +443,11 @@ async function moverPaso(id: string, pasoId: string, userId: string, delta: 1 | 
 
   [pasos[idx], pasos[destino]] = [pasos[destino], pasos[idx]];
 
-  await prisma.diagram.update({
-    where: { id },
-    data: { pasos: pasos as unknown as Prisma.InputJsonValue },
-  });
+  await prisma.$transaction((tx) =>
+    mutarDiagramaVersionado(tx, diagrama, "mover_paso", pasoId, {
+      pasos: pasos as unknown as Prisma.InputJsonValue,
+    }),
+  );
   revalidatePath(`/diagramas/${id}`);
 }
 
@@ -455,10 +470,15 @@ export async function moverPasoAbajoAction(formData: FormData) {
  *
  * Incremento 2 de F02 (diseño §6 riesgo 3): si el paso es tipo
  * "subproceso", borrar solo el paso dejaría un `Diagram` hijo huérfano
- * (sin nadie que lo enlace, pero sin borrarse solo). Se borra también el
- * hijo, en la misma transacción — el borrado en cascada de Prisma
- * (`onDelete: Cascade` en la auto-relación) se encarga de sus propios
- * descendientes si el hijo a su vez tuviera subprocesos. */
+ * (sin nadie que lo enlace, pero sin borrarse solo).
+ *
+ * Versionado (docs/DISENO-VERSIONADO-F02.md §5.2a): el hijo ya NO se borra
+ * físicamente (`prisma.diagram.delete`) — se marca con borrado lógico junto
+ * con todo su subárbol, para que `restaurarVersionAction` pueda revivirlo
+ * si el usuario deshace este cambio. Se purga físicamente recién cuando
+ * ninguna versión conservada del padre vuelve a mencionarlo (ver poda en
+ * src/lib/versionado.ts). La confirmación de UI previa (QuitarPasoButton)
+ * sigue siendo obligatoria e independiente de esto (§5.2c). */
 export async function quitarPasoAction(formData: FormData) {
   const user = await requireAppAccess();
   const id = String(formData.get("diagramId") ?? "");
@@ -478,20 +498,14 @@ export async function quitarPasoAction(formData: FormData) {
       siguienteNo: p.siguienteNo === pasoId ? undefined : p.siguienteNo,
     }));
 
-  if (pasoEliminado?.tipo === "subproceso" && pasoEliminado.subprocesoDiagramId) {
-    await prisma.$transaction([
-      prisma.diagram.delete({ where: { id: pasoEliminado.subprocesoDiagramId } }),
-      prisma.diagram.update({
-        where: { id },
-        data: { pasos: pasos as unknown as Prisma.InputJsonValue },
-      }),
-    ]);
-  } else {
-    await prisma.diagram.update({
-      where: { id },
-      data: { pasos: pasos as unknown as Prisma.InputJsonValue },
+  await prisma.$transaction(async (tx) => {
+    if (pasoEliminado?.tipo === "subproceso" && pasoEliminado.subprocesoDiagramId) {
+      await marcarBorradoLogicoSubarbol(tx, pasoEliminado.subprocesoDiagramId);
+    }
+    await mutarDiagramaVersionado(tx, diagrama, "quitar_paso", pasoId, {
+      pasos: pasos as unknown as Prisma.InputJsonValue,
     });
-  }
+  });
   revalidatePath(`/diagramas/${id}`);
 }
 
@@ -521,10 +535,11 @@ export async function reconocerHuecoAction(formData: FormData) {
   const reconocidos = parseReconocidos(diagrama.huecosReconocidos);
   if (reconocidos.includes(clave)) return;
 
-  await prisma.diagram.update({
-    where: { id },
-    data: { huecosReconocidos: [...reconocidos, clave] as Prisma.InputJsonValue },
-  });
+  await prisma.$transaction((tx) =>
+    mutarDiagramaVersionado(tx, diagrama, "reconocer_hueco", clave, {
+      huecosReconocidos: [...reconocidos, clave] as Prisma.InputJsonValue,
+    }),
+  );
   revalidatePath(`/diagramas/${id}`);
 }
 
@@ -539,10 +554,11 @@ export async function desreconocerHuecoAction(formData: FormData) {
 
   const reconocidos = parseReconocidos(diagrama.huecosReconocidos).filter((c) => c !== clave);
 
-  await prisma.diagram.update({
-    where: { id },
-    data: { huecosReconocidos: reconocidos as Prisma.InputJsonValue },
-  });
+  await prisma.$transaction((tx) =>
+    mutarDiagramaVersionado(tx, diagrama, "reconocer_hueco", clave, {
+      huecosReconocidos: reconocidos as Prisma.InputJsonValue,
+    }),
+  );
   revalidatePath(`/diagramas/${id}`);
 }
 
@@ -599,6 +615,11 @@ export async function descomponerEnSubprocesoAction(
 
   const corte = construirCorte(padrePasos, pasoIds, nombre);
 
+  // Versionado (docs/DISENO-VERSIONADO-F02.md §1.2): pasosBackup se elimina
+  // y se absorbe — el estado del padre previo al corte pasa a ser la
+  // imagen previa de una DiagramVersion con operacion "descomponer", igual
+  // que cualquier otra mutación. No se anida transacción (§2.2): se suma
+  // adentro de la misma $transaction que ya traía esta acción.
   const hijoId = await prisma.$transaction(async (tx) => {
     const hijo = await tx.diagram.create({
       data: {
@@ -610,7 +631,6 @@ export async function descomponerEnSubprocesoAction(
         parentDiagramId: padre.id,
         parentPasoId: corte.nuevoNodo.id,
         nivel: padre.nivel + 1,
-        pasosBackup: padrePasos as unknown as Prisma.InputJsonValue,
       },
     });
 
@@ -620,9 +640,8 @@ export async function descomponerEnSubprocesoAction(
       p.id === corte.nuevoNodo.id ? { ...p, subprocesoDiagramId: hijo.id } : p,
     );
 
-    await tx.diagram.update({
-      where: { id: padre.id },
-      data: { pasos: pasosPadreFinal as unknown as Prisma.InputJsonValue },
+    await mutarDiagramaVersionado(tx, padre, "descomponer", nombre, {
+      pasos: pasosPadreFinal as unknown as Prisma.InputJsonValue,
     });
 
     return hijo.id;
@@ -638,4 +657,98 @@ export async function descomponerEnSubprocesoAction(
   // conteo (sin llamar a esta acción, que requiere BD).
   revalidatePath(`/diagramas/${padre.id}`);
   return { hijoId };
+}
+
+// ─────────────────────────────────────────────────────────────
+// Versionado — historial y restaurar
+// docs/DISENO-VERSIONADO-F02.md §3.1
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Restaura `diagramId` al estado de `versionId`. Pieza de mayor riesgo de
+ * datos del incremento (§6 del diseño) — no se recorta sin avisar:
+ *
+ * 1. Versiona el estado ACTUAL antes de pisar nada (operacion "restaurar",
+ *    vía mutarDiagramaVersionado — nunca coalesce). Consecuencia: "deshacer
+ *    el deshacer" sale gratis, es restaurar la versión recién creada.
+ * 2. Reconcilia subprocesos comparando los `subprocesoDiagramId` de la
+ *    versión destino (V) contra el estado actual (A) — ver
+ *    reconciliarSubprocesos en src/lib/versionado.ts para la tabla de
+ *    casos completa (§5.2b).
+ * 3. Escribe actores/pasos/huecosReconocidos/cliente/proceso de la versión
+ *    destino. Los huecos de completitud NO se guardan: se recalculan
+ *    siempre en la página (CA-14, determinismo).
+ *
+ * Si algún subproceso quedó irrecuperable (purgado), los avisos viajan por
+ * query string al volver a la página — mismo patrón que
+ * generarDesdePromptAction usa para "preguntas" (no hay tabla de mensajes
+ * transitorios, es más barato que sobreviva un solo redirect que agregar
+ * infraestructura nueva). */
+export async function restaurarVersionAction(formData: FormData): Promise<void> {
+  const user = await requireAppAccess();
+  const diagramId = String(formData.get("diagramId") ?? "");
+  const versionId = String(formData.get("versionId") ?? "");
+
+  const diagrama = await diagramaDelUsuario(diagramId, user.id);
+  if (!diagrama) redirect("/dashboard");
+
+  const version = await prisma.diagramVersion.findFirst({
+    where: { id: versionId, diagramId },
+  });
+  if (!version) redirect(`/diagramas/${diagramId}`);
+
+  const idsVersionDestino = idsSubprocesoDePasos(version.pasos);
+  const idsEstadoActual = idsSubprocesoDePasos(diagrama.pasos);
+  const idsAConsultar = [...new Set([...idsVersionDestino, ...idsEstadoActual])];
+
+  const avisos: string[] = [];
+
+  await prisma.$transaction(async (tx) => {
+    const existentes = idsAConsultar.length
+      ? await tx.diagram.findMany({
+          where: { id: { in: idsAConsultar } },
+          select: { id: true, deletedAt: true },
+        })
+      : [];
+    const idsVivos = new Set(existentes.filter((d) => !d.deletedAt).map((d) => d.id));
+    const idsBorrados = new Set(existentes.filter((d) => d.deletedAt).map((d) => d.id));
+
+    const casos = reconciliarSubprocesos(idsVersionDestino, idsEstadoActual, idsVivos, idsBorrados);
+
+    // Los subprocesos purgados físicamente (irrecuperables) se degradan a
+    // "tarea" en el array de pasos que se va a escribir, conservando el
+    // texto — nunca se deja un enlace colgante (§5.2b).
+    const idsDegradados = new Set(
+      casos.filter((c) => c.caso === "degradar").map((c) => c.subprocesoDiagramId),
+    );
+    const pasosDestino = parsePasos(version.pasos).map((p) => {
+      if (p.tipo === "subproceso" && p.subprocesoDiagramId && idsDegradados.has(p.subprocesoDiagramId)) {
+        avisos.push(
+          `El subproceso «${p.texto}» ya no se puede recuperar; el paso quedó como actividad.`,
+        );
+        return { ...p, tipo: "tarea" as const, subprocesoDiagramId: undefined };
+      }
+      return p;
+    });
+
+    for (const caso of casos) {
+      if (caso.caso === "revivir") await revivirSubarbol(tx, caso.subprocesoDiagramId);
+      if (caso.caso === "borrado_logico") await marcarBorradoLogicoSubarbol(tx, caso.subprocesoDiagramId);
+    }
+
+    await mutarDiagramaVersionado(tx, diagrama, "restaurar", undefined, {
+      cliente: version.cliente,
+      proceso: version.proceso,
+      actores: version.actores as Prisma.InputJsonValue,
+      pasos: pasosDestino as unknown as Prisma.InputJsonValue,
+      huecosReconocidos: version.huecosReconocidos as Prisma.InputJsonValue,
+    });
+  });
+
+  revalidatePath(`/diagramas/${diagramId}`);
+  const destino =
+    avisos.length > 0
+      ? `/diagramas/${diagramId}?avisosRestaurar=${encodeURIComponent(JSON.stringify(avisos))}`
+      : `/diagramas/${diagramId}`;
+  redirect(destino);
 }

@@ -17,7 +17,7 @@ export async function GET(
   const user = await requireAppAccess();
   const { id } = await params;
 
-  const diagrama = await prisma.diagram.findFirst({ where: { id, userId: user.id } });
+  const diagrama = await prisma.diagram.findFirst({ where: { id, userId: user.id, deletedAt: null } });
   if (!diagrama) {
     return NextResponse.json({ error: "Diagrama no encontrado." }, { status: 404 });
   }

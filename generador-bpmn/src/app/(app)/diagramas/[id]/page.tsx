@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { ArrowLeft, Download, X, HelpCircle, Pencil, ChevronUp, ChevronDown } from "lucide-react";
+import { ArrowLeft, Download, X, HelpCircle, Pencil, ChevronUp, ChevronDown, History } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 import { parseActores, parsePasos, parseReconocidos, TIPOS_PASO, TIPO_LABEL } from "@/lib/diagramas";
 import { generarMermaid, idNodoParaPaso } from "@/lib/mermaid-render";
 import { claveHueco, evaluarCompletitud, tienePendientesSinResolver } from "@/lib/completitud";
+import { etiquetaOperacion } from "@/lib/versionado";
 import {
   actualizarMetaAction,
   eliminarDiagramaAction,
@@ -19,6 +20,7 @@ import {
   moverPasoAbajoAction,
   reconocerHuecoAction,
   desreconocerHuecoAction,
+  restaurarVersionAction,
 } from "@/app/(app)/actions";
 import { EliminarDiagramaButton } from "./EliminarDiagramaButton";
 import { QuitarPasoButton } from "./QuitarPasoButton";
@@ -38,6 +40,13 @@ function parsePreguntasPendientes(valor: string | undefined): string[] {
   }
 }
 
+/** "avisosRestaurar" llega en la URL solo justo después de restaurar una
+ * versión (ver restaurarVersionAction) — mismo patrón que "preguntas":
+ * aviso de una sola vez, no persistido. */
+function parseAvisosRestaurar(valor: string | undefined): string[] {
+  return parsePreguntasPendientes(valor);
+}
+
 const LABEL = "block text-sm font-medium text-ink";
 const INPUT =
   "mt-1 w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink outline-none transition focus:border-primary";
@@ -47,14 +56,14 @@ export default async function DiagramaPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ editId?: string; preguntas?: string }>;
+  searchParams: Promise<{ editId?: string; preguntas?: string; avisosRestaurar?: string }>;
 }) {
   const { id } = await params;
-  const { editId, preguntas } = await searchParams;
+  const { editId, preguntas, avisosRestaurar } = await searchParams;
   const user = await requireUser();
 
   const diagrama = await prisma.diagram.findFirst({
-    where: { id, userId: user.id },
+    where: { id, userId: user.id, deletedAt: null },
   });
   if (!diagrama) redirect("/dashboard");
 
@@ -62,10 +71,18 @@ export default async function DiagramaPage({
   const pasos = parsePasos(diagrama.pasos);
   const pasoEnEdicion = editId ? pasos.find((p) => p.id === editId) : undefined;
   const preguntasPendientes = parsePreguntasPendientes(preguntas);
+  const avisosDeRestaurar = parseAvisosRestaurar(avisosRestaurar);
   const codigoMermaid = generarMermaid(actores, pasos);
   const huecos = evaluarCompletitud(pasos);
   const reconocidos = parseReconocidos(diagrama.huecosReconocidos);
   const exportacionBloqueada = tienePendientesSinResolver(huecos, reconocidos);
+
+  // Historial de versiones (docs/DISENO-VERSIONADO-F02.md §3.1): lista
+  // descendente, solo se consulta acá (no en cada render del dashboard).
+  const versiones = await prisma.diagramVersion.findMany({
+    where: { diagramId: diagrama.id },
+    orderBy: { seq: "desc" },
+  });
 
   // Opciones de destino: cualquier otro paso del diagrama (no el que se
   // está editando, para no dejarlo apuntándose a sí mismo).
@@ -80,7 +97,7 @@ export default async function DiagramaPage({
   const diagramasHijo =
     idsSubprocesos.length > 0
       ? await prisma.diagram.findMany({
-          where: { id: { in: idsSubprocesos } },
+          where: { id: { in: idsSubprocesos }, deletedAt: null },
           select: { id: true, proceso: true, pasos: true },
         })
       : [];
@@ -119,6 +136,22 @@ export default async function DiagramaPage({
           <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-amber-900">
             {preguntasPendientes.map((pregunta, i) => (
               <li key={i}>{pregunta}</li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* Aviso de restaurar: subprocesos que ya no se pudieron recuperar
+          (ver restaurarVersionAction §5.2b, caso "degradar") */}
+      {avisosDeRestaurar.length > 0 && (
+        <section className="mt-6 rounded-xl border border-amber-300 bg-amber-50 p-5">
+          <h2 className="flex items-center gap-1.5 text-sm font-bold uppercase tracking-wide text-amber-800">
+            <History className="h-4 w-4" />
+            Versión restaurada
+          </h2>
+          <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-amber-900">
+            {avisosDeRestaurar.map((aviso, i) => (
+              <li key={i}>{aviso}</li>
             ))}
           </ul>
         </section>
@@ -500,6 +533,53 @@ export default async function DiagramaPage({
             + Agregar paso
           </button>
         </form>
+      </section>
+
+      {/* Historial de versiones (docs/DISENO-VERSIONADO-F02.md §3.1): lista
+          descendente, "Ver" en modo lectura y "Restaurar" completo. El copy
+          exacto de cada etiqueta lo define DISEÑADOR-UX — acá solo se
+          garantiza que el dato (operacion + detalle) llega a la fila. */}
+      <section className="mt-6 rounded-xl border border-line bg-surface p-5">
+        <h2 className="flex items-center gap-1.5 text-sm font-bold uppercase tracking-wide text-primary-ink">
+          <History className="h-4 w-4" />
+          Historial
+        </h2>
+        {versiones.length === 0 ? (
+          <p className="mt-3 text-sm text-ink-2">
+            Sin historial todavía — se registra desde la primera edición.
+          </p>
+        ) : (
+          <ul className="mt-3 divide-y divide-line text-sm">
+            {versiones.map((v) => (
+              <li key={v.id} className="flex items-center justify-between gap-3 py-2">
+                <div>
+                  <p className="text-ink">{etiquetaOperacion(v.operacion, v.detalle)}</p>
+                  <p className="text-xs text-ink-2">
+                    {v.createdAt.toLocaleString("es-CL")}
+                  </p>
+                </div>
+                <div className="flex shrink-0 items-center gap-3">
+                  <Link
+                    href={`/diagramas/${diagrama.id}/versiones/${v.id}`}
+                    className="text-xs font-medium text-primary-ink underline-offset-2 hover:underline"
+                  >
+                    Ver
+                  </Link>
+                  <form action={restaurarVersionAction}>
+                    <input type="hidden" name="diagramId" value={diagrama.id} />
+                    <input type="hidden" name="versionId" value={v.id} />
+                    <button
+                      type="submit"
+                      className="cursor-pointer text-xs font-medium text-ink-2 underline-offset-2 hover:underline"
+                    >
+                      Restaurar
+                    </button>
+                  </form>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       {/* Popup de edición de paso. Se abre navegando a ?editId=... (SSR, sin

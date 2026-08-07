@@ -5,8 +5,13 @@ import { requireUser } from "@/lib/session";
 
 export default async function Dashboard() {
   const user = await requireUser();
+  // deletedAt: null (versionado, docs/DISENO-VERSIONADO-F02.md §5.2a): un
+  // subproceso con borrado lógico no debe listarse. En la práctica esto
+  // raramente filtra algo acá (los hijos no aparecen en /dashboard salvo
+  // que el usuario navegue directo a su id), pero es la misma regla en
+  // todas las consultas de listado/carga, sin excepción.
   const diagramas = await prisma.diagram.findMany({
-    where: { userId: user.id },
+    where: { userId: user.id, deletedAt: null },
     orderBy: { updatedAt: "desc" },
   });
 

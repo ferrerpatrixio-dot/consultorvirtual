@@ -25,7 +25,7 @@ export function QuitarPasoButton({
         const cantidad = cantidadPasosSubproceso ?? 0;
         if (
           !confirm(
-            `Esto también va a borrar el subproceso "${nombre}" y sus ${cantidad} pasos. No se puede deshacer.`
+            `Esto también va a borrar el subproceso "${nombre}" y sus ${cantidad} pasos. Podés deshacerlo desde el Historial.`
           )
         ) {
           e.preventDefault();
