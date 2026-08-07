@@ -13,7 +13,7 @@ import { TIPOS_PASO, pasoSchema, type Paso } from "@/lib/diagramas";
 // procesos, no los automatiza. Ver docs/PROPUESTA-ARQUITECTO-BPMN-DESDE-PROMPT.md
 // sección 1.
 
-const MODELO = process.env.CLAUDE_MODEL ?? "claude-haiku-4-5";
+const MODELO = process.env.CLAUDE_MODEL ?? "claude-sonnet-5";
 
 export type ResultadoExtraccion = {
   actores: string[];
@@ -157,6 +157,7 @@ export async function extraerProcesoDesdePrompt(
     max_tokens: 8000,
     system: SYSTEM_PROMPT,
     output_config: {
+      effort: "high",
       format: { type: "json_schema", schema: EXTRACCION_JSON_SCHEMA },
     },
     messages: [{ role: "user", content: descripcion }],
