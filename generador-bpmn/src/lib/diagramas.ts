@@ -91,3 +91,10 @@ export function parsePasos(valor: unknown): Paso[] {
   const r = z.array(pasoSchema).safeParse(valor);
   return r.success ? (r.data as Paso[]) : [];
 }
+
+/** Valida `Diagram.huecosReconocidos` (Incremento 3 de F02 §2.3) leído
+ * desde la BD (Json). Un valor corrupto o ausente cae a []. */
+export function parseReconocidos(valor: unknown): string[] {
+  const r = z.array(z.string()).safeParse(valor);
+  return r.success ? r.data : [];
+}

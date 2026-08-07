@@ -4,9 +4,9 @@ import { z } from "zod";
 import { ArrowLeft, Download, X, HelpCircle, Pencil, ChevronUp, ChevronDown } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
-import { parseActores, parsePasos, TIPOS_PASO, TIPO_LABEL } from "@/lib/diagramas";
+import { parseActores, parsePasos, parseReconocidos, TIPOS_PASO, TIPO_LABEL } from "@/lib/diagramas";
 import { generarMermaid, idNodoParaPaso } from "@/lib/mermaid-render";
-import { evaluarCompletitud, tienePendientesSinResolver } from "@/lib/completitud";
+import { claveHueco, evaluarCompletitud, tienePendientesSinResolver } from "@/lib/completitud";
 import {
   actualizarMetaAction,
   eliminarDiagramaAction,
@@ -17,6 +17,8 @@ import {
   quitarPasoAction,
   moverPasoArribaAction,
   moverPasoAbajoAction,
+  reconocerHuecoAction,
+  desreconocerHuecoAction,
 } from "@/app/(app)/actions";
 import { EliminarDiagramaButton } from "./EliminarDiagramaButton";
 import { DiagramaPreview } from "./DiagramaPreview";
@@ -61,7 +63,8 @@ export default async function DiagramaPage({
   const preguntasPendientes = parsePreguntasPendientes(preguntas);
   const codigoMermaid = generarMermaid(actores, pasos);
   const huecos = evaluarCompletitud(pasos);
-  const exportacionBloqueada = tienePendientesSinResolver(huecos);
+  const reconocidos = parseReconocidos(diagrama.huecosReconocidos);
+  const exportacionBloqueada = tienePendientesSinResolver(huecos, reconocidos);
 
   // Opciones de destino: cualquier otro paso del diagrama (no el que se
   // está editando, para no dejarlo apuntándose a sí mismo).
@@ -150,22 +153,53 @@ export default async function DiagramaPage({
             Qué falta definir
           </h2>
           <ul className="mt-3 space-y-1.5 text-sm">
-            {huecos.map((h, i) => (
-              <li key={i} className="flex items-start gap-2">
-                <span
-                  className={`mt-0.5 shrink-0 rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
-                    h.severidad === "bloqueante"
-                      ? "bg-danger/10 text-danger"
-                      : h.severidad === "pendiente"
-                        ? "bg-amber-100 text-amber-800"
-                        : "bg-bg text-ink-2"
-                  }`}
-                >
-                  {h.severidad}
-                </span>
-                <span className="text-ink-2">{h.mensaje}</span>
-              </li>
-            ))}
+            {huecos.map((h, i) => {
+              const clave = claveHueco(h);
+              const yaReconocido = h.severidad === "pendiente" && reconocidos.includes(clave);
+              return (
+                <li key={i} className="flex items-start gap-2">
+                  <span
+                    className={`mt-0.5 shrink-0 rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                      h.severidad === "bloqueante"
+                        ? "bg-danger/10 text-danger"
+                        : h.severidad === "pendiente"
+                          ? "bg-amber-100 text-amber-800"
+                          : "bg-bg text-ink-2"
+                    }`}
+                  >
+                    {h.severidad}
+                  </span>
+                  <span className={yaReconocido ? "text-ink-2/60 line-through" : "text-ink-2"}>
+                    {h.mensaje}
+                  </span>
+                  {h.severidad === "pendiente" && !yaReconocido && (
+                    <form action={reconocerHuecoAction} className="ml-auto shrink-0">
+                      <input type="hidden" name="diagramId" value={diagrama.id} />
+                      <input type="hidden" name="clave" value={clave} />
+                      <button
+                        type="submit"
+                        className="cursor-pointer whitespace-nowrap text-xs font-medium text-primary-ink underline-offset-2 hover:underline"
+                      >
+                        Lo asumo, exportar igual
+                      </button>
+                    </form>
+                  )}
+                  {yaReconocido && (
+                    <form action={desreconocerHuecoAction} className="ml-auto shrink-0">
+                      <input type="hidden" name="diagramId" value={diagrama.id} />
+                      <input type="hidden" name="clave" value={clave} />
+                      <span className="mr-2 whitespace-nowrap text-xs italic text-ink-2">asumido por ti</span>
+                      <button
+                        type="submit"
+                        className="cursor-pointer whitespace-nowrap text-xs font-medium text-ink-2 underline-offset-2 hover:underline"
+                      >
+                        Revertir
+                      </button>
+                    </form>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </section>
       )}

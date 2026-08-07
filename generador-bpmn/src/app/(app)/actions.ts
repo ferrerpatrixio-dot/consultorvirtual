@@ -10,11 +10,12 @@ import {
   TIPOS_PASO,
   parseActores,
   parsePasos,
+  parseReconocidos,
   pasoSchema,
   type Paso,
 } from "@/lib/diagramas";
 import { extraerProcesoDesdePrompt } from "@/lib/extraccion-llm";
-import { evaluarCompletitud, tieneBloqueantes, type Hueco } from "@/lib/completitud";
+import { claveHueco, evaluarCompletitud, tieneBloqueantes, type Hueco } from "@/lib/completitud";
 import { registrarDiagramaDeTrial } from "@/lib/trial";
 import {
   esRegionSESE,
@@ -491,6 +492,57 @@ export async function quitarPasoAction(formData: FormData) {
       data: { pasos: pasos as unknown as Prisma.InputJsonValue },
     });
   }
+  revalidatePath(`/diagramas/${id}`);
+}
+
+// ─────────────────────────────────────────────────────────────
+// Reconocimiento de huecos pendientes (Incremento 3 de F02 §2.3)
+// docs/DISENO-INCREMENTO-3-F02.md
+// ─────────────────────────────────────────────────────────────
+
+/** Marca un hueco `pendiente` como asumido por el usuario, para destrabar
+ * la exportación (§2.3). No confía en la severidad que declare el
+ * formulario: recalcula los huecos desde cero y solo agrega la clave si
+ * corresponde a un hueco `pendiente` que existe hoy en el diagrama. Un
+ * `bloqueante` (incluido M5) nunca se puede reconocer — regla dura, no
+ * negociable (§2.3). */
+export async function reconocerHuecoAction(formData: FormData) {
+  const user = await requireAppAccess();
+  const id = String(formData.get("diagramId") ?? "");
+  const clave = String(formData.get("clave") ?? "");
+  const diagrama = await diagramaDelUsuario(id, user.id);
+  if (!diagrama || !clave) return;
+
+  const pasos = parsePasos(diagrama.pasos);
+  const huecos = evaluarCompletitud(pasos);
+  const esPendienteValido = huecos.some((h) => h.severidad === "pendiente" && claveHueco(h) === clave);
+  if (!esPendienteValido) return;
+
+  const reconocidos = parseReconocidos(diagrama.huecosReconocidos);
+  if (reconocidos.includes(clave)) return;
+
+  await prisma.diagram.update({
+    where: { id },
+    data: { huecosReconocidos: [...reconocidos, clave] as Prisma.InputJsonValue },
+  });
+  revalidatePath(`/diagramas/${id}`);
+}
+
+/** Revierte el reconocimiento de un hueco: vuelve a bloquear la
+ * exportación si el hueco sigue presente. */
+export async function desreconocerHuecoAction(formData: FormData) {
+  const user = await requireAppAccess();
+  const id = String(formData.get("diagramId") ?? "");
+  const clave = String(formData.get("clave") ?? "");
+  const diagrama = await diagramaDelUsuario(id, user.id);
+  if (!diagrama || !clave) return;
+
+  const reconocidos = parseReconocidos(diagrama.huecosReconocidos).filter((c) => c !== clave);
+
+  await prisma.diagram.update({
+    where: { id },
+    data: { huecosReconocidos: reconocidos as Prisma.InputJsonValue },
+  });
   revalidatePath(`/diagramas/${id}`);
 }
 

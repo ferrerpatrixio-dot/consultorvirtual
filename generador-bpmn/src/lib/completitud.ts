@@ -18,7 +18,18 @@ import type { Paso } from "@/lib/diagramas";
 
 export type SeveridadHueco = "bloqueante" | "pendiente" | "sugerencia";
 
-export type ReglaHueco = "A1" | "A2" | "A3" | "M1" | "M2" | "M3" | "M4" | "E2" | "E3";
+export type ReglaHueco =
+  | "A1"
+  | "A2"
+  | "A3"
+  | "A4"
+  | "M1"
+  | "M2"
+  | "M3"
+  | "M4"
+  | "M5"
+  | "E2"
+  | "E3";
 
 export type Hueco = {
   regla: ReglaHueco;
@@ -27,6 +38,42 @@ export type Hueco = {
   /** Paso al que se refiere el hueco, si aplica (M1 puede no tener uno). */
   pasoId?: string;
 };
+
+// A4 — actor genérico (QA-05, Incremento 3 §2.4): lista cerrada, comparación
+// exacta (no `includes`) case-insensitive sobre el actor recortado. Exportada
+// para que el ANALISTA pueda ampliarla sin tocar la lógica del motor.
+export const ACTORES_GENERICOS = [
+  "sistema",
+  "el sistema",
+  "area",
+  "el area",
+  "responsable",
+  "el responsable",
+  "encargado",
+  "el encargado",
+  "usuario",
+  "el usuario",
+  "otro",
+  "varios",
+  "n/a",
+  "por definir",
+] as const;
+
+// Rango Unicode de diacríticos combinantes (U+0300–U+036F), usado para
+// quitar acentos tras normalize("NFD"). Construido con fromCharCode en vez
+// de un literal de rango en el código fuente para evitar ambigüedad de
+// codificación entre editores/plataformas.
+const RANGO_DIACRITICOS = new RegExp(
+  "[" + String.fromCharCode(0x0300) + "-" + String.fromCharCode(0x036f) + "]",
+  "g",
+);
+
+/** true si el actor (recortado, sin mayúsculas ni acentos) matchea EXACTO
+ * alguno de los términos genéricos — "Sistema de Bodega" no matchea. */
+function esActorGenerico(actor: string): boolean {
+  const normalizado = actor.trim().toLowerCase().normalize("NFD").replace(RANGO_DIACRITICOS, "");
+  return (ACTORES_GENERICOS as readonly string[]).includes(normalizado);
+}
 
 // "subproceso" cuenta como actividad para todo el resto del motor
 // (alcanzabilidad, callejón sin salida, nombrado, actor) — diseño §1.1: "es
@@ -128,6 +175,13 @@ export function evaluarCompletitud(pasos: Paso[]): Hueco[] {
         mensaje: `El paso "${texto || p.id}" no tiene responsable asignado (queda en el carril "Por definir").`,
         pasoId: p.id,
       });
+    } else if (esActorGenerico(p.actor)) {
+      huecos.push({
+        regla: "A4",
+        severidad: "sugerencia",
+        mensaje: `El responsable del paso "${texto || p.id}" es genérico ("${p.actor.trim()}"). Identifica el rol o el área concreta: es lo que permite después asignar la mejora a alguien.`,
+        pasoId: p.id,
+      });
     }
   }
   // A3 también aplica a decisiones: alguien tiene que tomarlas.
@@ -158,6 +212,63 @@ export function evaluarCompletitud(pasos: Paso[]): Hueco[] {
       severidad: "bloqueante",
       mensaje: "El diagrama no tiene ningún evento de fin (fin_ok / fin_error).",
     });
+  }
+
+  // M1 — unicidad (Incremento 3 §2.2, QA-13). `pendiente`, no `bloqueante`:
+  // hay procesos con varios disparadores legítimos de inicio; el usuario
+  // puede reconocer el hueco (§2.3) y seguir. Solo se marca fin_ok repetido
+  // — un fin_ok + un fin_error juntos es modelado correcto (dos resultados
+  // distintos) y no se marca.
+  const cantidadInicios = pasos.filter((p) => p.tipo === "inicio").length;
+  if (cantidadInicios > 1) {
+    huecos.push({
+      regla: "M1",
+      severidad: "pendiente",
+      mensaje: `El diagrama tiene ${cantidadInicios} eventos de inicio. Un proceso debería tener uno solo: si arranca por varias vías, modela un inicio único y las variantes como una decisión posterior.`,
+    });
+  }
+  const cantidadFinOk = pasos.filter((p) => p.tipo === "fin_ok").length;
+  if (cantidadFinOk > 1) {
+    huecos.push({
+      regla: "M1",
+      severidad: "pendiente",
+      mensaje: `El diagrama tiene ${cantidadFinOk} eventos de fin OK. Verifica que no sea el mismo fin dibujado dos veces.`,
+    });
+  }
+
+  // ── M5 — destino inexistente (Incremento 3 §2.1) ─────────────────────
+  // Bloqueante: no es "falta información", es "el dato es inválido" — un
+  // id que no existe en `pasosPorId` es un error de datos, no una
+  // heurística discutible. Se evalúa sobre los campos crudos del Paso, sin
+  // pasar por `destinosDe()` (que filtra ids fantasma a propósito para el
+  // BFS de M3 — ver su comentario). Un paso de decisión con las dos ramas
+  // rotas genera dos huecos, uno por rama.
+  for (const p of pasos) {
+    if (p.tipo === "decision") {
+      if (p.siguienteSi && !pasosPorId.has(p.siguienteSi)) {
+        huecos.push({
+          regla: "M5",
+          severidad: "bloqueante",
+          mensaje: `El paso "${p.texto || p.id}" apunta a un destino que ya no existe en el diagrama (rama "Sí").`,
+          pasoId: p.id,
+        });
+      }
+      if (p.siguienteNo && !pasosPorId.has(p.siguienteNo)) {
+        huecos.push({
+          regla: "M5",
+          severidad: "bloqueante",
+          mensaje: `El paso "${p.texto || p.id}" apunta a un destino que ya no existe en el diagrama (rama "No").`,
+          pasoId: p.id,
+        });
+      }
+    } else if (p.siguiente && !pasosPorId.has(p.siguiente)) {
+      huecos.push({
+        regla: "M5",
+        severidad: "bloqueante",
+        mensaje: `El paso "${p.texto || p.id}" apunta a un destino que ya no existe en el diagrama.`,
+        pasoId: p.id,
+      });
+    }
   }
 
   // ── M4 — tope de tamaño (7PMG G7) ────────────────────────────────────
@@ -276,9 +387,24 @@ export function tieneBloqueantes(huecos: Hueco[]): boolean {
   return huecos.some((h) => h.severidad === "bloqueante");
 }
 
-/** Pendiente O bloqueante: cualquiera de las dos impide exportar (spec
- * §3.2: "Lo que quede sin resolver aparece marcado... y bloquea la
- * exportación"; CA-12). Solo "sugerencia" no bloquea nada. */
-export function tienePendientesSinResolver(huecos: Hueco[]): boolean {
-  return huecos.some((h) => h.severidad === "bloqueante" || h.severidad === "pendiente");
+/** Clave estable de un hueco, usada para el mecanismo de reconocimiento
+ * (Incremento 3 §2.3). El motor es determinístico, así que la misma
+ * condición produce siempre la misma clave — un hueco resuelto de verdad
+ * simplemente deja de aparecer; su clave queda huérfana en el array de
+ * reconocidos, sin efecto. */
+export function claveHueco(h: Hueco): string {
+  return `${h.regla}:${h.pasoId ?? "-"}`;
+}
+
+/** Pendiente sin reconocer, O bloqueante: cualquiera de las dos impide
+ * exportar (spec §3.2: "Lo que quede sin resolver aparece marcado... y
+ * bloquea la exportación"; CA-12). Solo "sugerencia" no bloquea nada.
+ * `reconocidos` (Incremento 3 §2.3) son claves de huecos `pendiente` que el
+ * usuario asumió a sabiendas para destrabar la exportación — nunca se
+ * aplica a `bloqueante`, ese nivel no se puede reconocer. */
+export function tienePendientesSinResolver(huecos: Hueco[], reconocidos: string[] = []): boolean {
+  const set = new Set(reconocidos);
+  return huecos.some(
+    (h) => h.severidad === "bloqueante" || (h.severidad === "pendiente" && !set.has(claveHueco(h))),
+  );
 }

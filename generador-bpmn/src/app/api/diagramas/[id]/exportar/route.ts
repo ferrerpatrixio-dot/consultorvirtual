@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAppAccess } from "@/lib/session";
-import { parseActores, parsePasos } from "@/lib/diagramas";
+import { parseActores, parsePasos, parseReconocidos } from "@/lib/diagramas";
 import { exportarBpmn } from "@/lib/exportar-bpmn";
 import { evaluarCompletitud, tienePendientesSinResolver } from "@/lib/completitud";
 
@@ -32,7 +32,8 @@ export async function GET(
   // estado guardado) porque cualquier edición nivel 1 posterior a la
   // generación puede haber vuelto a introducir un hueco.
   const huecos = evaluarCompletitud(pasos);
-  if (tienePendientesSinResolver(huecos)) {
+  const reconocidos = parseReconocidos(diagrama.huecosReconocidos);
+  if (tienePendientesSinResolver(huecos, reconocidos)) {
     return NextResponse.json(
       {
         error:

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { evaluarCompletitud } from "@/lib/completitud";
+import { claveHueco, evaluarCompletitud, tienePendientesSinResolver } from "@/lib/completitud";
 import type { Paso } from "@/lib/diagramas";
 
 // Smoke test: confirma que vitest + alias @/lib compilan y corren sobre
@@ -52,9 +52,12 @@ describe("evaluarCompletitud", () => {
 
   // ── Bloque B — actores (A3) ─────────────────────────────────────────────
   describe("A3 — actor asignado", () => {
-    it("QA-05: actor: 'Sistema' — hueco de cobertura CONOCIDO: A3 solo detecta string vacío/whitespace, no valida si el actor es un actor válido de negocio", () => {
+    it("QA-05: actor: 'Sistema' — A3 no lo marca (no está vacío); A4 (Incremento 3) sí lo marca como sugerencia", () => {
       const pasos: Paso[] = [{ id: "p1", tipo: "tarea", texto: "Enviar correo", actor: "Sistema" }];
       expect(huecosDe(pasos, "A3")).toHaveLength(0);
+      const a4 = huecosDe(pasos, "A4");
+      expect(a4).toHaveLength(1);
+      expect(a4[0].severidad).toBe("sugerencia");
     });
 
     it("QA-07: actor: '' dispara A3 pendiente", () => {
@@ -125,14 +128,43 @@ describe("evaluarCompletitud", () => {
 
   // ── Bloque D — estructura del flujo (M1/E2/E3) ──────────────────────────
   describe("M1/E2/E3 — estructura del flujo", () => {
-    it("QA-13: dos pasos tipo 'inicio' en el mismo diagrama — hueco de cobertura CONOCIDO: M1 usa pasos.some(...) que verifica existencia, no unicidad, así que no dispara por duplicado", () => {
+    it("QA-13 (Incremento 3): dos pasos tipo 'inicio' en el mismo diagrama dispara M1 pendiente", () => {
       const pasos: Paso[] = [
         { id: "i1", tipo: "inicio", texto: "Inicio 1", actor: "", siguiente: "fin" },
         { id: "i2", tipo: "inicio", texto: "Inicio 2", actor: "", siguiente: "fin" },
         { id: "fin", tipo: "fin_ok", texto: "Fin", actor: "" },
       ];
       const m1 = huecosDe(pasos, "M1");
-      expect(m1).toHaveLength(0);
+      expect(m1).toHaveLength(1);
+      expect(m1[0].severidad).toBe("pendiente");
+    });
+
+    it("Incremento 3: dos pasos fin_ok dispara M1 pendiente", () => {
+      const pasos: Paso[] = [
+        { id: "inicio", tipo: "inicio", texto: "Inicio", actor: "", siguiente: "fin1" },
+        { id: "fin1", tipo: "fin_ok", texto: "Fin 1", actor: "" },
+        { id: "fin2", tipo: "fin_ok", texto: "Fin 2", actor: "" },
+      ];
+      const m1 = huecosDe(pasos, "M1");
+      expect(m1).toHaveLength(1);
+      expect(m1[0].severidad).toBe("pendiente");
+    });
+
+    it("Incremento 3: un fin_ok + un fin_error juntos NO dispara M1 (modelado correcto, protege la decisión de §2.2)", () => {
+      const pasos: Paso[] = [
+        { id: "inicio", tipo: "inicio", texto: "Inicio", actor: "", siguiente: "d1" },
+        {
+          id: "d1",
+          tipo: "decision",
+          texto: "¿Aprueba?",
+          actor: "Jefe",
+          siguienteSi: "finOk",
+          siguienteNo: "finError",
+        },
+        { id: "finOk", tipo: "fin_ok", texto: "Fin OK", actor: "" },
+        { id: "finError", tipo: "fin_error", texto: "Fin con error", actor: "" },
+      ];
+      expect(huecosDe(pasos, "M1")).toHaveLength(0);
     });
 
     it("QA-14: paso tarea sin 'siguiente' dispara E3 bloqueante", () => {
@@ -212,6 +244,129 @@ describe("evaluarCompletitud", () => {
       ];
       const m3 = huecosDe(pasos, "M3");
       expect(m3).toHaveLength(1);
+    });
+  });
+
+  // ── M5 — destino inexistente (Incremento 3 §2.1) ────────────────────────
+  describe("M5 — destino inexistente", () => {
+    it("destino roto en 'siguiente' dispara M5 bloqueante", () => {
+      const pasos: Paso[] = [
+        { id: "p1", tipo: "tarea", texto: "Hacer algo", actor: "X", siguiente: "fantasma" },
+      ];
+      const m5 = huecosDe(pasos, "M5");
+      expect(m5).toHaveLength(1);
+      expect(m5[0].severidad).toBe("bloqueante");
+      expect(m5[0].pasoId).toBe("p1");
+    });
+
+    it("destino roto en 'siguienteSi' dispara M5 bloqueante (una sola rama rota)", () => {
+      const pasos: Paso[] = [
+        { id: "p1", tipo: "decision", texto: "¿Aprueba?", actor: "Jefe", siguienteSi: "fantasma", siguienteNo: "p2" },
+        { id: "p2", tipo: "fin_ok", texto: "Fin", actor: "" },
+      ];
+      const m5 = huecosDe(pasos, "M5");
+      expect(m5).toHaveLength(1);
+      expect(m5[0].mensaje).toContain('rama "Sí"');
+    });
+
+    it("las dos ramas rotas genera dos huecos M5", () => {
+      const pasos: Paso[] = [
+        {
+          id: "p1",
+          tipo: "decision",
+          texto: "¿Aprueba?",
+          actor: "Jefe",
+          siguienteSi: "fantasma1",
+          siguienteNo: "fantasma2",
+        },
+      ];
+      expect(huecosDe(pasos, "M5")).toHaveLength(2);
+    });
+
+    it("destino válido no dispara M5", () => {
+      const pasos: Paso[] = [
+        { id: "p1", tipo: "tarea", texto: "Hacer algo", actor: "X", siguiente: "p2" },
+        { id: "p2", tipo: "fin_ok", texto: "Fin", actor: "" },
+      ];
+      expect(huecosDe(pasos, "M5")).toHaveLength(0);
+    });
+
+    it("paso de fin sin destino no dispara M5", () => {
+      const pasos: Paso[] = [{ id: "p1", tipo: "fin_ok", texto: "Fin", actor: "" }];
+      expect(huecosDe(pasos, "M5")).toHaveLength(0);
+    });
+
+    it("borrar un paso referenciado limpia la referencia (quitarPasoAction) y no deja destino roto — regresión de la causa raíz de M5", () => {
+      // Simula lo que hace quitarPasoAction: borra el paso "p2" y limpia el
+      // campo `siguiente` de quien apuntaba a él (ver src/app/(app)/actions.ts).
+      const antes: Paso[] = [
+        { id: "p1", tipo: "tarea", texto: "Hacer algo", actor: "X", siguiente: "p2" },
+        { id: "p2", tipo: "tarea", texto: "Otro paso", actor: "X", siguiente: "fin" },
+        { id: "fin", tipo: "fin_ok", texto: "Fin", actor: "" },
+      ];
+      const despues = antes
+        .filter((p) => p.id !== "p2")
+        .map((p) => ({ ...p, siguiente: p.siguiente === "p2" ? undefined : p.siguiente }));
+      const m5 = evaluarCompletitud(despues).filter((h) => h.regla === "M5");
+      expect(m5).toHaveLength(0);
+    });
+  });
+
+  // ── A4 — actor genérico (Incremento 3 §2.4) ─────────────────────────────
+  describe("A4 — actor genérico", () => {
+    it('"Sistema" dispara A4 sugerencia', () => {
+      const pasos: Paso[] = [{ id: "p1", tipo: "tarea", texto: "Enviar correo", actor: "Sistema" }];
+      const a4 = huecosDe(pasos, "A4");
+      expect(a4).toHaveLength(1);
+      expect(a4[0].severidad).toBe("sugerencia");
+    });
+
+    it('"SISTEMA" (mayúsculas) también dispara A4', () => {
+      const pasos: Paso[] = [{ id: "p1", tipo: "tarea", texto: "Enviar correo", actor: "SISTEMA" }];
+      expect(huecosDe(pasos, "A4")).toHaveLength(1);
+    });
+
+    it('"Sistema de Bodega" NO dispara A4 (match exacto, no includes)', () => {
+      const pasos: Paso[] = [
+        { id: "p1", tipo: "tarea", texto: "Enviar correo", actor: "Sistema de Bodega" },
+      ];
+      expect(huecosDe(pasos, "A4")).toHaveLength(0);
+    });
+
+    it('"Bodeguero" (actor concreto) no dispara A4', () => {
+      const pasos: Paso[] = [{ id: "p1", tipo: "tarea", texto: "Enviar correo", actor: "Bodeguero" }];
+      expect(huecosDe(pasos, "A4")).toHaveLength(0);
+    });
+  });
+
+  // ── Reconocimiento de pendientes (Incremento 3 §2.3) ─────────────────────
+  describe("tienePendientesSinResolver + claveHueco — reconocimiento", () => {
+    it("un pendiente reconocido deja de bloquear la exportación", () => {
+      const pasos: Paso[] = [
+        { id: "i1", tipo: "inicio", texto: "Inicio 1", actor: "", siguiente: "fin" },
+        { id: "i2", tipo: "inicio", texto: "Inicio 2", actor: "", siguiente: "fin" },
+        { id: "fin", tipo: "fin_ok", texto: "Fin", actor: "" },
+      ];
+      const huecos = evaluarCompletitud(pasos);
+      const m1 = huecos.find((h) => h.regla === "M1" && h.severidad === "pendiente")!;
+      expect(tienePendientesSinResolver(huecos, [])).toBe(true);
+      expect(tienePendientesSinResolver(huecos, [claveHueco(m1)])).toBe(false);
+    });
+
+    it("un bloqueante 'reconocido' (payload manipulado) sigue bloqueado", () => {
+      const pasos: Paso[] = [{ id: "p1", tipo: "tarea", texto: "", actor: "X" }]; // A1 bloqueante
+      const huecos = evaluarCompletitud(pasos);
+      const a1 = huecos.find((h) => h.regla === "A1")!;
+      expect(tienePendientesSinResolver(huecos, [claveHueco(a1)])).toBe(true);
+    });
+
+    it("M5 'reconocido' (payload manipulado) sigue bloqueado", () => {
+      const pasos: Paso[] = [
+        { id: "p1", tipo: "tarea", texto: "Hacer algo", actor: "X", siguiente: "fantasma" },
+      ];
+      const huecos = evaluarCompletitud(pasos);
+      const m5 = huecos.find((h) => h.regla === "M5")!;
+      expect(tienePendientesSinResolver(huecos, [claveHueco(m5)])).toBe(true);
     });
   });
 });

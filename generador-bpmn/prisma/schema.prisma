@@ -141,6 +141,14 @@ model Diagram {
   // incremento.
   pasosBackup Json?
 
+  /// Incremento 3 de F02 (docs/DISENO-INCREMENTO-3-F02.md §2.3): claves de
+  /// huecos `pendiente` que el usuario declaró aceptar a sabiendas, para
+  /// destrabar la exportación. Array de strings con el formato
+  /// `${regla}:${pasoId ?? "-"}` (ver claveHueco en src/lib/completitud.ts).
+  /// Nunca contiene huecos `bloqueante` — el server los rechaza (ver
+  /// reconocerHuecoAction).
+  huecosReconocidos Json @default("[]")
+
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   parent   Diagram?  @relation("Descomposicion", fields: [parentDiagramId], references: [id], onDelete: Cascade)
   children Diagram[] @relation("Descomposicion")
