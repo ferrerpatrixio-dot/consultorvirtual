@@ -45,7 +45,7 @@ export function SuscripcionForm({ publicKey }: { publicKey: string }) {
 
     const mp = new window.MercadoPago(publicKey);
     const cardForm = mp.cardForm({
-      amount: "9990",
+      amount: "19900",
       iframe: true,
       form: {
         id: "form-checkout",
@@ -141,7 +141,7 @@ export function SuscripcionForm({ publicKey }: { publicKey: string }) {
           disabled={!sdkListo || pending}
           className="w-full cursor-pointer rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {pending ? "Procesando…" : "Suscribirme — CLP $9.990/mes"}
+          {pending ? "Procesando…" : "Suscribirme — CLP $19.900/mes"}
         </button>
       </form>
     </>
