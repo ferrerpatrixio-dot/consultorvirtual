@@ -21,6 +21,7 @@ import {
   desreconocerHuecoAction,
 } from "@/app/(app)/actions";
 import { EliminarDiagramaButton } from "./EliminarDiagramaButton";
+import { QuitarPasoButton } from "./QuitarPasoButton";
 import { DiagramaPreview } from "./DiagramaPreview";
 
 /** "preguntas" llega en la URL solo justo después de generar un diagrama
@@ -69,6 +70,23 @@ export default async function DiagramaPage({
   // Opciones de destino: cualquier otro paso del diagrama (no el que se
   // está editando, para no dejarlo apuntándose a sí mismo).
   const opcionesDestino = pasos.filter((p) => p.id !== pasoEnEdicion?.id);
+
+  // Datos de los diagramas hijo (pasos "subproceso") para poder avisar,
+  // antes de borrar, cuántos pasos se pierden en cascada (ver
+  // quitarPasoAction en actions.ts). Un solo query en batch, no N+1.
+  const idsSubprocesos = pasos
+    .filter((p) => p.tipo === "subproceso" && p.subprocesoDiagramId)
+    .map((p) => p.subprocesoDiagramId!);
+  const diagramasHijo =
+    idsSubprocesos.length > 0
+      ? await prisma.diagram.findMany({
+          where: { id: { in: idsSubprocesos } },
+          select: { id: true, proceso: true, pasos: true },
+        })
+      : [];
+  const datosHijoPorId = new Map(
+    diagramasHijo.map((d) => [d.id, { nombre: d.proceso, cantidad: parsePasos(d.pasos).length }])
+  );
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-10">
@@ -360,12 +378,19 @@ export default async function DiagramaPage({
                       <form action={quitarPasoAction} className="inline">
                         <input type="hidden" name="diagramId" value={diagrama.id} />
                         <input type="hidden" name="pasoId" value={p.id} />
-                        <button
-                          type="submit"
-                          className="ml-3 cursor-pointer text-danger hover:underline"
-                        >
-                          Eliminar
-                        </button>
+                        <QuitarPasoButton
+                          esSubproceso={p.tipo === "subproceso"}
+                          nombreSubproceso={
+                            p.subprocesoDiagramId
+                              ? datosHijoPorId.get(p.subprocesoDiagramId)?.nombre
+                              : undefined
+                          }
+                          cantidadPasosSubproceso={
+                            p.subprocesoDiagramId
+                              ? datosHijoPorId.get(p.subprocesoDiagramId)?.cantidad
+                              : undefined
+                          }
+                        />
                       </form>
                     </td>
                   </tr>
