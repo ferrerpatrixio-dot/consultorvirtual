@@ -8,6 +8,95 @@
 
 ## 📅 CAMBIOS RECIENTES
 
+### 2026-08-07 — Cierre de sesión: pricing, modelo Sonnet 5, reglas M6/A6, versionado completo, nuevo agente ADMIN-DOCUMENTAL
+
+Sesión larga con múltiples deploys a `mapea.aiprocess.cl` (proyecto Vercel real: **`consultorvirtual`**,
+no "mapea" — ver incidente de infraestructura abajo). Todo verificado por PMcoordinador
+independientemente antes de cada push (tsc/eslint/tests/build + revisión de código), no solo
+reportado por los agentes.
+
+**Pricing:** subió de CLP $9.990/mes a **CLP $19.900/mes**, plan único, todo incluido (decisión de
+Patricio vía PRODUCT MANAGER — el precio viejo no reflejaba el alcance real del producto, que guía
+metodológicamente 4 niveles, no solo genera un diagrama). Plan nuevo creado en Mercado Pago
+(sandbox, `dcb883d7642743a9a9aae2a84f9ed92f`), sin suscriptores activos afectados (verificado: 0
+antes de migrar). El modelo de dos tiers (PYME $19.900 / Pro $39.900, con OTC o topes de
+fair-use) quedó **diseñado pero pospuesto** — depende del Reporte de Riesgo/Fricciones, que
+todavía no existe. Ver conversación de sesión para el detalle completo del análisis de
+PRODUCT MANAGER y COMERCIAL.
+
+**Modelo de IA:** `CLAUDE_MODEL` pasa de `claude-haiku-4-5` (fallback, nunca seteado en Vercel) a
+**`claude-sonnet-5`** con `effort: "high"`, decisión de ARQUITECTO IT con datos empíricos reales
+contra la API (Haiku no soporta el parámetro `effort`; Sonnet con thinking adaptativo no cuesta
+más en `high` que en `low` para tareas mecánicas). Prioriza calidad de entregable, instrucción
+explícita de Patricio.
+
+**Reglas M6/A6 (completitud):** cierre del hallazgo QA-09 del analista sobre decisiones de 3+
+salidas. Veredicto: NO hace falta modelo de datos N-ario (el estándar BPMN y la propia guía 7PMG
+favorecen la cadena de binarias). Se agregaron M6 (ramas gemelas, `siguienteSi === siguienteNo`) y
+A6 (decisión sin redactar como pregunta), más ajuste al prompt de extracción para declarar en
+`pending_questions` cuando se arma una cadena.
+
+**Versionado e historial de diagramas** (`docs/DISENO-VERSIONADO-F02.md`, diseño de ARQUITECTO IT):
+snapshot completo por versión (`DiagramVersion`), coalescencia de 5 min, poda a 50 versiones,
+borrado lógico de subprocesos (reemplaza `pasosBackup`, columna eliminada tras migrar sus datos),
+panel de historial + restaurar con reconciliación de subprocesos (4 casos, todos validados por QA
+contra la BD real, incluyendo el caso end-to-end de borrar+restaurar). SECURITY revisó retención
+bajo Ley 19.628: no bloquea (falta política de privacidad, pero es tarea de LEGAL antes de cobrar,
+no antes de deployar). Commit `594386f`.
+
+**Incidente de infraestructura (resuelto):** un agente DELIVERY vinculó por error un proyecto
+Vercel vacío llamado "mapea" (`vercel link --project mapea`) en vez del proyecto real
+`consultorvirtual`, que es al que está aliado `mapea.aiprocess.cl`. Causó que `CLAUDE_MODEL` se
+seteara sin efecto real la primera vez. Corregido re-vinculando `.vercel/project.json`. Además se
+descubrió que faltaba `"postinstall": "prisma generate"` en `package.json` — sin eso, Vercel
+restauraba caché de build con cliente Prisma desactualizado y **los últimos ~2 días de cambios no
+llegaban a producción real** pese a que las verificaciones locales pasaban limpias. Fix en commit
+`910a045`. Ambos hallazgos quedaron documentados en memoria (`indice-documentos-relacionados.md`
+del PMcoordinador) para no repetirse.
+
+**Nuevo agente: ADMIN-DOCUMENTAL** (`.claude/agents/admin-documental.md`, agregado a
+`MATRIZ_AGENTES.md` v1.6 y `ORGANIGRAMA.md`). Nace directamente de un incidente de esta sesión:
+`MATRIZ_AGENTES.md` tenía PRODUCT MANAGER/COMERCIAL/FINANCE desde v1.1 pero `ORGANIGRAMA.md`
+quedó desactualizado hasta que ARQUITECTO IT lo notó al pasar. Su trabajo es revisar consistencia
+entre documentos relacionados cada vez que PM lo invoca después de un cambio — no corre solo.
+
+---
+
+### 2026-08-07 — Incremento 3 de F02 implementado (DEV): integridad del grafo + desbloqueo de exportación
+
+Diseño de ARQUITECTO-IT: `docs/DISENO-INCREMENTO-3-F02.md`. Cuatro entregas, todas en `generador-bpmn/`:
+
+- ✅ **Regla M5 (bloqueante) — destino inexistente**: `siguiente`/`siguienteSi`/`siguienteNo` que
+  apunta a un id que no existe ahora se detecta y bloquea la exportación (antes se omitía en
+  silencio en `exportar-bpmn.ts` y `mermaid-render.ts`, y el resto del motor evaluaba un grafo
+  distinto del declarado). Se verificó `quitarPasoAction`: ya limpiaba las referencias entrantes
+  al borrar un paso, no hizo falta arreglo ahí — M5 queda como red de seguridad para datos que
+  ya estén rotos en producción por otra vía.
+- ✅ **M1 — unicidad de inicio/fin (QA-13)**: más de un `inicio`, o más de un `fin_ok`, ahora
+  generan hueco `pendiente` (antes solo se verificaba existencia, no unicidad). Un `fin_ok` + un
+  `fin_error` juntos sigue sin marcarse (es modelado correcto).
+- ✅ **Mecanismo de "reconocer pendiente"**: nueva columna `Diagram.huecosReconocidos` (migración
+  aditiva, sin riesgo), server actions `reconocerHuecoAction`/`desreconocerHuecoAction`, y
+  `tienePendientesSinResolver` con nueva firma que excluye pendientes reconocidos del bloqueo de
+  exportación. Corrige una contradicción real en producción: diagramas de 50+ nodos (M4) eran
+  inexportables sin ninguna acción disponible para destrabarlos. Los `bloqueante` (incluido M5)
+  nunca se pueden reconocer.
+- ✅ **A4 — actor genérico (QA-05)**: sugerencia (no bloquea) cuando el actor de un paso matchea
+  exacto una lista cerrada de términos genéricos ("Sistema", "Responsable", etc.).
+- ✅ **Script de conteo de impacto** (`generador-bpmn/scripts/conteo-impacto-m5.ts`, solo lectura):
+  corrido contra la BD real antes de este commit. Resultado: **1 diagrama total en producción, 0
+  con destinos rotos.** Riesgo de M5 trabando diagramas existentes: nulo por ahora.
+- ✅ Tests extendidos en `completitud.test.ts` (48 pasan, 1 skip preexistente de QA-09).
+  `npx tsc --noEmit`, `npx eslint src`, `npm run build` limpios.
+- ⚠️ **Desviación del pedido original**: se pidió agregar la acción de "reconocer" también al
+  formulario de generación (`NuevoDiagramaIAForm.tsx`), pero ese diagrama todavía no está
+  persistido (no tiene `diagramId`) y los huecos `pendiente` no bloquean el guardado ahí (solo
+  bloquea `tieneBloqueantes`, no `tienePendientesSinResolver`) — no aplica el mecanismo antes de
+  guardar. El diseño de ARQUITECTO-IT (§2.3) solo referencia `page.tsx` para esta UI; se siguió el
+  diseño aprobado.
+- **Pendiente de VB de QA antes de producción** (política de la casa) y de aprobación de deploy
+  de Patricio/PMcoordinador dado el resultado del script de impacto.
+
 ### 2026-08-02 (continuación) — Reestructuración de agentes + arranque producto BPMN-desde-prompt (PMcoordinador)
 
 **PRODUCTO NUEVO — Generador BPMN desde prompt (MVP Línea de Negocio 3):**
@@ -911,6 +1000,51 @@ grande, mismo rigor que el diseño original del producto.
 
 ---
 
+### 2026-08-07 — DELIVERY: Incremento 2 F02 a producción
+
+**Deploy Incremento 2 F02** (commit `7ee03da`) a `mapea.aiprocess.cl` vía Vercel.
+
+**Cambios incluidos:**
+- Migración aditiva: columnas `parentDiagramId`, `parentPasoId`, `nivel` (INT DEFAULT 0), 
+  `pasosBackup` (JSONB) en tabla `Diagram`
+- Auto-relación `Diagram` → `Diagram` con FK `ON DELETE CASCADE` para representar árbol de 
+  descomposición en subprocesos
+- Motor de descomposición: `src/lib/descomposicion.ts` + test suite (`descomposicion.test.ts`)
+- Integración en acciones de UI (`actions.ts`, `exportar/route.ts`, etc.)
+- Motor completitud actualizado para validar regla M4 (tope de tamaño de pasos)
+- Documentación: `docs/DISENO-INCREMENTO-2-F02-DESCOMPOSICION.md`
+
+**Validaciones pre-deploy:**
+- ✅ `tsc --noEmit` (DEV) — limpio
+- ✅ `eslint` (DEV) — limpio
+- ✅ `npm run test` (DEV) — 33 tests pasan, 1 skip esperado
+- ✅ `npm run build` (DEV) — limpio
+- ✅ Revisión manual transacción de creación/borrado recursivo (PM)
+- ✅ Validación de migración SQL — puramente aditiva, no hay riesgo de pérdida de datos
+
+**Ejecución del deploy:**
+- ✅ Git commit `7ee03da` — "Incremento 2 F02: descomposición de diagramas en subprocesos + regla M4"
+- ✅ Git push a `master` (origen `github.com/ferrerpatrixio-dot/consultorvirtual`)
+- ✅ Deploy automático en Vercel triggered
+
+**Validación post-deploy (smoke tests):**
+- ✅ `mapea.aiprocess.cl` accesible (HTTP 200)
+- ✅ HTML cargado correctamente (contenido "mapea/bpmn/diagrama" detectado)
+- ✅ Next.js app inicializado (`_next` presente)
+- ✅ API endpoint respondiendo
+
+**Notas operacionales:**
+- No requirió backup previo (migración aditiva, sin borrado)
+- Base de datos: `postgres://2.24.87.198:5432/iaprocess_server1?schema=generador_bpmn` 
+  (aislada, no afecta otros proyectos)
+- Vercel ejecutó automáticamente `prisma migrate deploy` durante el build (variables de entorno 
+  ya configuradas en dashboard)
+
+**Status:** ✅ Producción activa. Código estable. Próximo: validación de usuario en UAT si 
+Patricio lo requiere, o confirmar cierre de F02 si el deploy es definitivo.
+
+---
+
 ## 🎯 PRÓXIMAS AUDITORÍAS
 
 - **Próximo semanal:** 2026-08-08 (viernes)
@@ -918,5 +1052,5 @@ grande, mismo rigor que el diseño original del producto.
 
 ---
 
-*Mantenido por: PMcoordinador*  
-*Última auditoría: 2026-07-31*
+*Mantenido por: PMcoordinador (DELIVERY durante deploy)*  
+*Última auditoría: 2026-08-07*

@@ -1,8 +1,20 @@
 # 🤖 MATRIZ DE AGENTES - CONSULTORAVIRTUAL
 
-**Versión:** 1.4  
-**Fecha:** 2026-08-02  
+**Versión:** 1.6  
+**Fecha:** 2026-08-02 (actualizado 2026-08-07)  
 **Propósito:** Definir roles, responsabilidades y autoridad de cada agente en CONSULTORAVIRTUAL (empresa única integrada)
+
+> **Este documento es la fuente de verdad del roster** (quién existe, cuántos son, qué hace cada
+> uno). [ORGANIGRAMA.md](ORGANIGRAMA.md) solo visualiza jerarquía y flujo de proyecto — cualquier
+> agente nuevo se agrega primero acá.
+
+> **Cambios v1.6 (2026-08-07):** agregado **ADMIN-DOCUMENTAL** — nace de un incidente real de
+> desincronización entre este documento y `ORGANIGRAMA.md` (v1.5). Su trabajo es exactamente
+> evitar que eso se repita. Total: 12 agentes.
+
+> **Cambios v1.5 (2026-08-05):** `ORGANIGRAMA.md` no tenía reflejados a PRODUCT MANAGER,
+> COMERCIAL ni FINANCE (agregados acá en v1.1) — corregido, con vínculo explícito entre ambos
+> documentos para que no se vuelva a desalinear el roster.
 
 > **Cambios v1.4 (2026-08-02):** ARQUITECTO se dividió en dos roles: **ARQUITECTO IT**
 > (decide stack y herramientas) y **ANALISTA DE PROCESOS DE NEGOCIO** (mapa de procesos,
@@ -354,6 +366,29 @@ que el deployment de un proyecto para cliente.
 - Accesibilidad: WCAG AA mínimo
 - Reducción de soporte (menos preguntas "¿cómo hago esto?")
 
+---
+
+### **ADMIN-DOCUMENTAL** 📋
+**Rol:** Consistencia entre documentos relacionados (roster, cadenas de diseño, pricing, bitácora)
+
+| Aspecto | Descripción |
+|---------|------------|
+| **Responsable De** | Que documentos relacionados no se desincronicen entre sí (ej. MATRIZ_AGENTES.md vs ORGANIGRAMA.md) |
+| **Tareas Core** | Comparar documentos relacionados tras un cambio, reportar discrepancias, aplicar corrección solo si PM lo pide |
+| **Decisión Clave** | "¿Este cambio dejó algún documento relacionado desactualizado?" |
+| **Scope** | Documentos de definición/plan (no código, no contenido técnico nuevo) |
+| **Reporta A** | PM (Coordinador) |
+| **Escala** | Discrepancia sustantiva que no puede resolver solo (deja al agente dueño del contenido decidir) |
+| **Prioridad** | Se invoca DESPUÉS de cada cambio relevante a un doc de definición/plan — nunca espontáneo |
+
+**Deliverables:**
+- Reporte de consistencia (qué revisó, qué encontró, qué corrigió)
+- Mapa de documentos relacionados actualizado (vive en su propio `.claude/agents/admin-documental.md`)
+
+**Criterio de Éxito:**
+- 0 desincronizaciones de roster/pricing detectadas por un tercero antes que por él
+- Mapa de relaciones entre docs se mantiene vivo, no queda obsoleto
+
 **Nota:** Conversa directamente CON otros agentes para coordinar (ej. con DEV sobre
 implementabilidad). Pero SIEMPRE avisa al PM de cambios propuestos que requieran validación.
 
@@ -512,6 +547,7 @@ NIVEL 3 (Patricio Ferrer decide)
 | PM | Proyectos on-time (±10%) | 90%+ |
 | LEGAL | Contratos sin litigios | 100% |
 | DELIVERY | NPS post-capacitación | ≥8 |
+| ADMIN-DOCUMENTAL | Desincronizaciones detectadas por terceros (meta: 0) | 0 |
 
 ---
 

@@ -1,11 +1,26 @@
 # 🏢 ORGANIGRAMA - CONSULTORAVIRTUAL
 
-**Fecha:** 2026-08-02  
-**Estructura:** Consultora Virtual con 12 Agentes + 1 Decisor Humano
+**Fecha:** 2026-08-02 (actualizado 2026-08-07)  
+**Estructura:** Consultora Virtual con 12 Agentes + PM (Coordinador) + 1 Decisor Humano
 
 > **Actualización 2026-08-02:** ARQUITECTO se dividió en **ARQUITECTO IT** (stack y herramientas)
 > y **ANALISTA DE PROCESOS DE NEGOCIO** (mapa de procesos, riesgos, errores). Roster completo
 > e invocación de cada agente: [EQUIPO.md](EQUIPO.md).
+
+> **Actualización 2026-08-05:** Se incorporan al organigrama **PRODUCT MANAGER**, **COMERCIAL** y
+> **FINANCE**, que ya existían en `MATRIZ_AGENTES.md` (v1.1) pero no estaban reflejados acá — el
+> conteo de 11 agentes de ese documento ya los incluía. Además, toda referencia suelta a
+> "ARQUITECTO" en este documento se corrige a **ARQUITECTO IT** para no confundirlo con
+> ANALISTA-PROCESOS-NEGOCIO (post-split 2026-08-02).
+>
+> **Regla para evitar que esto se repita:** `MATRIZ_AGENTES.md` es la **fuente de verdad del
+> roster** (quién existe, cuántos son, qué hace cada uno). Este documento (`ORGANIGRAMA.md`) solo
+> visualiza jerarquía, flujo de proyecto y escenarios — nunca agrega un agente nuevo acá sin que
+> ya esté en la matriz primero. Si se agrega un agente a la matriz, hay que reflejarlo acá en la
+> misma sesión, no "después".
+>
+> **Actualización 2026-08-07:** se agrega **ADMIN-DOCUMENTAL** (matriz v1.6), agente cuyo trabajo
+> es justamente aplicar la regla del párrafo anterior — nace de esta misma inconsistencia.
 
 ---
 
@@ -46,6 +61,18 @@
    ┌────────────────┐
    │   DELIVERY     │
    │    Go-live     │
+   └────────────────┘
+
+   ┌────────────────┐   ┌────────────────┐   ┌────────────────┐
+   │PRODUCT MANAGER │   │   COMERCIAL    │   │    FINANCE     │
+   │Precio·lanzam.  │   │Prospecting·    │   │ Cash flow ·    │
+   │research merc.  │   │cierre contrato │   │ runway         │
+   └────────────────┘   └────────────────┘   └────────────────┘
+
+   ┌────────────────┐
+   │ADMIN-DOCUMENTAL│
+   │Consistencia    │
+   │entre documentos│
    └────────────────┘
 ```
 
@@ -117,6 +144,30 @@
 - Trabaja con: DEV (entender sistema), QA (pre-launch), cliente (capacitación)
 - Autoridad en: Deployment, capacitación, adopción
 
+**PRODUCT MANAGER** (Estrategia de producto y modelo de negocio)
+- Reporta a: PM + Patricio Ferrer
+- Trabaja con: COMERCIAL (viabilidad de precio en cotizaciones), FINANCE (impacto en cash flow), ARQUITECTO IT (costo de implementación)
+- Autoridad en: Estrategia de precio, lanzamiento, discontinuación de producto
+- Escala a Patricio: decisiones de precio, lanzamiento, discontinuación
+
+**COMERCIAL** (Generador de oportunidades y closer)
+- Reporta a: PM
+- Trabaja con: PRODUCT MANAGER (términos y precio), LEGAL (contrato), PM (aprobación de scope)
+- Autoridad en: Prospecting, propuestas, negociación, cierre
+- Escala a PM: descuentos >30%, clientes atípicos, términos no estándar
+
+**FINANCE** (Guardián del flujo de caja)
+- Reporta a: PM + Patricio Ferrer
+- Trabaja con: PM (estado de proyectos y costos), PRODUCT MANAGER (impacto de pricing en caja)
+- Autoridad en: Forecast de cash flow, runway, alertas de tesorería
+- Escala a Patricio: runway <30 días, clientes >45 días sin pagar
+
+**ADMIN-DOCUMENTAL** (Consistencia entre documentos)
+- Reporta a: PM
+- Trabaja con: cualquier agente dueño de un documento que necesite corrección sustantiva (no solo de sincronización mecánica)
+- Autoridad en: Detectar y reportar (o corregir, si PM lo pide) discrepancias entre documentos relacionados
+- Se invoca: solo después de un cambio concreto a un doc de definición/plan, nunca espontáneo
+
 ---
 
 ## 🔀 MATRIZ RACI (Quién Hace Qué)
@@ -172,7 +223,7 @@ ARQUITECTO IT define stack · DISEÑADOR-UX define journey
 ### **FASE 3: Implementación (Semanas 4-10)**
 ```
 DEV implementa (en paralelo)
-├─ ARQUITECTO revisa (sigue el plan)
+├─ ARQUITECTO IT revisa (sigue el plan)
 ├─ QA escribe test cases
 ├─ SECURITY audita código
 └─ PM reporta progreso
@@ -223,7 +274,8 @@ PM cierra proyecto
 
 ```
 NIVEL 1 (Diagnóstico, Gratis)
-├─ ARQUITECTO: no participa
+├─ ANALISTA-PROCESOS: hace el discovery / mapa as-is (es quien SÍ participa acá)
+├─ ARQUITECTO IT: no participa
 ├─ DEV: no participa
 ├─ QA: no participa
 ├─ SECURITY: valida Ley 19.628 solamente
@@ -233,7 +285,8 @@ NIVEL 1 (Diagnóstico, Gratis)
 Timeline: 1 día (async)
 
 NIVEL 2 (Consultoría, $1.5K-$3K)
-├─ ARQUITECTO: 2-3 días (diseño)
+├─ ANALISTA-PROCESOS: mapa + riesgos (previo al diseño de ARQUITECTO IT)
+├─ ARQUITECTO IT: 2-3 días (diseño)
 ├─ DEV: support only (no implementa)
 ├─ QA: no participa
 ├─ SECURITY: valida propuesta (1 día)
@@ -243,7 +296,8 @@ NIVEL 2 (Consultoría, $1.5K-$3K)
 Timeline: 1 semana
 
 NIVEL 3 (Implementación, $6K-$15K)
-├─ ARQUITECTO: full-time (2-3 semanas)
+├─ ANALISTA-PROCESOS: 1-2 semanas (mapa + riesgos, inicio del proyecto)
+├─ ARQUITECTO IT: full-time (2-3 semanas)
 ├─ DEV: full-time (6-8 semanas)
 ├─ QA: full-time (8-10 semanas)
 ├─ SECURITY: 2-3 semanas (distributed)
@@ -264,7 +318,7 @@ NIVEL 1 (Diagnóstico): $0 (lead gen)
 └─ Cost: ~$200 (marginal)
 
 NIVEL 2 (Consultoría): $1.5K-$3K
-├─ ARQUITECTO: 3 days × $300/day = $900
+├─ ARQUITECTO IT: 3 days × $300/day = $900
 ├─ SECURITY: 1 day × $300/day = $300
 ├─ PM: 5 days × $250/day = $1.250
 ├─ LEGAL: 1 day × $400/day = $400
@@ -272,7 +326,7 @@ NIVEL 2 (Consultoría): $1.5K-$3K
 └─ Costo total: ~$2.850 (vs $3K margen bruto)
 
 NIVEL 3 (Implementación): $6K-$15K
-├─ ARQUITECTO: 20 days × $300 = $6.000
+├─ ARQUITECTO IT: 20 days × $300 = $6.000
 ├─ DEV: 50 days × $400 = $20.000 (outsourced/tools)
 ├─ QA: 20 days × $250 = $5.000 (tools + testing)
 ├─ SECURITY: 15 days × $300 = $4.500
@@ -289,7 +343,7 @@ NIVEL 3 (Implementación): $6K-$15K
 ### **Escenario 1: Cliente dice "No es lo que pedí"**
 ```
 DELIVERY reporta → PM investiga
-PM habla con ARQUITECTO + DEV
+PM habla con ARQUITECTO IT + DEV
 ├─ Si es error nuestro: PM + DEV arreglan (sin costo adicional)
 ├─ Si es cliente cambió idea: PM + LEGAL negocian scope adicional
 └─ Si es crítico: Patricio Ferrer interviene
@@ -306,7 +360,7 @@ LEGAL + SECURITY crean plan de corrección
 
 ### **Escenario 3: DEV no puede terminar a tiempo**
 ```
-PM detecta en semana 8 → PM + ARQUITECTO hacen plan de contingencia
+PM detecta en semana 8 → PM + ARQUITECTO IT hacen plan de contingencia
 ├─ Opción A: Extender timeline 1-2 semanas (DEV trabaja más)
 ├─ Opción B: MVP approach (lanzar core, secondary after)
 └─ Escalación: Patricio Ferrer decide (afecta reputación)
