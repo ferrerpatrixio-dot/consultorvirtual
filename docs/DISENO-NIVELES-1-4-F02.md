@@ -25,7 +25,9 @@ Antes de proponer nada, verifiqué el estado actual en `generador-bpmn/` (no me 
 | `Paso.tipo` incluye `"subproceso"` + `subprocesoDiagramId` con `superRefine` | `src/lib/diagramas.ts:20,46,71` | ✅ |
 | `Paso` ya tiene `entradas`/`salidas` opcionales | `src/lib/diagramas.ts:51-52` | ✅ migrados, sin reglas E1 todavía |
 | Descomponer NO consume cupo de trial | `src/app/(app)/actions.ts:577-583,651-653` | ✅ decisión ya tomada e implementada |
-| Cupo de trial = 1 diagrama total, para siempre | `src/lib/trial.ts:16` | ✅ |
+| Cupo de trial = 1 diagrama total, para siempre (contador que solo sube) | `src/lib/trial.ts:16,73-78` | ✅ — **cambia por decisión del 2026-08-07, ver §2.3** |
+| `eliminarDiagramaAction` hace borrado **físico**, no lógico | `actions.ts:283` (`prisma.diagram.delete`) | ⚠️ el `deletedAt` solo lo escribe el camino de `quitarPaso`/`descomponer` |
+| `revivirSubarbol` solo revive hijos (se llama con `subprocesoDiagramId`) | `versionado.ts:179`, `actions.ts:735` | ✅ — ningún camino resucita un diagrama **raíz** |
 | `evaluarCompletitud(pasos)` es función pura, sin acceso a BD | `src/lib/completitud.ts:140` | ✅ (dato clave para §5.3) |
 | Borrado lógico vía `deletedAt` + poda diferida | `schema.prisma:151`, `versionado.ts:163` | ✅ |
 | El dashboard lista por `{ userId, deletedAt: null }` | `dashboard/page.tsx:14` | ✅ — **no filtra `parentDiagramId: null`**, ver §2.4 |
@@ -175,17 +177,68 @@ Pero la llamada no es comparable a la de un BPMN: entrada de una línea (el rubr
 |---|---|
 | Crear/generar borrador de mapa de valor | `requireAppAccess` (trial vigente o suscripción) + tope propio `trialValueMapsCreated < 3` |
 | Editar / confirmar el mapa | `requireAppAccess`, sin tope (es edición local, cero LLM) |
-| Bajar de nivel → crear el `Diagram` de Nivel 2 | `requireCreationAccess` **sin cambios**, y sí consume `trialDiagramsCreated` |
+| Bajar de nivel → crear el `Diagram` de Nivel 2 | `requireCreationAccess`, resuelto por **slot activo** — ver §2.3.1, reemplaza al contador `trialDiagramsCreated` |
 
-Es decir: **el mapa es gratis y exploratorio, bajar a un proceso es lo que cuesta.** Coherente con la métrica: el cupo mide el trabajo real de modelado, y el mapa de valor es el anzuelo. Un tope de 3 generaciones acota el abuso de "regenerá el borrador 400 veces" sin que ningún usuario legítimo lo note (el borrador se genera una vez y se edita a mano).
+Es decir: **el mapa es gratis y exploratorio, bajar a un proceso es lo que ocupa el cupo** (ocupa, no gasta: se libera al borrar, §2.3). Coherente con la métrica: el cupo mide el trabajo real de modelado, y el mapa de valor es el anzuelo. Un tope de 3 generaciones acota el abuso de "regenerá el borrador 400 veces" sin que ningún usuario legítimo lo note (el borrador se genera una vez y se edita a mano).
 
 `trialValueMapsCreated Int @default(0)` en `User`, y `evaluarAcceso` devuelve un `puedeGenerarMapaValor` adicional. No reutilizar `puedeCrearDiagrama`: son dos recursos con dos costos distintos, mezclarlos es lo que hace que un cambio de precio después obligue a tocar lógica.
 
-### 2.3 Tensión comercial que escalo a PRODUCT MANAGER (bloqueante antes de codear)
+### 2.3 Política de trial — RESUELTA (2026-08-07). Ya no es bloqueante.
 
-**El Nivel 1 vuelve visible que el trial da 1 solo diagrama.** Hoy el usuario en trial ve un cupo abstracto. Después del Nivel 1 va a ver su empresa dibujada con 9 macroprocesos y va a poder abrir exactamente **uno**. Eso es o el mejor momento de conversión del producto ("mapeaste tu empresa completa, suscribite para detallarla") o la peor frustración del trial, y la diferencia está enteramente en el copy y en si el cupo se mantiene en 1.
+Este apartado escalaba una tensión comercial: con el Nivel 1, el usuario en trial ve su empresa con 9 macroprocesos y puede abrir exactamente uno, y el cupo dejaba de ser abstracto. ANALISTA-PROCESOS-NEGOCIO lo evaluó desde el perfil real del cliente objetivo (analista freelance) y **Patricio aprobó la política que sigue. Está cerrada: DEV la implementa, no la reabre.**
 
-No es decisión mía. Es de PM/Patricio, y hay que tomarla **antes** de que DEV escriba la pantalla, porque cambia el copy, el momento del paywall y posiblemente `TRIAL_MAX_DIAGRAMAS`.
+**(1) El cupo es un slot rehacible, no un disparo único.**
+
+Durante el trial el usuario puede tener **un (1) proceso raíz detallado a la vez**, y puede rehacerlo o reemplazarlo las veces que quiera: borrar el que tiene y detallar otro macroproceso, o regenerar el mismo con un prompt mejor. Lo único que no puede es tener **dos procesos raíz detallados en simultáneo**.
+
+El motivo comercial, para que quede el criterio: lo que se cobra es la **capacidad simultánea** (el proceso raíz #2, y a futuro la vista consolidada de riesgos de toda la empresa), no el intento. Un analista que no puede corregir su primer intento no evalúa el producto: lo abandona.
+
+**(2) Nivel 1 completo, siempre gratis.** Sin cambios respecto de §2.2: el mapa de valor no consume cupo de diagramas y su único tope es el ya diseñado de 3 generaciones de borrador LLM (`trialValueMapsCreated`).
+
+**(3) El `.bpmn` exportado en trial es el real, sin marcas ni recortes.** Byte por byte idéntico al de un usuario pago: mismo XML, sin marca de agua, sin elementos omitidos, sin comentario agregado. **DEV: no hay ninguna rama por estado de suscripción en `exportar-bpmn.ts`.** Razón: el analista necesita abrirlo en Bizagi/Camunda/bpmn.io y comprobar que el estándar es válido *antes* de confiar en pagar; un export degradado no prueba nada y es exactamente lo que rompe la confianza que el producto vende.
+
+**(4) Anotado para cuando existan — marca en entregables cara al cliente.** Los documentos que un usuario le entrega a *su* cliente y que salen de niveles futuros (procedimientos de Nivel 4, reporte de riesgos de Nivel 3) **sí pueden llevar la marca "Generado con Mapea · versión de evaluación" mientras el usuario esté en trial**. No es parte de esta tanda —esos entregables no están construidos—, queda registrado acá para que el criterio no se pierda: la distinción es entre un **artefacto técnico de verificación** (el `.bpmn`, sin marca, punto 3) y un **entregable comercial terminado** (el PDF/`.md` que el consultor factura, con marca). No es la misma decisión y no se resuelve igual.
+
+#### 2.3.1 Cómo se implementa: consulta derivada, sin columna nueva
+
+**Decisión: se deriva de la BD. No se agrega columna, y `trialDiagramsCreated` deja de gobernar el gating.**
+
+```ts
+// src/lib/trial.ts
+export const TRIAL_MAX_RAICES_SIMULTANEAS = 1;
+
+const raicesActivas = await prisma.diagram.count({
+  where: { userId, parentDiagramId: null, deletedAt: null },
+});
+// puedeCrearDiagrama = suscripcionActiva
+//   || (trialActivo && raicesActivas < TRIAL_MAX_RAICES_SIMULTANEAS)
+```
+
+Por qué la consulta derivada y no una columna `trialRaicesActivas` que sube y baja:
+
+1. **El estado ya existe y es el mismo que la UI muestra.** Un contador incremental/decremental es una copia de un dato que la tabla `Diagram` ya tiene, y toda copia se desincroniza: basta una acción de borrado que se olvide de decrementar para que el usuario quede trabado en un cupo fantasma, sin forma de destrabarse solo. Ese bug es invisible hasta que un usuario lo reporta, y es irreparable sin tocar la BD a mano.
+2. **Los dos caminos de borrado ya dejan el estado correcto, sin tocarlos.** `eliminarDiagramaAction` borra físicamente (la fila desaparece del `count`); `marcarBorradoLogicoSubarbol` escribe `deletedAt` (el `where` la excluye). La consulta funciona con ambos **sin modificar ninguna de las dos**, que es justamente el argumento: no hay lugar donde alguien pueda olvidarse de mantener el contador.
+3. **Ningún camino resucita una raíz.** Verificado: `revivirSubarbol` solo se invoca sobre `subprocesoDiagramId` desde `restaurarVersionAction` (`actions.ts:735`), es decir siempre sobre un **hijo**. No existe hoy un flujo que pueda hacer pasar al usuario de 1 a 2 raíces activas por la espalda. **DEV: si alguna vez se agrega "restaurar diagrama borrado" a nivel raíz, esa acción tiene que pasar por el mismo gating de cupo** — dejarlo comentado en `revivirSubarbol`.
+4. **Costo nulo.** Es un `count` sobre `Diagram` filtrando por `userId`, dentro de `evaluarAcceso`, que ya hace un `findUnique` sobre `User` en el mismo request. El índice necesario ya está implícito en el filtro por `userId` que usa el dashboard.
+
+**Qué pasa con `trialDiagramsCreated`.** Deja de participar del gating. **No se borra la columna en esta tanda** (migración destructiva, sin beneficio, y el dato histórico sirve para métricas de producto: cuántos intentos hizo un usuario antes de convertir). `registrarDiagramaDeTrial` se conserva **como telemetría** y hay que renombrar su comentario: ya no es un cupo, es un contador de generaciones acumuladas. **DEV: el comentario actual de `trial.ts:9-16` explica el razonamiento contrario al que ahora rige —"un conteo en vivo permitiría generar uno nuevo cada vez que borra el anterior"— y hay que reescribirlo entero, no dejarlo.** Ese comentario describía la política vieja como si fuera una verdad técnica; si queda, la próxima persona "arregla" el gating de vuelta al contador.
+
+**Riesgo asumido, explícito (lo registro, no lo reabro).** El razonamiento que el comentario viejo defendía era real: borrar y regenerar dispara `generarDesdePromptAction`, que es la llamada cara al LLM, y con slot rehacible el trial no tiene techo de llamadas. La política aprobada acepta ese costo a cambio de conversión, y el trial de 3 días ya es un techo natural. **Si el costo de API se vuelve visible, la mitigación correcta NO es volver al cupo de 1** —eso deshace la decisión de producto— sino poner un techo anti-abuso alto sobre el contador que ya existe (p. ej. `trialDiagramsCreated < 10`), que ningún usuario legítimo alcanza. **No se implementa ahora**: es una línea el día que haya un dato que lo justifique, y agregarlo hoy sería optimizar contra un problema que nadie midió.
+
+#### 2.3.2 Impacto en el gating de "bajar de nivel"
+
+La tabla de §2.2 se lee así con la política resuelta:
+
+| Acción | Gating |
+|---|---|
+| Crear/generar borrador de mapa de valor | `requireAppAccess` + `puedeGenerarMapaValor` (`trialValueMapsCreated < 3`) |
+| Editar / confirmar el mapa | `requireAppAccess`, sin tope |
+| **Bajar de nivel → crear el `Diagram` raíz del macroproceso** | `requireCreationAccess`, ahora resuelto por **slot activo** (`raicesActivas < 1` en trial), no por contador acumulado |
+| Borrar el proceso raíz detallado | `requireAppAccess`, sin gating — **es lo que libera el slot** |
+| Descomponer en subprocesos | sin cupo (decisión del Incremento 2, sin cambios: los hijos tienen `parentDiagramId != null`, no cuentan) |
+| Exportar `.bpmn` | `requireAppAccess`. **Sin diferencia alguna entre trial y pago** |
+
+**Consecuencia para la pantalla de Nivel 1 (esto es lo que estaba trabado y ahora se puede escribir).** Con 9 macroprocesos en pantalla y el slot ocupado, las demás cajas **no se muestran bloqueadas con candado**: se muestran con la acción *"Detallar este proceso"* disponible, y al invocarla —con el slot ocupado— el sistema explica que en la versión de evaluación se detalla un proceso a la vez y ofrece dos salidas: **(a)** reemplazar el actual (borra el detallado y detalla este; confirmación explícita porque destruye trabajo), o **(b)** suscribirse para tener los dos. **DEV: el server valida el cupo igual, siempre** — el diálogo es UX, no el control. El copy exacto lo cierra DISEÑADOR-UX; lo que el diseño técnico fija es que existen esas dos salidas y que ninguna caja queda muerta.
 
 ### 2.4 Deuda que hay que cerrar en la misma tanda
 
@@ -297,8 +350,11 @@ Todo lo de esta sección se resolvió el 2026-08-07, tras la revisión de ANALIS
 | Generación LLM del borrador (prompt + json_schema + saneo) | **S-M** | Archivo nuevo, **no tocar `extraccion-llm.ts`** — riesgo cero de regresión sobre la extracción que ya está en producción. La fórmula de nomenclatura y la tabla de conversiones son texto del prompt: no mueven el sizing |
 | Pantalla del mapa (selector de alcance + grilla por categoría, editar/agregar/quitar/reordenar, confirmar) | **M** | Es la pieza más grande. UI nueva completa, no reusa el editor de pasos. El selector de alcance es un `select` de 3 opciones, **S** dentro de esta pieza |
 | `bajarANivel2Action` + enlace transaccional + breadcrumb | **S-M** | Crea un `Diagram` raíz con `valueMapId`; reusa el flujo de creación existente |
-| Gating de trial (`puedeGenerarMapaValor`) | **S** | |
+| Gating de trial: `puedeGenerarMapaValor` + slot rehacible por consulta derivada | **S** | §2.3.1. Un `count` dentro de `evaluarAcceso`, un `const` nuevo, y reescribir el comentario de `trial.ts:9-16`. **Cero migración**: no agrega columna ni la borra |
+| Diálogo "reemplazar o suscribirse" al detallar con el slot ocupado | **S** | §2.3.2. Confirmación destructiva + link a suscripción. Copy de DISEÑADOR-UX |
 | Arreglo del dashboard (raíces + mapas) | **S** | Deuda preexistente, §2.4 |
+
+**Sizing total Nivel 1: sigue siendo M — confirmado con la política de trial del 2026-08-07.** La resolución de §2.3 **baja** el trabajo respecto de lo que estaba planteado: el slot derivado elimina una migración que el contador habría necesitado, no toca el export (punto 3: cero ramas por suscripción en `exportar-bpmn.ts`), y el marcado de entregables (punto 4) queda fuera de alcance porque esos entregables no existen. Lo único que suma es el diálogo de reemplazo, que es **S** dentro de una pantalla que ya era **M**. Ninguna pieza cambió de talla.
 
 **Timeline: lo confirma DEV.** Orden de magnitud: por debajo del Incremento 2.
 
@@ -465,7 +521,7 @@ Cada procedimiento es una llamada al LLM, y hoy no hay ningún contador que las 
 | Criterio | Nivel 1 | Nivel 4 |
 |---|---|---|
 | Riesgo sobre código en producción | **Bajo** — tabla nueva aislada, no toca motor, export, versionado ni descomposición | **Medio-alto** — toca 4 acciones ya desplegadas (§5.3); un error pierde trabajo del usuario en silencio |
-| Preguntas de producto abiertas | 1 (cupo de trial, §2.3) | 2 (input por paso con DISEÑADOR-UX, §6.2; tope de generaciones, §8) |
+| Preguntas de producto abiertas | **0** — el cupo de trial se cerró el 2026-08-07 (§2.3) | 2 (input por paso con DISEÑADOR-UX, §6.2; tope de generaciones, §8) |
 | Costo LLM incremental | Bajo, acotado | Alto y proporcional al tamaño del proceso |
 | Qué destraba | El **punto de entrada**: hoy Mapea arranca en el aire, pidiéndole al usuario que elija un proceso sin haberle mostrado nunca su empresa | El entregable operativo final |
 | Sizing | M | M |
@@ -484,7 +540,7 @@ Cada procedimiento es una llamada al LLM, y hoy no hay ningún contador que las 
 
 **Nivel 1:** tabla nueva `ValueMap` (no `Diagram` con un `tipo`: ningún consumidor de `Diagram` sirve, la cardinalidad es 1→N diagramas raíz, y el `Cascade` de la auto-relación borraría todos los procesos del usuario). Macroprocesos como `Json` en la fila, igual que `actores`/`pasos`. Enlace hacia Nivel 2 duplicado —`Json` como fuente de verdad, `Diagram.valueMapId` como índice denormalizado con `SetNull`—, mismo patrón ya vigente para subprocesos. Sin `ValueMapVersion` (sobre-diseño; `borradorLlm` cubre el "volver atrás").
 
-**Trial Nivel 1:** el mapa **no** consume `trialDiagramsCreated`; bajar a un proceso **sí**. Contador propio con tope de 3 generaciones. Ojo: el argumento del Incremento 2 ("no consume porque no llama al LLM") **no aplica** acá —el mapa sí llama—, pero la llamada es un orden de magnitud más barata.
+**Trial Nivel 1 (política cerrada, 2026-08-07 — §2.3):** el mapa de valor no consume cupo de diagramas y tiene contador propio con tope de 3 generaciones LLM. El cupo del trial pasa de "1 diagrama para siempre" a **1 proceso raíz detallado a la vez, rehacible sin límite**: se ocupa al detallar, se libera al borrar. Se implementa como **consulta derivada** (`count` de `Diagram` con `parentDiagramId: null` y `deletedAt: null`), **sin columna nueva** — el estado ya existe en la tabla y una copia solo se puede desincronizar. `trialDiagramsCreated` sobrevive como telemetría, fuera del gating. El `.bpmn` en trial es **idéntico al pago, sin marca de agua** (es lo que le permite al analista verificar el estándar antes de pagar); la marca "versión de evaluación" queda reservada para los entregables cara al cliente de Niveles 3-4, que no existen todavía. Ojo: el argumento del Incremento 2 ("no consume porque no llama al LLM") **no aplica** al mapa —sí llama—, pero la llamada es un orden de magnitud más barata.
 
 **LLM Nivel 1:** propone `{nombre, categoria, descripcion}` y nada más. El código asigna ids, valida categorías y unicidad, y —clave— **el badge de "borrador" es un `if` sobre `confirmadoAt`, no una frase del prompt**. Así la condición 1 de §4 de la metodología es garantía y no buena intención.
 
@@ -500,7 +556,9 @@ Cada procedimiento es una llamada al LLM, y hoy no hay ningún contador que las 
 
 **Independientes entre sí. Recomiendo Nivel 1 primero:** es el punto de entrada que hoy falta, tiene el riesgo más aislado, y deja tiempo para resolver con DISEÑADOR-UX el flujo de input por paso que el Nivel 4 necesita.
 
-**Escalo a PRODUCT MANAGER, bloqueante antes de codear:**
-1. Con el Nivel 1, el cupo de 1 diagrama en trial se vuelve visible y áspero (le mostrás 9 puertas y abrís 1). ¿Se mantiene el cupo? ¿Dónde cae el paywall?
-2. Tope de generaciones de procedimiento en trial (mi recomendación: 3).
-3. Orden de construcción, si prioriza monetización sobre completar el embudo.
+**Bloqueantes: ninguno para el Nivel 1.** El único que había (cupo de trial) quedó resuelto el 2026-08-07 y está en §2.3.
+
+**Pendientes de PRODUCT MANAGER, que NO bloquean la primera tanda (Nivel 1):**
+1. Tope de generaciones de procedimiento en trial (mi recomendación: 3) — §8, aplica recién al construir Nivel 4.
+2. Marca "Generado con Mapea · versión de evaluación" en procedimientos y reporte de riesgos — §2.3 punto 4, aplica cuando esos entregables existan.
+3. Orden de construcción, si prioriza monetización sobre completar el embudo — §10.

@@ -29,12 +29,14 @@ export async function requireAppAccess() {
 }
 
 /** Igual que requireAppAccess, pero además exige cupo para crear un
- * diagrama nuevo: suscripción activa, o trial vigente con el cupo de 1
- * diagrama todavía disponible. Usado en las Server Actions y páginas que
- * crean diagramas (crearDiagramaAction, generarDesdePromptAction,
- * /diagramas/nuevo, /diagramas/nuevo-ia) para que el bloqueo del segundo
- * diagrama funcione a nivel de servidor, no solo ocultando el botón en la
- * UI. */
+ * diagrama RAÍZ nuevo: suscripción activa, o trial vigente con el slot de
+ * raíz simultánea libre (política de slot rehacible, ver
+ * TRIAL_MAX_RAICES_SIMULTANEAS en src/lib/trial.ts — 1 raíz detallada a la
+ * vez, rehacible sin límite borrando la anterior). Usado en las Server
+ * Actions y páginas que crean diagramas raíz (crearDiagramaAction,
+ * generarDesdePromptAction, bajarANivel2Action, /diagramas/nuevo,
+ * /diagramas/nuevo-ia) para que el bloqueo funcione a nivel de servidor, no
+ * solo ocultando el botón en la UI. */
 export async function requireCreationAccess() {
   const user = await requireUser();
   const acceso = await evaluarAcceso(user.id);

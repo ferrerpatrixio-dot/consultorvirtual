@@ -56,9 +56,16 @@ model User {
   // (generarDesdePromptAction). Solo sube, nunca baja. Ver src/lib/trial.ts.
   trialDiagramsCreated Int @default(0)
 
-  accounts Account[]
-  sessions Session[]
-  diagrams Diagram[]
+  // Nivel 1 de F02 (docs/DISENO-NIVELES-1-4-F02.md §2.2): tope propio de
+  // generaciones LLM del borrador de Mapa de Valor, separado de
+  // trialDiagramsCreated porque son dos recursos con dos costos distintos
+  // (ver src/lib/trial.ts). Editar/confirmar el mapa NO incrementa esto.
+  trialValueMapsCreated Int @default(0)
+
+  accounts  Account[]
+  sessions  Session[]
+  diagrams  Diagram[]
+  valueMaps ValueMap[]
 
   @@schema("generador_bpmn")
 }
@@ -132,7 +139,22 @@ model Diagram {
   // descomponerEnSubprocesoAction en src/lib/descomposicion.ts).
   parentDiagramId String?
   parentPasoId    String? // id del Paso "subproceso" del padre que abre este diagrama
+  // Sigue siendo "profundidad dentro del árbol de subprocesos" (raíz = 0).
+  // NO renumerar para que el Nivel 1 (Mapa de Valor) sea el nivel 1: el
+  // nivel metodológico es nivel + 2. Renumerar exige backfill de toda la
+  // tabla y revisar TOPE_NIVELES en descomposicion.ts a cambio de estética
+  // (docs/DISENO-NIVELES-1-4-F02.md §1.4).
   nivel           Int     @default(0)
+
+  // Nivel 1 de F02 (docs/DISENO-NIVELES-1-4-F02.md §1.2-1.3): de qué Mapa
+  // de Valor bajó este diagrama, y a qué macroproceso corresponde. Índice
+  // denormalizado — la fuente de verdad del enlace es
+  // Macroproceso.diagramId dentro de ValueMap.macroprocesos, mismo criterio
+  // que Paso.subprocesoDiagramId vs parentDiagramId arriba. SetNull, NO
+  // Cascade: borrar el mapa de valor no puede borrar los procesos que el
+  // usuario ya modeló (ciclos de vida opuestos, ver §1.1(a)3 del diseño).
+  valueMapId     String?
+  macroprocesoId String?
 
   /// Incremento 3 de F02 (docs/DISENO-INCREMENTO-3-F02.md §2.3): claves de
   /// huecos `pendiente` que el usuario declaró aceptar a sabiendas, para
@@ -154,9 +176,57 @@ model Diagram {
   parent   Diagram?         @relation("Descomposicion", fields: [parentDiagramId], references: [id], onDelete: Cascade)
   children Diagram[]        @relation("Descomposicion")
   versions DiagramVersion[]
+  valueMap ValueMap?        @relation(fields: [valueMapId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([parentDiagramId])
+  @@index([userId, deletedAt])
+  @@index([valueMapId])
+  @@schema("generador_bpmn")
+}
+
+// Nivel 1 de F02 (docs/DISENO-NIVELES-1-4-F02.md §1). Tabla nueva, NO
+// Diagram con un "tipo" distinto: ningún consumidor de Diagram (completitud,
+// mermaid-render, exportar-bpmn, descomposicion) sirve sobre un mapa de
+// valor, la cardinalidad es 1→N diagramas raíz (no la auto-relación 1→1 de
+// Diagram), y el onDelete: Cascade de esa auto-relación borraría todos los
+// procesos del usuario si el mapa fuera un Diagram padre. Ver razones
+// completas en el diseño §1.1.
+model ValueMap {
+  id      String @id @default(cuid())
+  userId  String
+  cliente String // la empresa mapeada (mismo campo libre que Diagram.cliente)
+  rubro   String // input del usuario; es el ÚNICO insumo del borrador LLM
+
+  /// Alcance declarado del mapa: "empresa" | "unidad" | "sede" (ver ALCANCES
+  /// en src/lib/valor.ts). Gobierna qué avisos de revisarMapaValor aplican
+  /// (V1/V3/V4 solo con "empresa", §3.3 del diseño). Default "empresa"
+  /// porque es el caso mayoritario en PYME.
+  alcance String @default("empresa")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// Macroprocesos vigentes (los que el usuario editó y confirmó). Fuente
+  /// de verdad. Ver macroprocesoSchema en src/lib/valor.ts.
+  macroprocesos Json @default("[]")
+
+  /// El borrador que devolvió el LLM, intacto, tal como llegó. Nunca se
+  /// sobrescribe con las ediciones del usuario — permite "volver al
+  /// borrador" sin gastar otra llamada al LLM y mostrar honestamente qué
+  /// propuso la máquina vs. qué puso el usuario.
+  borradorLlm Json @default("[]")
+
+  /// null = todavía es borrador (badge "propuesta editable" en toda la UI,
+  /// controlado por un `if`, no por texto del prompt). No se puede bajar de
+  /// nivel a un macroproceso hasta que esto tenga fecha.
+  confirmadoAt DateTime?
+
+  deletedAt DateTime?
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  diagrams Diagram[]
+
   @@index([userId, deletedAt])
   @@schema("generador_bpmn")
 }

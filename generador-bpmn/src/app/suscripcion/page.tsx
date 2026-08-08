@@ -31,7 +31,7 @@ export default async function SuscripcionPage({
   // docs/VIABILIDAD-PRODUCT-MANAGER-BPMN-DESDE-PROMPT.md sección 8.3).
   const mensajeTrial =
     motivo === "cupo-usado"
-      ? "Ya usaste tu proceso de prueba gratuita. Activa tu plan para crear procesos ilimitados por CLP $19.900/mes."
+      ? "En la versión de evaluación se detalla un proceso a la vez. Borra el que ya tienes desde el dashboard para detallar otro gratis, o activa tu plan para tener varios en simultáneo por CLP $19.900/mes."
       : motivo === "trial-vencido"
         ? "Tu prueba gratuita de 3 días terminó. Activa tu plan por CLP $19.900/mes para seguir usando el generador de diagramas."
         : null;
@@ -43,6 +43,14 @@ export default async function SuscripcionPage({
         <p className="mt-3 rounded-lg border border-primary bg-bg p-3 text-sm font-medium text-ink">
           {mensajeTrial}
         </p>
+      )}
+      {motivo === "cupo-usado" && (
+        <a
+          href="/dashboard"
+          className="mt-2 inline-block text-sm font-medium text-primary-ink underline"
+        >
+          Ir al dashboard para borrar mi proceso actual
+        </a>
       )}
       <p className="mt-1 text-sm text-ink-2">
         Plan único: CLP $19.900/mes. Necesitas una suscripción activa para
