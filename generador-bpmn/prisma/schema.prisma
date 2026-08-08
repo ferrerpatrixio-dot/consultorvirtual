@@ -175,8 +175,9 @@ model Diagram {
   user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   parent   Diagram?         @relation("Descomposicion", fields: [parentDiagramId], references: [id], onDelete: Cascade)
   children Diagram[]        @relation("Descomposicion")
-  versions DiagramVersion[]
-  valueMap ValueMap?        @relation(fields: [valueMapId], references: [id], onDelete: SetNull)
+  versions       DiagramVersion[]
+  valueMap       ValueMap?        @relation(fields: [valueMapId], references: [id], onDelete: SetNull)
+  procedimientos Procedimiento[]
 
   @@index([userId])
   @@index([parentDiagramId])
@@ -228,6 +229,39 @@ model ValueMap {
   diagrams Diagram[]
 
   @@index([userId, deletedAt])
+  @@schema("generador_bpmn")
+}
+
+// Nivel 4 de F02 (docs/DISENO-NIVELES-1-4-F02.md §5.1). Entidad separada,
+// NO dentro de Paso: DiagramVersion snapshotea `pasos` completo en cada
+// mutación (ver mutarDiagramaVersionado) — un procedimiento dentro del Json
+// de pasos se clonaría entero en cada versión. `pasoId` es el id del Paso
+// DENTRO de ese diagrama (único por diagrama, no global). Cascade sí es
+// correcto acá (al revés que ValueMap): un procedimiento sin su paso no
+// significa nada, y el paso no sobrevive al diagrama.
+model Procedimiento {
+  id        String @id @default(cuid())
+  diagramId String
+  userId    String // denormalizado, autoriza sin join (mismo criterio que DiagramVersion)
+  pasoId    String
+
+  /// Contenido estructurado. Ver procedimientoSchema en src/lib/procedimientos.ts.
+  contenido Json
+
+  /// Qué escribió el usuario para generarlo (§6.2 del diseño): es el insumo
+  /// que hace que el contenido NO sea invención — sin esto no se puede
+  /// auditar de dónde salió cada instrucción, ni regenerar.
+  promptFuente String @db.Text
+
+  estado    String   @default("borrador") // "borrador" | "confirmado"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  diagram Diagram @relation(fields: [diagramId], references: [id], onDelete: Cascade)
+
+  @@unique([diagramId, pasoId])
+  @@index([diagramId, deletedAt])
   @@schema("generador_bpmn")
 }
 

@@ -32,6 +32,8 @@ import {
   reconciliarSubprocesos,
   idsSubprocesoDePasos,
 } from "@/lib/versionado";
+import { elegiblePasoProcedimiento, procedimientoSchema } from "@/lib/procedimientos";
+import { estructurarProcedimiento } from "@/lib/procedimientos-llm";
 import type { Prisma } from "@prisma/client";
 
 /** Diagrama del usuario autenticado, o null si no existe / no le pertenece.
@@ -379,6 +381,11 @@ export async function agregarPasoAction(formData: FormData) {
   const parsed = leerPasoForm(formData);
   if (!parsed.success) return;
 
+  // Nivel 4 de F02 (§5.3 regla 2 del diseño): el id de un paso nuevo tiene
+  // que ser no reciclable para que un procedimiento soft-deleted nunca se
+  // re-adjunte a un paso distinto que reutiliza el mismo pasoId.
+  // randomUUID() ya cumple esto (colisión estadísticamente nula) — no hace
+  // falta verificar contra procedimientos soft-deleted del diagrama.
   const nuevo: Paso = {
     id: randomUUID(),
     actor: parsed.data.actor,
@@ -502,6 +509,15 @@ export async function quitarPasoAction(formData: FormData) {
     if (pasoEliminado?.tipo === "subproceso" && pasoEliminado.subprocesoDiagramId) {
       await marcarBorradoLogicoSubarbol(tx, pasoEliminado.subprocesoDiagramId);
     }
+    // Nivel 4 de F02 (docs/DISENO-NIVELES-1-4-F02.md §5.3, regla 1):
+    // soft-delete del procedimiento de ese pasoId, en la misma transacción
+    // que la mutación versionada. No borrado físico: si el usuario restaura
+    // una versión anterior que trae este pasoId de vuelta, el procedimiento
+    // tiene que volver (ver reconciliación en restaurarVersionAction).
+    await tx.procedimiento.updateMany({
+      where: { diagramId: diagrama.id, pasoId, deletedAt: null },
+      data: { deletedAt: new Date() },
+    });
     await mutarDiagramaVersionado(tx, diagrama, "quitar_paso", pasoId, {
       pasos: pasos as unknown as Prisma.InputJsonValue,
     });
@@ -644,6 +660,14 @@ export async function descomponerEnSubprocesoAction(
       pasos: pasosPadreFinal as unknown as Prisma.InputJsonValue,
     });
 
+    // Nivel 4 de F02 (§5.3 regla 3 del diseño — "el punto de integración
+    // donde más fácil se pierde trabajo del usuario en silencio"): los
+    // pasos que se mueven al hijo se llevan sus procedimientos.
+    await tx.procedimiento.updateMany({
+      where: { diagramId: padre.id, pasoId: { in: pasoIds } },
+      data: { diagramId: hijo.id },
+    });
+
     return hijo.id;
   });
 
@@ -736,6 +760,24 @@ export async function restaurarVersionAction(formData: FormData): Promise<void> 
       if (caso.caso === "borrado_logico") await marcarBorradoLogicoSubarbol(tx, caso.subprocesoDiagramId);
     }
 
+    // Nivel 4 de F02 (§5.3 regla 1 del diseño): reconciliación simétrica de
+    // procedimientos, mismo criterio que arriba con subprocesos. Los ids de
+    // paso son no reciclables (randomUUID), así que "pasoId presente en la
+    // versión destino" identifica sin ambigüedad al mismo paso que pudo
+    // existir antes. Pasos que la versión destino trae de vuelta → revive
+    // su procedimiento si estaba soft-deleted; pasos que la versión destino
+    // NO tiene pero el estado actual sí → soft-delete de su procedimiento
+    // (mismo efecto que si se hubiera quitado el paso).
+    const idsPasoDestino = parsePasos(version.pasos).map((p) => p.id);
+    await tx.procedimiento.updateMany({
+      where: { diagramId: diagrama.id, pasoId: { in: idsPasoDestino }, deletedAt: { not: null } },
+      data: { deletedAt: null },
+    });
+    await tx.procedimiento.updateMany({
+      where: { diagramId: diagrama.id, pasoId: { notIn: idsPasoDestino }, deletedAt: null },
+      data: { deletedAt: new Date() },
+    });
+
     await mutarDiagramaVersionado(tx, diagrama, "restaurar", undefined, {
       cliente: version.cliente,
       proceso: version.proceso,
@@ -751,4 +793,139 @@ export async function restaurarVersionAction(formData: FormData): Promise<void> 
       ? `/diagramas/${diagramId}?avisosRestaurar=${encodeURIComponent(JSON.stringify(avisos))}`
       : `/diagramas/${diagramId}`;
   redirect(destino);
+}
+
+// ─────────────────────────────────────────────────────────────
+// Procedimientos — Nivel 4 de F02
+// docs/DISENO-NIVELES-1-4-F02.md, Parte B
+// ─────────────────────────────────────────────────────────────
+
+export type EstadoGeneracionProcedimiento = { error?: string };
+
+/** Genera (o regenera) el procedimiento de un paso: el usuario ya escribió
+ * en sus palabras cómo se hace (promptUsuario), y esta acción llama al LLM
+ * para ESTRUCTURARLO — nunca para inventar contenido nuevo (§6.2 del
+ * diseño). Upsert sobre la fila única (diagramId, pasoId): regenerar
+ * siempre vuelve a "borrador", aunque ya estuviera confirmado — un
+ * contenido nuevo requiere revisión de nuevo. */
+export async function generarProcedimientoAction(
+  _prevState: EstadoGeneracionProcedimiento,
+  formData: FormData,
+): Promise<EstadoGeneracionProcedimiento> {
+  const user = await requireAppAccess();
+  const diagramId = String(formData.get("diagramId") ?? "");
+  const pasoId = String(formData.get("pasoId") ?? "");
+  const promptUsuario = String(formData.get("promptUsuario") ?? "").trim();
+
+  const diagrama = await diagramaDelUsuario(diagramId, user.id);
+  if (!diagrama) return { error: "Diagrama no encontrado." };
+  if (!promptUsuario) return { error: "Describe cómo se hace este paso antes de generar." };
+
+  const pasos = parsePasos(diagrama.pasos);
+  const idx = pasos.findIndex((p) => p.id === pasoId);
+  const paso = pasos[idx];
+  if (!paso) return { error: "Paso no encontrado." };
+  if (!elegiblePasoProcedimiento(paso)) {
+    return { error: "Este tipo de paso no lleva procedimiento." };
+  }
+
+  const vecinos = [pasos[idx - 1]?.texto, pasos[idx + 1]?.texto].filter(
+    (t): t is string => !!t,
+  );
+
+  let contenido;
+  try {
+    contenido = await estructurarProcedimiento(
+      { actor: paso.actor, texto: paso.texto, entradas: paso.entradas, salidas: paso.salidas, vecinos },
+      promptUsuario,
+    );
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "No se pudo generar el procedimiento." };
+  }
+
+  await prisma.procedimiento.upsert({
+    where: { diagramId_pasoId: { diagramId, pasoId } },
+    create: {
+      diagramId,
+      userId: user.id,
+      pasoId,
+      contenido: contenido as unknown as Prisma.InputJsonValue,
+      promptFuente: promptUsuario,
+      estado: "borrador",
+    },
+    update: {
+      contenido: contenido as unknown as Prisma.InputJsonValue,
+      promptFuente: promptUsuario,
+      estado: "borrador",
+      deletedAt: null,
+    },
+  });
+
+  revalidatePath(`/diagramas/${diagramId}`);
+  return {};
+}
+
+/** Guarda ediciones manuales del contenido estructurado (el usuario ajustó
+ * el borrador que propuso el LLM, o lo escribió desde cero). Editar no
+ * confirma: vuelve a "borrador" si estaba confirmado, porque el contenido
+ * cambió y hay que revisarlo de nuevo. */
+export async function guardarProcedimientoManualAction(formData: FormData) {
+  const user = await requireAppAccess();
+  const diagramId = String(formData.get("diagramId") ?? "");
+  const pasoId = String(formData.get("pasoId") ?? "");
+  const contenidoJson = String(formData.get("contenidoJson") ?? "");
+
+  const diagrama = await diagramaDelUsuario(diagramId, user.id);
+  if (!diagrama) return;
+
+  let contenidoBruto: unknown;
+  try {
+    contenidoBruto = JSON.parse(contenidoJson);
+  } catch {
+    return;
+  }
+  const parsed = procedimientoSchema.safeParse(contenidoBruto);
+  if (!parsed.success) return;
+
+  const existente = await prisma.procedimiento.findUnique({
+    where: { diagramId_pasoId: { diagramId, pasoId } },
+  });
+
+  await prisma.procedimiento.upsert({
+    where: { diagramId_pasoId: { diagramId, pasoId } },
+    create: {
+      diagramId,
+      userId: user.id,
+      pasoId,
+      contenido: parsed.data as unknown as Prisma.InputJsonValue,
+      promptFuente: existente?.promptFuente ?? "",
+      estado: "borrador",
+    },
+    update: {
+      contenido: parsed.data as unknown as Prisma.InputJsonValue,
+      estado: "borrador",
+      deletedAt: null,
+    },
+  });
+
+  revalidatePath(`/diagramas/${diagramId}`);
+}
+
+/** Marca el procedimiento como confirmado: el usuario revisó el contenido
+ * (propuesto por IA o editado a mano) y lo da por bueno. Puramente un
+ * cambio de estado — no toca el contenido. */
+export async function confirmarProcedimientoAction(formData: FormData) {
+  const user = await requireAppAccess();
+  const diagramId = String(formData.get("diagramId") ?? "");
+  const pasoId = String(formData.get("pasoId") ?? "");
+
+  const diagrama = await diagramaDelUsuario(diagramId, user.id);
+  if (!diagrama) return;
+
+  await prisma.procedimiento.updateMany({
+    where: { diagramId, pasoId, deletedAt: null },
+    data: { estado: "confirmado" },
+  });
+
+  revalidatePath(`/diagramas/${diagramId}`);
 }

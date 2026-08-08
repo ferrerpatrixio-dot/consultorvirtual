@@ -9,6 +9,11 @@ import { generarMermaid, idNodoParaPaso } from "@/lib/mermaid-render";
 import { claveHueco, evaluarCompletitud, tienePendientesSinResolver } from "@/lib/completitud";
 import { etiquetaOperacion } from "@/lib/versionado";
 import {
+  elegiblePasoProcedimiento,
+  coberturaProcedimientos,
+  parseContenidoProcedimiento,
+} from "@/lib/procedimientos";
+import {
   actualizarMetaAction,
   eliminarDiagramaAction,
   agregarActorAction,
@@ -25,6 +30,7 @@ import {
 import { EliminarDiagramaButton } from "./EliminarDiagramaButton";
 import { QuitarPasoButton } from "./QuitarPasoButton";
 import { DiagramaPreview } from "./DiagramaPreview";
+import { ProcedimientoDrawer } from "./ProcedimientoDrawer";
 
 /** "preguntas" llega en la URL solo justo después de generar un diagrama
  * con IA (ver generarDesdePromptAction) — no se persiste en la BD, es un
@@ -56,10 +62,15 @@ export default async function DiagramaPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ editId?: string; preguntas?: string; avisosRestaurar?: string }>;
+  searchParams: Promise<{
+    editId?: string;
+    preguntas?: string;
+    avisosRestaurar?: string;
+    procId?: string;
+  }>;
 }) {
   const { id } = await params;
-  const { editId, preguntas, avisosRestaurar } = await searchParams;
+  const { editId, preguntas, avisosRestaurar, procId } = await searchParams;
   const user = await requireUser();
 
   const diagrama = await prisma.diagram.findFirst({
@@ -104,6 +115,22 @@ export default async function DiagramaPage({
   const datosHijoPorId = new Map(
     diagramasHijo.map((d) => [d.id, { nombre: d.proceso, cantidad: parsePasos(d.pasos).length }])
   );
+
+  // Nivel 4 de F02 (docs/DISENO-NIVELES-1-4-F02.md, Parte B): procedimientos
+  // vigentes del diagrama, para el indicador de cobertura y el badge por
+  // fila. Un solo query, no N+1.
+  const procedimientos = await prisma.procedimiento.findMany({
+    where: { diagramId: diagrama.id, deletedAt: null },
+  });
+  const procedimientoPorPasoId = new Map(procedimientos.map((p) => [p.pasoId, p]));
+  const cobertura = coberturaProcedimientos(pasos, procedimientos);
+  const pasoProcedimiento = procId ? pasos.find((p) => p.id === procId) : undefined;
+  const procedimientoSeleccionado = procId ? procedimientoPorPasoId.get(procId) : undefined;
+  const idxProc = procId ? pasos.findIndex((p) => p.id === procId) : -1;
+  // Próximo pasoId sin procedimiento, excluyendo el actual (VB condicional
+  // DISEÑADOR-UX §"Siguiente paso sin documentar"): reutiliza cobertura.faltantes,
+  // ya calculada arriba — no hay query ni estado nuevo.
+  const siguientePasoSinDocumentarId = cobertura.faltantes.find((id) => id !== procId);
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-10">
@@ -343,6 +370,36 @@ export default async function DiagramaPage({
           Pasos del proceso
         </h2>
 
+        {/* Indicador de cobertura de procedimientos (Nivel 4 de F02, §6.3
+            del diseño): informativo, nunca bloqueante, color neutro — no es
+            una alerta. Nunca decir "opcional": devaluaría el entregable.
+            Solo se muestra si hay al menos un paso elegible. */}
+        {cobertura.elegibles > 0 && (
+          <div className="mt-2 mb-1">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-xs text-ink-2">
+                {cobertura.conProcedimiento} de {cobertura.elegibles} tareas tienen procedimiento documentado
+              </p>
+              {cobertura.conProcedimiento > 0 && (
+                <a
+                  href={`/api/diagramas/${diagrama.id}/manual`}
+                  className="shrink-0 text-xs font-medium text-primary-ink underline-offset-2 hover:underline"
+                >
+                  Descargar manual operativo (.md)
+                </a>
+              )}
+            </div>
+            <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-bg">
+              <div
+                className="h-full rounded-full bg-ink-2/40"
+                style={{
+                  width: `${Math.round((cobertura.conProcedimiento / cobertura.elegibles) * 100)}%`,
+                }}
+              />
+            </div>
+          </div>
+        )}
+
         {pasos.length === 0 ? (
           <p className="mt-3 text-sm text-ink-2">Sin pasos todavía.</p>
         ) : (
@@ -401,6 +458,35 @@ export default async function DiagramaPage({
                         : p.siguiente ?? "—"}
                     </td>
                     <td className="py-2 pr-2 whitespace-nowrap">
+                      {/* Nivel 4 de F02: indicador de procedimiento por
+                          fila, solo en pasos elegibles (§6.1 del diseño:
+                          tarea/sistema). 3 estados visuales — sin
+                          procedimiento / borrador / confirmado. */}
+                      {elegiblePasoProcedimiento(p) && (() => {
+                        const proc = procedimientoPorPasoId.get(p.id);
+                        const estado = proc?.estado as "borrador" | "confirmado" | undefined;
+                        return (
+                          <Link
+                            href={`/diagramas/${diagrama.id}?procId=${p.id}`}
+                            title={
+                              estado === "confirmado"
+                                ? "Procedimiento confirmado"
+                                : estado === "borrador"
+                                  ? "Procedimiento en borrador"
+                                  : "Sin procedimiento documentado"
+                            }
+                            className={`mr-1.5 inline-flex cursor-pointer items-center rounded px-1.5 py-1 text-[10px] font-bold uppercase tracking-wide transition ${
+                              estado === "confirmado"
+                                ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
+                                : estado === "borrador"
+                                  ? "bg-amber-100 text-amber-800 hover:bg-amber-200"
+                                  : "bg-bg text-ink-2 hover:bg-line"
+                            }`}
+                          >
+                            {estado === "confirmado" ? "Procedimiento" : estado === "borrador" ? "Borrador" : "+ Procedimiento"}
+                          </Link>
+                        );
+                      })()}
                       <Link
                         href={`/diagramas/${diagrama.id}?editId=${p.id}`}
                         className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-line px-2.5 py-1 text-xs font-medium text-ink-2 transition hover:bg-bg"
@@ -730,6 +816,35 @@ export default async function DiagramaPage({
             </form>
           </div>
         </div>
+      )}
+
+      {/* Drawer de procedimiento (Nivel 4 de F02, PARTE B del diseño). Se
+          abre navegando a ?procId=... (SSR, sin JS de cliente para abrir),
+          mismo patrón que el popup de edición de paso — pero panel lateral
+          en vez de modal centrado, porque el usuario necesita ver contexto
+          del paso (vecinos) mientras describe cómo se hace. `key` fuerza un
+          remount cuando cambia el paso o el contenido persistido, para que
+          el estado local del formulario no arrastre datos del paso
+          anterior tras un revalidatePath. */}
+      {pasoProcedimiento && (
+        <ProcedimientoDrawer
+          key={`${pasoProcedimiento.id}-${procedimientoSeleccionado?.updatedAt.getTime() ?? "nuevo"}`}
+          diagramId={diagrama.id}
+          paso={{
+            id: pasoProcedimiento.id,
+            actor: pasoProcedimiento.actor,
+            texto: pasoProcedimiento.texto,
+            anterior: idxProc > 0 ? pasos[idxProc - 1]?.texto : undefined,
+            siguiente: idxProc >= 0 ? pasos[idxProc + 1]?.texto : undefined,
+          }}
+          contenidoInicial={
+            procedimientoSeleccionado ? parseContenidoProcedimiento(procedimientoSeleccionado.contenido) : null
+          }
+          estadoInicial={(procedimientoSeleccionado?.estado as "borrador" | "confirmado" | undefined) ?? null}
+          promptFuenteInicial={procedimientoSeleccionado?.promptFuente ?? ""}
+          siguientePasoSinDocumentarId={siguientePasoSinDocumentarId}
+          cobertura={{ conProcedimiento: cobertura.conProcedimiento, elegibles: cobertura.elegibles }}
+        />
       )}
     </main>
   );
