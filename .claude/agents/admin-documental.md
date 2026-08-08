@@ -41,8 +41,10 @@ Este mapa es tu propia herramienta de trabajo — cuando encuentres una relació
 - `docs/DISENO-INCREMENTO-2-F02-DESCOMPOSICION.md` — Incremento 2.
 - `docs/DISENO-INCREMENTO-3-F02.md` — Incremento 3 (reemplazó lo que el plan original llamaba "Incremento 3" para versionado — ver nota de numeración en ese mismo doc).
 - `docs/DISENO-VERSIONADO-F02.md` — Versionado (sin número, a propósito, para no colisionar de nuevo).
+- `docs/DISENO-NIVELES-1-4-F02.md` — Niveles 1 (Diagrama de Valor) y 4 (Procedimientos); incorpora reglas de nomenclatura/clasificación de `sistemaaiprocess/prompts/mapa-procesos-nivel0.md` (histórico).
 - `docs/METODOLOGIA-JERARQUIA-MAPEA.md` — metodología de 4 niveles, validada por Patricio, referenciada por varios de los anteriores.
 - `sistemaaiprocess/docs/fundamentos-teoricos.md` — verificación de fuentes académicas (7PMG) citadas en el motor de completitud.
+- `sistemaaiprocess/prompts/mapa-procesos-nivel0.md` — **insumo histórico** (2026-07-23); prompt base para captura de Nivel 0. Reglas incorporadas en DISENO-NIVELES-1-4-F02.md. Versionado 2026-08-07 como referencia.
 
 **Pricing (deben coincidir el número y el estado "vigente" vs "histórico"):**
 - Cualquier commit/código que muestre precio al usuario (`generador-bpmn/src/app/suscripcion/*`, `generador-bpmn/scripts/bootstrap-mercadopago-plan*.mjs`).
